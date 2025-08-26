@@ -9,12 +9,20 @@ public class Client {
     public Client(){
         try{
             Socket socketClient = new Socket(HOST,PORT);
-            // entrada para leer desde el socket
+            // entrada para leer desde el socket-server
             BufferedReader input = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-            //DataOutputStream output = new DataOutputStream(socketClient.getOutputStream());
+            // para enviar desde el cliente al servidor
+            DataOutputStream output = new DataOutputStream(socketClient.getOutputStream());
             System.out.println("C: Connecting to <" + HOST + ">");
-            // imprime la respuesta del servidor
+            // cliente lee saludo del servidor
             System.out.println("S: "+ input.readLine());
+            // envio de mensaje del cliente al servidor
+            output.writeBytes("HOla servidor soy el cliente\n");
+            // esperando respuesta del servidor
+            String serverResponse = input.readLine();
+            // imprimir respuesta
+            System.out.println("Response: "+ serverResponse);
+
             socketClient.close();
             System.out.println("C: Disconnect of <" + HOST + ">" );
         }catch(Exception e){
