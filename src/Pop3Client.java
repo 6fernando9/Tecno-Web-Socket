@@ -52,8 +52,17 @@ public class Pop3Client {
                 command = "STAT\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
-                System.out.println("Respuesta servidor a PASS: " + input.readLine());
+                System.out.println("Respuesta servidor a STAT: " + input.readLine());
 
+                command = "RETR 19\r\n";
+                System.out.println("Comando: " + command);
+                output.writeBytes(command);
+                System.out.println("Respuesta servidor a RETR 19: " + getMultiline(input));
+
+                command = "QUIT\r\n";
+                System.out.println("Comando: " + command);
+                output.writeBytes(command);
+                System.out.println("Respuesta servidor a QUIT: " + input.readLine());
 
             }
             output.close();
