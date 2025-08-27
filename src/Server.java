@@ -22,10 +22,8 @@ public class Server {
                 //servidor lee el mensaje del cliente
                 String clientMsg = input.readLine();
                 System.out.println(" el cliente dice: " + clientMsg);
-                // Servidor responde al cliente
+                // Servidor responde al cliente -envia mensaje de nuveo
                 output.writeBytes("Recibí tu mensaje: " + clientMsg + "\n");
-
-
                 socketClient.close();
             }
             System.out.println("S: it's too many clients for now");
