@@ -28,8 +28,8 @@ public class Pop3Client {
     }
     public static void main(String[] args) {
         String server = "mail.tecnoweb.org.bo";
-        String user = "grupo20sa";
-        String  password = "grup020grup020*";
+        String user = "grupo29sa";
+        String  password = "grup029grup029*";
         String line;
         String command;
         int port = 110;

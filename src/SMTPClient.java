@@ -7,47 +7,41 @@ public class SMTPClient {
     private String server;
     private String receptorUser;
     private String  emisorUser;
-    private String line;
-    private String command;
     private int port;
     public SMTPClient(){
-        this.server = "mail.tecnoweb.org.bo";
-        this.receptorUser = "grupo20sc@tecnoweb.org.bo";
-        this.emisorUser = "evansbv@gmail.com";
+        this.server = SocketUtils.MAIL_SERVER;
+        this.receptorUser = "muerte201469@gmail.com";
+        this.emisorUser = "grupo29sc@tecnoweb.org.bo";
+        this.port = SocketUtils.SMTP_PORT;
     }
     public SMTPClient(String server, String receptorUser,
-                      String emisorUser, String line,String command, int port){
+                      String emisorUser){
             this.server = server;
             this.receptorUser = receptorUser;
             this.emisorUser = emisorUser;
-            this.command = command;
-            this.line = line;
-            this.port = port;
+            this.port = SocketUtils.SMTP_PORT;
     }
-    public static void main(String[] args) {
-        String server = "mail.tecnoweb.org.bo";
-        String receptorUser = "grupo20sc@tecnoweb.org.bo";
-        String  emisorUser = "evansbv@gmail.com";
-        String line;
-        String command;
-        int port = 25;
+    public void ejecutarSocket() {
         try{
-            Socket socket = new Socket(server,port);
+            System.out.println(this.toString());
+            String SMTPServer = SocketUtils.MAIL_SERVER;
+            Socket socket = new Socket(SMTPServer,SocketUtils.SMTP_PORT);
+            String command = "";
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             if ( SMTPClient.esEntradaValida(socket,input,output) ) {
                 System.out.println("Mensaje del servidor: " + input.readLine());
-                command = "HELO " + server + " \r\n";
+                command = "HELO " + SMTPServer + " \r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a HELO: " + input.readLine());
 
-                command = "MAIL FROM: <" + emisorUser + "> \r\n";
+                command = "MAIL FROM: " + this.getEmisorUser() + "\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a Mail From: " + input.readLine());
 
-                command = "RCPT TO: <" + receptorUser + "> \r\n";
+                command = "RCPT TO: " + this.getReceptorUser() + "\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a RCPT FROM: " + input.readLine());
@@ -57,10 +51,12 @@ public class SMTPClient {
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a DATA: " + input.readLine());
 
-                command = "SUBJECT : DEMO VIA SOCKET'S \n";
-                command += "Hola como estas \n";
-                command += "bien... gracias.\n";
-                command += ".\n";
+                command = "Subject: DEMO VIA SOCKET'S\r\n";
+                command += "\r\n";
+                command += "Hola como estas\r\n";
+                command += "bien... gracias.\r\n";
+                command += ".\r\n";
+
 
                 System.out.println("comando: "+ command);
                 output.writeBytes( command );
@@ -78,10 +74,25 @@ public class SMTPClient {
             System.out.println("throw - "+ e.getMessage());
         }
     }
+    public static void main(String[] args) {
+        SMTPClient smtpClient = new SMTPClient();
+        smtpClient.ejecutarSocket();
+    }
 
     public static boolean esEntradaValida(Socket socket, BufferedReader input, DataOutputStream output){
         return socket != null && input != null && output != null;
     }
+
+    @Override
+    public String toString() {
+        return "SMTPClient{" +
+                "server='" + server + '\'' +
+                ", receptorUser='" + receptorUser + '\'' +
+                ", emisorUser='" + emisorUser + '\'' +
+                ", port=" + port +
+                '}';
+    }
+
     public String getServer() {
         return server;
     }
@@ -106,19 +117,5 @@ public class SMTPClient {
         this.emisorUser = emisorUser;
     }
 
-    public String getLine() {
-        return line;
-    }
 
-    public void setLine(String line) {
-        this.line = line;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
 }
