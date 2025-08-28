@@ -9,42 +9,35 @@ public class Pop3Client {
     private String server;
     private String user;
     private String password;
-    private String line;
-    private String command;
     private int port;
     public Pop3Client(){
-        this.server = "mail.tecnoweb.org.bo";
-        this.user = "grupo20sa";
-        this.password = "grup020grup020*";
+        this.server = SocketUtils.MAIL_SERVER;
+        this.user = "grupo30sc";
+        this.password = "grup030grup030*";
+        this.port = SocketUtils.POP3_PORT;
     }
-    public Pop3Client(String server, String user,
-                      String password, String line,String command, int port){
-        this.server = server;
+    public Pop3Client(String user,
+                      String password){
+        this.server = SocketUtils.MAIL_SERVER;
         this.user = user;
         this.password = password;
-        this.command = command;
-        this.line = line;
-        this.port = port;
+        this.port = SocketUtils.POP3_PORT;
     }
-    public static void main(String[] args) {
-        String server = "mail.tecnoweb.org.bo";
-        String user = "grupo29sa";
-        String  password = "grup029grup029*";
+    public void executePop3Client() {
         String line;
         String command;
-        int port = 110;
         try{
-            Socket socket = new Socket(server,port);
+            Socket socket = new Socket(this.getServer(),this.getPort());
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-            if ( SMTPClient.esEntradaValida(socket,input,output) ) {
+            if ( SocketUtils.esEntradaValida(socket,input,output) ) {
                 System.out.println("Mensaje del servidor: " + input.readLine());
-                command = "USER " + user + " \r\n";
+                command = "USER " + this.getUser() + "\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a USER: " + input.readLine());
 
-                command = "PASS " + password + " \r\n";
+                command = "PASS " + this.getPassword() + "\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a PASS: " + input.readLine());
@@ -54,10 +47,15 @@ public class Pop3Client {
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a STAT: " + input.readLine());
 
+                command ="LIST \r\n";
+                System.out.println("comando: " + command);
+                output.writeBytes(command);
+                System.out.println("Respuesta del servidor: " + SocketUtils.getMultiline(input));
+
                 command = "RETR 19\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
-                System.out.println("Respuesta servidor a RETR 19: " + getMultiline(input));
+                System.out.println("Respuesta servidor a RETR 19: " + SocketUtils.getMultiline(input));
 
                 command = "QUIT\r\n";
                 System.out.println("Comando: " + command);
@@ -72,23 +70,13 @@ public class Pop3Client {
             System.out.println("throw - "+ e.getMessage());
         }
     }
-    static private String getMultiline(BufferedReader input) throws IOException {
-        String lines = "";
-        while (true) {
-            String line = input.readLine();
-            if (line == null){
-                throw new IOException("Server unawares closed the connection");
-            }
-            if(line.equals(".")) {
-                break;
-            }
-            if ((!line.isEmpty()) && (line.charAt(0) == '.')) {
-                line = line.substring(1);
-            }
-            lines = lines + "\n" + line;
-        }
-        return lines;
+    public static void main(String[] args) {
+        Pop3Client pop3Client = new Pop3Client();
+        pop3Client.executePop3Client();
     }
+
+
+
     public String getUser() {
         return user;
     }
@@ -113,21 +101,6 @@ public class Pop3Client {
         this.password = password;
     }
 
-    public String getLine() {
-        return line;
-    }
-
-    public void setLine(String line) {
-        this.line = line;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
 
     public int getPort() {
         return port;
@@ -135,10 +108,6 @@ public class Pop3Client {
 
     public void setPort(int port) {
         this.port = port;
-    }
-
-    public static boolean esEntradaValida(Socket socket, BufferedReader input, DataOutputStream output){
-        return socket != null && input != null && output != null;
     }
     //conexion con BD psql -U agenda -d db_agenda -h mail.tecnoweb.org.bo -c 'SELECT * FROM persona'
 

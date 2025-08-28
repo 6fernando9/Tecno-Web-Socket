@@ -14,24 +14,24 @@ public class SMTPClient {
         this.emisorUser = "grupo29sc@tecnoweb.org.bo";
         this.port = SocketUtils.SMTP_PORT;
     }
-    public SMTPClient(String server, String receptorUser,
+    public SMTPClient(String receptorUser,
                       String emisorUser){
-            this.server = server;
+            this.server = SocketUtils.MAIL_SERVER;
             this.receptorUser = receptorUser;
             this.emisorUser = emisorUser;
             this.port = SocketUtils.SMTP_PORT;
     }
-    public void ejecutarSocket() {
+    public void executeSMTPClient() {
         try{
             System.out.println(this.toString());
-            String SMTPServer = SocketUtils.MAIL_SERVER;
-            Socket socket = new Socket(SMTPServer,SocketUtils.SMTP_PORT);
+
+            Socket socket = new Socket(this.getServer(),this.getPort());
             String command = "";
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             if ( SMTPClient.esEntradaValida(socket,input,output) ) {
                 System.out.println("Mensaje del servidor: " + input.readLine());
-                command = "HELO " + SMTPServer + " \r\n";
+                command = "HELO " + this.getServer() + " \r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
                 System.out.println("Respuesta servidor a HELO: " + input.readLine());
@@ -76,7 +76,7 @@ public class SMTPClient {
     }
     public static void main(String[] args) {
         SMTPClient smtpClient = new SMTPClient();
-        smtpClient.ejecutarSocket();
+        smtpClient.executeSMTPClient();
     }
 
     public static boolean esEntradaValida(Socket socket, BufferedReader input, DataOutputStream output){
@@ -116,6 +116,8 @@ public class SMTPClient {
     public void setEmisorUser(String emisorUser) {
         this.emisorUser = emisorUser;
     }
-
+    public int getPort(){
+        return this.port;
+    }
 
 }
