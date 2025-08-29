@@ -16,6 +16,11 @@ public class SocketUtils {
     public static boolean esEntradaValida(Socket socket, BufferedReader input, DataOutputStream output){
         return socket != null && input != null && output != null;
     }
+    public static void closeServices(Socket socket, BufferedReader input, DataOutputStream output) throws IOException {
+        socket.close();
+        input.close();
+        output.close();
+    }
     static String getMultiline(BufferedReader input) throws IOException {
         String lines = "";
         while (true) {
