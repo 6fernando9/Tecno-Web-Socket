@@ -1,3 +1,7 @@
+package Database;
+
+import Utils.SocketUtils;
+
 import java.sql.*;
 
 //tecno web
@@ -6,7 +10,7 @@ import java.sql.*;
 //bd = db_agenda
 //table persona
 // import java.sql.*
-
+//conexion con BD psql -U agenda -d db_agenda -h mail.tecnoweb.org.bo -c 'SELECT * FROM persona'
 public class PGSQLClient {
     private String server;
     private String user;

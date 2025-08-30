@@ -1,9 +1,13 @@
+package SMTP;
+
+import Utils.SocketUtils;
+
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.rmi.Naming;
 
 // TODO -> REFACTORIZAR
 public class SMTPClient {
@@ -13,12 +17,12 @@ public class SMTPClient {
     private int port;
     public SMTPClient(){
         this.server = SocketUtils.MAIL_SERVER;
-        this.receptorUser = "fernandopadilla170@gmail.com";
-        this.emisorUser = "grupo29sc@tecnoweb.org.bo";
+        this.receptorUser = "fernando@gmail.com";
+        this.emisorUser = "grupo30sc@tecnoweb.org.bo";
         this.port = SocketUtils.SMTP_PORT;
     }
-    public SMTPClient(String receptorUser,
-                      String emisorUser){
+    public SMTPClient(String emisorUser,
+                      String receptorUser){
             this.server = SocketUtils.MAIL_SERVER;
             this.receptorUser = receptorUser;
             this.emisorUser = emisorUser;
@@ -104,6 +108,7 @@ public class SMTPClient {
         output.writeBytes(command);
         System.out.println("Respuesta servidor a Data Subject: " + input.readLine());
     }
+    //para la tarea
     public void sendPatronToServer(String patron){
         try{
             Socket socket = new Socket(this.server,this.port);
@@ -120,30 +125,26 @@ public class SMTPClient {
             throw new RuntimeException(e);
         }
     }
-
-    // TODO -> probar si envia, y obtener data desde el POP3,luego ejecutar el SQL, para enviar al correo
     public static void main(String[] args) {
-        SMTPClient smtpClient = new SMTPClient("grupo29sc@tecnoweb.org.bo","fernando170@gmail.com");
-        smtpClient.sendPatronToServer("er");
+        executeTask();
+    }
+
+    public static void executeTask() {
+       SMTPClient smtpClient = new SMTPClient();
+       smtpClient.executeSMTPClient();
     }
 
 
-
-
-
-
-
+    // metodos que toda clase de JAVA tiene
     @Override
     public String toString() {
-        return "SMTPClient{" +
+        return "SMTP.SMTPClient{" +
                 "server='" + server + '\'' +
                 ", receptorUser='" + receptorUser + '\'' +
                 ", emisorUser='" + emisorUser + '\'' +
                 ", port=" + port +
                 '}';
     }
-
-
 
     public String getServer() {
         return server;
@@ -168,6 +169,7 @@ public class SMTPClient {
     public void setEmisorUser(String emisorUser) {
         this.emisorUser = emisorUser;
     }
+
     public int getPort(){
         return this.port;
     }
