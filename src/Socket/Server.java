@@ -1,8 +1,6 @@
 package Socket;
-
 import java.io.*;
 import java.net.*;
-
 
 public class Server {
     // puerto de abertura del servidor

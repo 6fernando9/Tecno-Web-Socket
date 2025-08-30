@@ -5,7 +5,6 @@ import POP3.Pop3Client;
 import SMTP.SMTPClient;
 import Utils.SQLUtils;
 import Utils.TecnoUtils;
-
 import java.util.List;
 
 public class Patron {
@@ -20,6 +19,7 @@ public class Patron {
         }
         return null;
     }
+
     public static void main(String[] args) {
         // send to patron with SMTP
         SMTPClient smtpClient = new SMTPClient("fernando@gmail.com","grupo30sc@tecnoweb.org.bo");

@@ -1,15 +1,11 @@
 package SMTP;
-
-import Utils.SocketUtils;
-
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import Utils.SocketUtils;
 
-// TODO -> REFACTORIZAR
 public class SMTPClient {
     private String server;
     private String receptorUser;

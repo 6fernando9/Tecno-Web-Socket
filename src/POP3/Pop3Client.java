@@ -1,8 +1,4 @@
 package POP3;
-
-import Utils.SocketUtils;
-import Utils.TecnoUtils;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,9 +6,9 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import Utils.SocketUtils;
+import Utils.TecnoUtils;
 
-/// TODO -> REFACTORIZAR
-/// TOOD -> Crear cliente para BD con posgreSQL
 public class Pop3Client {
     private String server;
     private String user;

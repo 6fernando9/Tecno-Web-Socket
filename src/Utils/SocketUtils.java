@@ -25,7 +25,6 @@ public class SocketUtils {
         String lines = "";
         while (true) {
             String line = input.readLine();
-//            System.out.println("LINE: " + line.contains("SUBJECT"));
             if (line == null){
                 throw new IOException("Socket.Socket.Server unawares closed the connection");
             }

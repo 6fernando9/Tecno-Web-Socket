@@ -2,6 +2,7 @@ package Utils;
 
 import Exceptions.InvalidGroupException;
 import java.util.List;
+
 //TODO -> podria aplicarse validaciones extremas a cada punto
 public class TecnoUtils {
     private static List<String> GRUPOS_PERMITIDOS = List.of("sc","sa","cc");
