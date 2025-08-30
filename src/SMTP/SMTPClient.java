@@ -103,22 +103,25 @@ public class SMTPClient {
     }
     public static void executeDataSubject(String subject,String context,BufferedReader input,DataOutputStream output) throws IOException {
         String command = "SUBJECT: " + subject + "\r\n";
-        command += context + "\r\n";
+        command += "\r\n";
+        if (context != null) {
+            command += context + "\r\n";
+        }
         command += ".\r\n";
         output.writeBytes(command);
         System.out.println("Respuesta servidor a Data Subject: " + input.readLine());
     }
     //para la tarea
-    public void sendPatronToServer(String patron){
+    public void sendDataToServer(String subject,String context){
         try{
-            Socket socket = new Socket(this.server,this.port);
+            Socket socket = new Socket(this.getServer(),this.getPort());
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             if (SocketUtils.esEntradaValida(socket,input,output)) {
-                executeMailFrom(this.emisorUser,input,output);
-                executeReceivedTo(this.receptorUser,input,output);
+                executeMailFrom(this.getEmisorUser(),input,output);
+                executeReceivedTo(this.getReceptorUser(),input,output);
                 executeData(input,output);
-                executeOnlySubject(patron,input,output);
+                executeDataSubject(subject,context,input,output);
             }
             SocketUtils.closeServices(socket,input,output);
         } catch (IOException e) {

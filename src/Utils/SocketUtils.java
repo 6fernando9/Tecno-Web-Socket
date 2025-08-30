@@ -12,10 +12,6 @@ public class SocketUtils {
     public static int POP3_PORT = 110;
     public static String MAIL_SERVER = "mail.tecnoweb.org.bo";
 
-    public static String DB_USER = "agenda";
-    public static String DB_PASSWORD = "agendaagenda";
-    public static String DB_NAME = "db_agenda";
-    public static String DB_TABLE = "persona";
 
     public static boolean esEntradaValida(Socket socket, BufferedReader input, DataOutputStream output){
         return socket != null && input != null && output != null;
@@ -42,7 +38,6 @@ public class SocketUtils {
             }
             lines = lines + "\n" + line;
         }
-        System.out.println("Lineas " + lines);
         return lines;
     }
     public static List<String> getIdsForListCommand(BufferedReader input) throws IOException{

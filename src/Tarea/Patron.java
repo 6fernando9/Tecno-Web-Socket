@@ -1,7 +1,9 @@
 package Tarea;
 
+import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
+import Utils.SQLUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
@@ -20,13 +22,18 @@ public class Patron {
     }
     public static void main(String[] args) {
         // send to patron with SMTP
-        SMTPClient smtpClient = new SMTPClient("fernando1@gmail.com","grupo30sc@tecnoweb.org.bo");
-       // smtpClient.sendPatronToServer("er");
+        SMTPClient smtpClient = new SMTPClient("fernando@gmail.com","grupo30sc@tecnoweb.org.bo");
+         smtpClient.sendDataToServer("e",null);
         String user = TecnoUtils.getUserForPop3(smtpClient.getReceptorUser());
         String password = TecnoUtils.generatePasswordForPop3(user);
         Pop3Client pop3Client = new Pop3Client(user,password);
         List<String> dataList = pop3Client.executeTaskPop3();
         String patron = obtenerPatron(dataList,smtpClient.getEmisorUser());
-        System.out.println("patron: " + patron);
-    }
+        System.out.println(patron);
+        PGSQLClient pgsqlClient = new PGSQLClient();
+        System.out.println(SQLUtils.getQueryForPatron(patron));
+        String data = pgsqlClient.executePGSQLClientForPersonTableForPatronQuery(SQLUtils.getQueryForPatron(patron));
+        System.out.println(data);
+        smtpClient.sendDataToServer("SQL INJECTION",data);
+    }   
 }

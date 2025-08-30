@@ -1,6 +1,7 @@
 package POP3;
 
 import Utils.SocketUtils;
+import Utils.TecnoUtils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -60,7 +61,7 @@ public class Pop3Client {
         String command = "RETR " + messageNumber + "\r\n";
         System.out.println("Command: " + command);
         output.writeBytes(command);
-        System.out.println("Respuesta del servidor: " + input.readLine());
+        System.out.println("Respuesta del servidor: " + SocketUtils.getMultiline(input));
     }
     public void executeDeleCommand(int messageNumber,BufferedReader input, DataOutputStream output) throws IOException {
         String command = "DELE " + messageNumber + "\r\n";
@@ -119,7 +120,6 @@ public class Pop3Client {
     }
 
     public void executePop3Client() {
-        String line;
         String command;
         try{
             Socket socket = new Socket(this.getServer(),this.getPort());
@@ -147,16 +147,9 @@ public class Pop3Client {
                 output.writeBytes(command);
                 System.out.println("Respuesta del servidor: " + SocketUtils.getMultiline(input));
 
-                command = "RETR 2\r\n";
-                System.out.println("Comando: " + command);
-                output.writeBytes(command);
-                System.out.println("Respuesta servidor a RETR 3: " + SocketUtils.getMultiline(input));
-
-//                command = "DELE 1\r\n";
-//                System.out.println("Comando: " + command);
-//                output.writeBytes(command);
-//                System.out.println("Respuesta servidor a DELE 7: " + input.readLine());
-
+                for (int i = 1; i < 5; i++) {
+                    executeRetrCommand(i,input,output);
+                }
                 command = "QUIT\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
