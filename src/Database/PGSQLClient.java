@@ -17,14 +17,21 @@ public class PGSQLClient {
     private String user;
     private String password;
     private String bdName;
-    private String bdTable;
+    //private String bdTable;
 
+    public PGSQLClient(String server,String user,String password, String bdName){
+        this.server = server;
+        this.user = user;
+        this.password = password;
+        this.bdName = bdName;
+        //this.bdTable = bdTable;
+    }
     public PGSQLClient(){
         this.server = SocketUtils.MAIL_SERVER;
         this.user = SQLUtils.DB_USER;
         this.password = SQLUtils.DB_PASSWORD;
         this.bdName = SQLUtils.DB_NAME;
-        this.bdTable = SQLUtils.DB_TABLE;
+        //this.bdTable = SQLUtils.DB_TABLE;
     }
 
     public void executePGSQLClientForPersonTable(String query){
@@ -40,6 +47,7 @@ public class PGSQLClient {
             System.out.println("Throw: " + e.getMessage());
         }
     }
+
 
     public String executePGSQLClientForPersonTableForPatronQuery(String query){
         String databaseUrl = "jdbc:postgresql://" + this.getServer() + ":5432/" + this.getBdName();
@@ -122,6 +130,9 @@ public class PGSQLClient {
         resultSet.close();
         return result;
     }
+
+
+
     public static void main(String[] args) {
         PGSQLClient pgsqlClient = new PGSQLClient();
         pgsqlClient.executePGSQLClientForPersonTable("SELECT * FROM persona");
@@ -159,13 +170,13 @@ public class PGSQLClient {
         this.bdName = bdName;
     }
 
-    public String getBdTable() {
-        return bdTable;
-    }
-
-    public void setBdTable(String bdTable) {
-        this.bdTable = bdTable;
-    }
+//    public String getBdTable() {
+//        return bdTable;
+//    }
+//
+//    public void setBdTable(String bdTable) {
+//        this.bdTable = bdTable;
+//    }
 
 
 }

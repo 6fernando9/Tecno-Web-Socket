@@ -11,6 +11,14 @@ public class SMTPClient {
     private String receptorUser;
     private String  emisorUser;
     private int port;
+
+    //para usarlo en el parcial
+    public SMTPClient(String server, String receptorUser,String emisorUser){
+        this.server = server;
+        this.receptorUser = receptorUser;
+        this.emisorUser = emisorUser;
+        this.port = SocketUtils.SMTP_PORT;
+    }
     public SMTPClient(){
         this.server = SocketUtils.MAIL_SERVER;
         this.receptorUser = "fernando@gmail.com";
@@ -24,6 +32,7 @@ public class SMTPClient {
             this.emisorUser = emisorUser;
             this.port = SocketUtils.SMTP_PORT;
     }
+
     public void executeSMTPClient() {
         try{
             Socket socket = new Socket(this.getServer(),this.getPort());
@@ -73,6 +82,7 @@ public class SMTPClient {
             System.out.println("throw - "+ e.getMessage());
         }
     }
+
     public static void executeMailFrom(String emisor,BufferedReader input,DataOutputStream output) throws IOException {
         String command = "MAIL FROM: " + emisor + "\r\n";
         System.out.println("Comando: " + command);
@@ -107,7 +117,8 @@ public class SMTPClient {
         output.writeBytes(command);
         System.out.println("Respuesta servidor a Data Subject: " + input.readLine());
     }
-    //para la tarea
+
+    //antes de usar el metodo requiero instanciar el emisor y receptor
     public void sendDataToServer(String subject,String context){
         try{
             Socket socket = new Socket(this.getServer(),this.getPort());
@@ -124,9 +135,24 @@ public class SMTPClient {
             throw new RuntimeException(e);
         }
     }
+
+
+
+
+
+
+
+
     public static void main(String[] args) {
         executeTask();
     }
+
+
+
+
+
+
+
 
     public static void executeTask() {
        SMTPClient smtpClient = new SMTPClient();

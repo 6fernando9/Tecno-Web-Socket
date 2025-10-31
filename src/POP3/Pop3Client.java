@@ -20,6 +20,14 @@ public class Pop3Client {
         this.password = "grup030grup030*";
         this.port = SocketUtils.POP3_PORT;
     }
+
+    //para usarlo en el parcial
+    public Pop3Client(String server,String user,String password){
+        this.server = server;
+        this.user = user;
+        this.password = password;
+        this.port = SocketUtils.POP3_PORT;
+    }
     public Pop3Client(String user,
                       String password){
         this.server = SocketUtils.MAIL_SERVER;
@@ -78,6 +86,9 @@ public class Pop3Client {
         output.writeBytes(command);
         return SocketUtils.getData(input);
     }
+    //el List solo retorna el id y la dimension ejem:
+    // 1  4449
+    // 2  3332
     private List<String> executeListCommandForTask(BufferedReader input,DataOutputStream output) throws IOException {
         String command = "LIST \r\n";
         System.out.println("Comando: " + command);
@@ -118,8 +129,11 @@ public class Pop3Client {
     public void executePop3Client() {
         String command;
         try{
+            //inicializar conexion
             Socket socket = new Socket(this.getServer(),this.getPort());
+            //input para respuestas del servidor
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            //output para envio de datos al servidor
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             if ( SocketUtils.esEntradaValida(socket,input,output) ) {
                 System.out.println("Mensaje del servidor: " + input.readLine());
@@ -143,6 +157,7 @@ public class Pop3Client {
                 output.writeBytes(command);
                 System.out.println("Respuesta del servidor: " + SocketUtils.getMultiline(input));
 
+                //para ver cada mensaje
                 for (int i = 1; i < 5; i++) {
                     executeRetrCommand(i,input,output);
                 }
