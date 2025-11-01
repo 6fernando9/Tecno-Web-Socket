@@ -7,21 +7,42 @@ import Database.PGSQLClient;
 import java.sql.*;
 
 public class UpdateSQLQuery {
-    public String getCreateUserQuery(UpdateUsuarioDTO updateUsuarioDTO){
+    private static final String SQL_EXISTS =
+            "SELECT EXISTS(SELECT 1 FROM usuario WHERE id = ?)";
+
+    private static final String SQL_UPDATE =
+            "UPDATE usuario SET \"user\" = ?, pass = ?, correo = ?, nombre = ?, telefono = ?, tipo = ? WHERE id = ?";
+
+    public String getUpdateUserQuery(UpdateUsuarioDTO updateUsuarioDTO){
         return String.format(
                 """
-                INSERT INTO usuario ("user" , pass, correo, nombre, telefono, tipo)
-                VALUES ('%s', '%s','%s', '%s', %d, '%s')
+                UPDATE usuario 
+                SET "user" = '%s', 
+                    pass = '%s', 
+                    correo = '%s', 
+                    nombre = '%s', 
+                    telefono = %d, 
+                    tipo = '%s'
+                WHERE id = %d
                 """,
                 updateUsuarioDTO.username,
                 updateUsuarioDTO.password,
                 updateUsuarioDTO.correo,
                 updateUsuarioDTO.nombre,
                 updateUsuarioDTO.telefono,
-                updateUsuarioDTO.tipo
+                updateUsuarioDTO.tipo,
+                updateUsuarioDTO.id
         );
     }
 
+    private boolean existsUser(Connection con, long id) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(SQL_EXISTS)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
     //para respuesta final
     private String generarRespuestaPararCrearUsuario(ResultSet resultSet) throws SQLException {
         String result = "";
@@ -50,19 +71,29 @@ public class UpdateSQLQuery {
         resultSet.close();
         return result;
     }
-    public String executeUpdateUserQuery(PGSQLClient pgsqlClient, String query){
+    public String executeUpdateUserQuery(PGSQLClient pgsqlClient, UpdateUsuarioDTO updateUsuarioDTO){
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
-        String tuplas = "";
-        int filasAfectadas = 0;
         try{
             Connection connection = DriverManager.getConnection(databaseUrl,pgsqlClient.getUser(),pgsqlClient.getPassword());
             System.out.println("Connecting successfully to database");
             //Consultas
-            Statement statement = connection.createStatement();
-            filasAfectadas = statement.executeUpdate(query);
-            statement.close();
-            connection.close();
-            return "Actualizacion Exitosa!\r\n";
+            if (!existsUser(connection, updateUsuarioDTO.id)) {
+                return "No existe un usuario con id=" + updateUsuarioDTO.id + ". No se realizó ninguna actualización.\r\n";
+            }
+            try (PreparedStatement ps = connection.prepareStatement(SQL_UPDATE)) {
+                ps.setString(1, updateUsuarioDTO.username);
+                ps.setString(2, updateUsuarioDTO.password);
+                ps.setString(3, updateUsuarioDTO.correo);
+                ps.setString(4, updateUsuarioDTO.nombre);
+                ps.setLong(5, updateUsuarioDTO.telefono);
+                ps.setString(6, updateUsuarioDTO.tipo);
+                int filas = ps.executeUpdate();
+                if (filas == 0) {
+                    // En caso de carrera o eliminación entre pasos
+                    return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.\r\n";
+                }
+                return "Actualización exitosa (" + filas + " fila(s)).\r\n";
+            }
         }catch(Exception e){
             System.out.println("Throw: " + e.getMessage());
             return "ERROR DE BASE DE DATOS: " + e.getMessage() + "\r\n";

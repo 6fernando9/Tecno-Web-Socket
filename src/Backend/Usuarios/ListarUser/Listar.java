@@ -18,12 +18,13 @@ public class Listar {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                dasd["*"]
+                createuser["8","SS","SSSSSS","123333","SSS@gmail.com","7563872","admin"]
                 """;
-        String input1 = "[\"1\",\"gemini\"]";
+
         String[] arreglo = TecnoUtils.procesarString(subject);
+        System.out.println(UsuarioDTO.crearUsuarioMedianteSubject(subject));
         System.out.println(Arrays.stream(arreglo).toList());
-        System.out.println(Arrays.stream(arreglo).toList().size());
+
 //        String context = null;
 //        String server = SocketUtils.MAIL_SERVER;
 //        TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

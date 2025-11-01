@@ -160,9 +160,11 @@ public class SMTPClient {
 
 
     public static void main(String[] args) {
-        String emisor = "muerte201469@gmail.com";
-        String receptor = "grupo14sc@tecnoweb.org.bo";
-        String subject = "updateuser";
+        //String emisor = "muerte201469@gmail.com";
+        //String receptor = "grupo14sc@tecnoweb.org.bo";
+        String receptor = "fernandopadilla170@gmail.com";
+        String emisor = "grupo14sc@tecnoweb.org.bo";
+        String subject = "createuser[\"8\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

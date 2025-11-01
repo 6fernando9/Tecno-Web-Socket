@@ -12,9 +12,7 @@ public class Create {
     public static void main(String args[]){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
-        String subject = """
-                createuser["8","TTR","SSSSSS","123333","SSS@gmail.com","7563872","admin"]
-                """;
+        String subject = "createuser[\"9L\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -39,9 +37,7 @@ public class Create {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            //TODO -> extraer informacion de insercion de usuario [,,,,,],pasar a DTO
-
-            UsuarioDTO usuarioDTO = new UsuarioDTO(7L,"TTR","SSSSSS","123333","SSS@gmail.com",7563872L,"admin");
+            UsuarioDTO usuarioDTO = UsuarioDTO.crearUsuarioMedianteSubject(subject);
             System.out.println("dto" + usuarioDTO.id);
             CreateSQLQuery createSQLQuery = new CreateSQLQuery();
             String queryCreateUser = createSQLQuery.getCreateUserQuery(usuarioDTO);

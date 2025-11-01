@@ -17,7 +17,9 @@ public class Update {
     public static void main(String args[]){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
-        String subject = "updateuser";
+        String subject = """
+                updateuser["8","TTR","SSSSSS","123333","SSS@gmail.com","7563872","admin"]
+                """;
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -42,13 +44,12 @@ public class Update {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            //TODO -> extraer informacion de insercion de usuario [,,,,,],pasar a DTO
-            UpdateUsuarioDTO usuarioDTO = new UpdateUsuarioDTO("TTR","SSSSSS","123333","SSS@gmail.com",7563872L,"admin");
 
+            UpdateUsuarioDTO usuarioDTO = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
             UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
-            String queryUpdateUser = updateSQLQuery.getCreateUserQuery(usuarioDTO);
-            System.out.println("Query: "+ queryUpdateUser);
-            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, queryUpdateUser);
+            //String queryUpdateUser = updateSQLQuery.getCreateUserQuery(usuarioDTO);
+            //System.out.println("Query: "+ queryUpdateUser);
+            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, usuarioDTO);
             smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
         }else{
             smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");

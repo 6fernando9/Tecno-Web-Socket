@@ -35,7 +35,7 @@ public class TecnoUtils {
     //se asume que vendra inputs tipo LIST["*"], algo que tenga corchetes y data dentro
     public static String[] procesarString(String cadena) {
         int indexCorcheteInicial = cadena.indexOf("[");
-        int indexCorcheteFinal = cadena.indexOf("]");
+        int indexCorcheteFinal = cadena.lastIndexOf("]");
         String data = cadena.substring(indexCorcheteInicial,indexCorcheteFinal + 1);
         String contenido = data.replaceAll("[\\[\\]]", "");
         String limpio = contenido.replace("\"", "");
