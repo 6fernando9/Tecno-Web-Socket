@@ -6,7 +6,9 @@ import Utils.TecnoUtils;
 
 public class UpdateUsuarioDTO extends CreateUsuarioDTO{
     public Long id;
-
+    public UpdateUsuarioDTO(){
+        super();
+    }
     public UpdateUsuarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol) {
         super(nombre, apellido, email, telefono, password, rol);
         this.id = id;
@@ -18,7 +20,11 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
             return Resultado.error("Error: se esperaban al menos 7 campos (id, nombre, apellido, email, telefono, password, rol)");
         }
         String id = data[0];
-        Resultado<CreateUsuarioDTO> resultadoCreateDTO = CreateUsuarioDTO.crearUsuarioMedianteSubject(subject);
+        String subjectParaReutilizarCreate = String.format(
+                "[\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"]",
+                data[1], data[2], data[3], data[4], data[5], data[6]
+        );
+        Resultado<CreateUsuarioDTO> resultadoCreateDTO = CreateUsuarioDTO.crearUsuarioMedianteSubject(subjectParaReutilizarCreate);
         if(!resultadoCreateDTO.esExitoso()){
             return Resultado.error(resultadoCreateDTO.getError());
         }

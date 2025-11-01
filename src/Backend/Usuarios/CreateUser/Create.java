@@ -15,7 +15,7 @@ public class Create {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createuser["evans","balcazar veizaga","evans3@gmail.com","76773834","12345678","barbero"]
+                createuser["evans","balcazar veizaga","evans7@gmail.com","76773834","12345678","barbero"]
                 """;
         subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -44,7 +44,7 @@ public class Create {
         if( existeMensajeEnPop3 ){
             Resultado<CreateUsuarioDTO> resultadoCreateUser = CreateUsuarioDTO.crearUsuarioMedianteSubject(subject);
             if(!resultadoCreateUser.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Fallo Campos",resultadoCreateUser.getError() + "\r\n");
+                smtpClientResponse.sendDataToServer("SQL Create User: Fallo Campos",resultadoCreateUser.getError() + "\r\n");
                 return;
             }
             CreateUsuarioDTO createUsuarioDTO = resultadoCreateUser.getValor();

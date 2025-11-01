@@ -12,7 +12,7 @@ public class CreateUsuarioDTO {
     public String telefono;
     public String password;
     public String rol;
-
+    public CreateUsuarioDTO(){}
     public CreateUsuarioDTO(String nombre, String apellido, String email, String telefono, String password, String rol){
           this.nombre = nombre;
           this.apellido = apellido;
@@ -89,23 +89,22 @@ public class CreateUsuarioDTO {
                 "  rol = '" + rol + "'\r\n" +
                 "}";
     }
-
     public String toStringCorreoHTML() {
         String html = """
-    <div style="font-family: Arial, sans-serif; padding: 10px;">
-      <h2 style="color:#4CAF50;">✅ Usuario creado exitosamente</h2>
-      <p><b>Nombre:</b> %s %s</p>
-      <p><b>Email:</b> %s</p>
-      <p><b>Teléfono:</b> %s</p>
-      <p><b>Contraseña:</b> %s</p>
-      <p><b>Rol:</b> %s</p>
-      <br>
-      <p>Bienvenido al sistema 🎉</p>
-    </div>
-    """.formatted(nombre, apellido, email, telefono, password, rol);
-
-        // Normaliza los saltos a CRLF para SMTP
-        return html.replace("\r\n", "\n").replace("\n", "\r\n");
+<html>\r
+  <body style="font-family: Arial, sans-serif; padding: 10px;">\r
+    <h2 style="color:#4CAF50;">✅ Usuario creado exitosamente</h2>\r
+    <p><b>Nombre:</b> %s %s</p>\r
+    <p><b>Email:</b> %s</p>\r
+    <p><b>Teléfono:</b> %s</p>\r
+    <p><b>Contraseña:</b> %s</p>\r
+    <p><b>Rol:</b> %s</p>\r
+    <br>\r
+    <p>Bienvenido al sistema 🎉</p>\r
+  </body>\r
+</html>\r
+""".formatted(nombre, apellido, email, telefono, password, rol);
+        return html;
     }
 
 

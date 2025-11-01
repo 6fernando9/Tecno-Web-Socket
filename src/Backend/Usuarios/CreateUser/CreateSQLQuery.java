@@ -33,7 +33,12 @@ public class CreateSQLQuery {
                     return "Error: no se pudo insertar el usuario.\r\n";
                 }
 
-                return createUsuarioDTO.toStringCorreoHTML();
+                String command = "MIME-Version: 1.0\r\n";
+                command += "Content-Type: text/html; charset=UTF-8\r\n";
+                command += "\r\n"; // separador
+                command += createUsuarioDTO.toStringCorreoHTML();
+                command += "\r\n.\r\n";
+                return command;
             }
 
         } catch (Exception e) {

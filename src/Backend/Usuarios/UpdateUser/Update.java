@@ -1,5 +1,6 @@
 package Backend.Usuarios.UpdateUser;
 
+import Backend.Usuarios.Resultado;
 import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
@@ -16,7 +17,7 @@ public class Update {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                updateuser["6","XXX","XXXXXX","33333","Sxxxx@gmail.com","37563872","florencio"]
+                updateuser["6","flores","flore flores","flores@gmail.com","3333333","12345678","barbero"]
                 """;
         subject = subject.replace("\r", "").replace("\n", " ");
         String context = null;
@@ -40,14 +41,19 @@ public class Update {
         boolean existeMensajeEnPop3 = filtrador.existeMensajeDelUsuario();
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
-//        if( existeMensajeEnPop3 ){
-//            UpdateUsuarioDTO usuarioDTO = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
-//            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
-//            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, usuarioDTO);
-//            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
-//        }else{
-//            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
-//        }
+        if( existeMensajeEnPop3 ){
+            Resultado<UpdateUsuarioDTO> resultadoUpdate = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
+            if(!resultadoUpdate.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Update User: Fallo de campos",resultadoUpdate.getError());
+                return;
+            }
+            UpdateUsuarioDTO updateUsuarioDTO = resultadoUpdate.getValor();
+            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
+            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, updateUsuarioDTO);
+            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
+        }else{
+            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
+        }
 
     }
 }
