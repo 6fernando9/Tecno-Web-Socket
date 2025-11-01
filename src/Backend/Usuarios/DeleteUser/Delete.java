@@ -1,8 +1,7 @@
-package Backend.Usuarios.UpdateUser;
+package Backend.Usuarios.DeleteUser;
 
 import Backend.Usuarios.CreateUser.CreateSQLQuery;
-import Backend.Usuarios.dto.UpdateUsuarioDTO;
-import Backend.Usuarios.dto.UsuarioDTO;
+import Backend.Usuarios.dto.DeleteUsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -13,12 +12,12 @@ import Utils.TecnoUtils;
 
 import java.util.List;
 
-public class Update {
+public class Delete {
     public static void main(String args[]){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                updateuser["83","XXX","XXXXXX","33333","Sxxxx@gmail.com","37563872","florencio"]
+                deleteuser["8"]
                 """;
         subject = subject.replace("\r", "").replace("\n", " ");
         String context = null;
@@ -34,21 +33,21 @@ public class Update {
         String password = TecnoUtils.generatePasswordForPop3(user);
         System.out.println(password);
         Pop3Client pop3Client = new Pop3Client(server,user,password);
-
         List<String> dataList = pop3Client.executeTaskPop3();
-
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
         Filtrador filtrador = new Filtrador(emisor,subject,context,dataList);
         boolean existeMensajeEnPop3 = filtrador.existeMensajeDelUsuario();
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            UpdateUsuarioDTO usuarioDTO = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
-            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
-            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, usuarioDTO);
-            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
+            DeleteUsuarioDTO usuarioDTO = DeleteUsuarioDTO.createDeleteUsuarioDTO(subject);
+            System.out.println("dto" + usuarioDTO.id);
+            DeleteSQLQuery deleteSQLQuery = new DeleteSQLQuery();
+            System.out.println("id usuario " + usuarioDTO.id);
+            String resultadoDeleteUser = deleteSQLQuery.executeDeleteUserQuery(pgsqlClient,usuarioDTO.id);
+            smtpClientResponse.sendDataToServer("SQL Delete User",resultadoDeleteUser);
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Delete User","Fallo al eliminar Usuario\r\n");
         }
 
     }

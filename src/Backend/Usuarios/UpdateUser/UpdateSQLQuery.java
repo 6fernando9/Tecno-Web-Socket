@@ -1,5 +1,6 @@
 package Backend.Usuarios.UpdateUser;
 
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Backend.Usuarios.dto.UsuarioDTO;
 import Database.PGSQLClient;
@@ -7,9 +8,6 @@ import Database.PGSQLClient;
 import java.sql.*;
 
 public class UpdateSQLQuery {
-    private static final String SQL_EXISTS =
-            "SELECT EXISTS(SELECT 1 FROM usuario WHERE id = ?)";
-
     private static final String SQL_UPDATE =
             "UPDATE usuario SET \"user\" = ?, pass = ?, correo = ?, nombre = ?, telefono = ?, tipo = ? WHERE id = ?";
 
@@ -35,14 +33,7 @@ public class UpdateSQLQuery {
         );
     }
 
-    private boolean existsUser(Connection con, long id) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement(SQL_EXISTS)) {
-            ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
+
     //para respuesta final
     private String generarRespuestaPararCrearUsuario(ResultSet resultSet) throws SQLException {
         String result = "";
@@ -77,7 +68,7 @@ public class UpdateSQLQuery {
             Connection connection = DriverManager.getConnection(databaseUrl,pgsqlClient.getUser(),pgsqlClient.getPassword());
             System.out.println("Connecting successfully to database");
             //Consultas
-            if (!existsUser(connection, updateUsuarioDTO.id)) {
+            if (!GeneralUsuarioSQLUtils.existsUser(connection, updateUsuarioDTO.id)) {
                 return "No existe un usuario con id=" + updateUsuarioDTO.id + ". No se realizó ninguna actualización.\r\n";
             }
             try (PreparedStatement ps = connection.prepareStatement(SQL_UPDATE)) {

@@ -182,17 +182,44 @@ public class Pop3Client {
             System.out.println("throw - "+ e.getMessage());
         }
     }
+    public void vaciarMensajesDeGrupo(){
+        try{
+            Socket socket = new Socket(this.getServer(),this.getPort());
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+            if ( SocketUtils.esEntradaValida(socket,input,output) ) {
+                System.out.println("Mensaje del servidor: " + input.readLine());
+//                this.executeHelo(input,output);
+                this.executeUserCommand(input,output);
+                this.executePassCommand(input,output);
+                List<String> listaIds = this.executeListCommandForTask(input,output);
+                for(String id: listaIds){
+                    this.executeDeleCommand(Integer.parseInt(id),input,output);
+                }
+                this.executeQuitCommand(input,output);
+            }
+            SocketUtils.closeServices(socket,input,output);
+        }catch(Exception e){
+            System.out.println("throw - "+ e.getMessage());
+        }
+
+    }
     public static void main(String[] args) {
-        String emisor = "muerte201469@gmail.com";
-        String receptor = "grupo14sc@tecnoweb.org.bo";
-        String user = TecnoUtils.getUserForPop3(receptor);
-        System.out.println("Usuario");
-        System.out.println(user);
-        System.out.println("Password");
-        String password = TecnoUtils.generatePasswordForPop3(user);
-        System.out.println(password);
-        Pop3Client pop3Client = new Pop3Client(SocketUtils.MAIL_SERVER,user,password);
-        System.out.println(pop3Client.executeTaskPop3());
+//        String emisor = "muerte201469@gmail.com";
+//        String receptor = "grupo14sc@tecnoweb.org.bo";
+//        String user = TecnoUtils.getUserForPop3(receptor);
+//        System.out.println("Usuario");
+//        System.out.println(user);
+//        System.out.println("Password");
+//        String password = TecnoUtils.generatePasswordForPop3(user);
+//        System.out.println(password);
+//        Pop3Client pop3Client = new Pop3Client(SocketUtils.MAIL_SERVER,user,password);
+//        System.out.println(pop3Client.executeTaskPop3());
+
+        //para vaciado
+        Pop3Client pop3Client = new Pop3Client(SocketUtils.MAIL_SERVER,"grupo14sc","grup014grup014*");
+        pop3Client.vaciarMensajesDeGrupo();
+
     }
 
     public String getUser() {
