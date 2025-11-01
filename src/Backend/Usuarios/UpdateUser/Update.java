@@ -1,8 +1,6 @@
 package Backend.Usuarios.UpdateUser;
 
-import Backend.Usuarios.CreateUser.CreateSQLQuery;
 import Backend.Usuarios.dto.UpdateUsuarioDTO;
-import Backend.Usuarios.dto.UsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -18,7 +16,7 @@ public class Update {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                updateuser["83","XXX","XXXXXX","33333","Sxxxx@gmail.com","37563872","florencio"]
+                updateuser["6","XXX","XXXXXX","33333","Sxxxx@gmail.com","37563872","florencio"]
                 """;
         subject = subject.replace("\r", "").replace("\n", " ");
         String context = null;
@@ -42,14 +40,14 @@ public class Update {
         boolean existeMensajeEnPop3 = filtrador.existeMensajeDelUsuario();
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
-        if( existeMensajeEnPop3 ){
-            UpdateUsuarioDTO usuarioDTO = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
-            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
-            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, usuarioDTO);
-            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
-        }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
-        }
+//        if( existeMensajeEnPop3 ){
+//            UpdateUsuarioDTO usuarioDTO = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
+//            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
+//            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, usuarioDTO);
+//            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
+//        }else{
+//            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
+//        }
 
     }
 }

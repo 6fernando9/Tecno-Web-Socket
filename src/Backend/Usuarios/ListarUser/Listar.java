@@ -1,8 +1,6 @@
 package Backend.Usuarios.ListarUser;
 
-import Backend.Usuarios.CreateUser.CreateSQLQuery;
 import Backend.Usuarios.dto.MensajeUsuarioDTO;
-import Backend.Usuarios.dto.UsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -11,7 +9,6 @@ import Utils.SQLUtils;
 import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Listar {

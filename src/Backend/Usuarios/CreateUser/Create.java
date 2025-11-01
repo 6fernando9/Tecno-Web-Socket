@@ -1,6 +1,8 @@
 package Backend.Usuarios.CreateUser;
 
-import Backend.Usuarios.dto.UsuarioDTO;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Usuarios.Resultado;
+import Backend.Usuarios.dto.CreateUsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -12,7 +14,10 @@ public class Create {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
-        String subject = "createuser[\"9L\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
+        String subject = """
+                createuser["evans","balcazar veizaga","evans3@gmail.com","76773834","12345678","barbero"]
+                """;
+        subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -37,20 +42,16 @@ public class Create {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            UsuarioDTO usuarioDTO = UsuarioDTO.crearUsuarioMedianteSubject(subject);
-            System.out.println("dto" + usuarioDTO.id);
+            Resultado<CreateUsuarioDTO> resultadoCreateUser = CreateUsuarioDTO.crearUsuarioMedianteSubject(subject);
+            if(!resultadoCreateUser.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Fallo Campos",resultadoCreateUser.getError() + "\r\n");
+                return;
+            }
+            CreateUsuarioDTO createUsuarioDTO = resultadoCreateUser.getValor();
             CreateSQLQuery createSQLQuery = new CreateSQLQuery();
-            String queryCreateUser = createSQLQuery.getCreateUserQuery(usuarioDTO);
-            System.out.println("Query: "+ queryCreateUser);
-            String resultadoCreateUser = createSQLQuery.executeInsertUserQuery(pgsqlClient, queryCreateUser);
-//            String cuerpoRespuesta = resultadoCreateUser +
-//                    "\r\n" +
-//                    "Datos del Usuario Insertado:\r\n" +
-//                    "=============================\r\n" +
-//                    usuarioDTO.toStringCorreo() +
-//                    "\r\n" + // Otra línea en blanco
-//                    "Comando Inicial Procesado (Subject): " + subject + "\r\n";
-            smtpClientResponse.sendDataToServer("SQL CreateUser",resultadoCreateUser);
+
+            String strCreateUser = createSQLQuery.executeInsertUserQuery(pgsqlClient, createUsuarioDTO);
+            smtpClientResponse.sendDataToServer("SQL CreateUser",strCreateUser + "\r\n");
         }else{
             smtpClientResponse.sendDataToServer("SQL Fail Create User","Fallo al crear Usuario\r\n");
         }

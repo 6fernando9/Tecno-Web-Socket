@@ -1,45 +1,45 @@
 package Backend.Usuarios.CreateUser;
 
-import Backend.Usuarios.dto.UsuarioDTO;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Usuarios.dto.CreateUsuarioDTO;
 import Database.PGSQLClient;
 
 import java.sql.*;
 
 public class CreateSQLQuery {
-    public String getCreateUserQuery(UsuarioDTO usuarioDTO){
-        return String.format(
-                """
-                INSERT INTO usuario (id, "user" , pass, correo, nombre, telefono, tipo)
-                VALUES (%d, '%s', '%s','%s', '%s', %d, '%s')
-                """,
-                usuarioDTO.id,
-                usuarioDTO.username,
-                usuarioDTO.password,
-                usuarioDTO.correo,
-                usuarioDTO.nombre,
-                usuarioDTO.telefono,
-                usuarioDTO.tipo
-        );
-    }
+    private static final String SQL_INSERT =
+            "INSERT INTO usuarios (nombre, apellido, email, telefono, password, rol) VALUES (?, ?, ?, ?, ?, ?)";
 
-    //para respuesta final
-
-    public String executeInsertUserQuery(PGSQLClient pgsqlClient,String query){
+    public String executeInsertUserQuery(PGSQLClient pgsqlClient, CreateUsuarioDTO createUsuarioDTO) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
-        String tuplas = "";
-        int filasAfectadas = 0;
-        try{
-            Connection connection = DriverManager.getConnection(databaseUrl,pgsqlClient.getUser(),pgsqlClient.getPassword());
+
+        try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Connecting successfully to database");
-            //Consultas
-            Statement statement = connection.createStatement();
-            filasAfectadas = statement.executeUpdate(query);
-            statement.close();
-            connection.close();
-            return "Insercion Exitosa!\r\n";
-        }catch(Exception e){
+            if (GeneralUsuarioSQLUtils.existeUsuarioPorEmail(connection, createUsuarioDTO.email)) {
+                return "Error: ya existe un usuario con el correo '" + createUsuarioDTO.email + "'.\r\n";
+            }
+
+            try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT)) {
+                ps.setString(1, createUsuarioDTO.nombre);
+                ps.setString(2, createUsuarioDTO.apellido);
+                ps.setString(3, createUsuarioDTO.email);
+                ps.setString(4, createUsuarioDTO.telefono);
+                ps.setString(5, createUsuarioDTO.password);
+                ps.setString(6, createUsuarioDTO.rol);
+
+                int filas = ps.executeUpdate();
+
+                if (filas == 0) {
+                    return "Error: no se pudo insertar el usuario.\r\n";
+                }
+
+                return createUsuarioDTO.toStringCorreoHTML();
+            }
+
+        } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
             return "ERROR DE BASE DE DATOS: " + e.getMessage() + "\r\n";
         }
     }
+
 }
