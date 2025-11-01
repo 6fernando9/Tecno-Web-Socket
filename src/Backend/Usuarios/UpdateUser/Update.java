@@ -18,8 +18,9 @@ public class Update {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                updateuser["8","TTR","SSSSSS","123333","SSS@gmail.com","7563872","admin"]
+                updateuser["83","XXX","XXXXXX","33333","Sxxxx@gmail.com","37563872","florencio"]
                 """;
+        subject = subject.replace("\r", "").replace("\n", " ");
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

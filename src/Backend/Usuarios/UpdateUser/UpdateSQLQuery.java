@@ -87,9 +87,9 @@ public class UpdateSQLQuery {
                 ps.setString(4, updateUsuarioDTO.nombre);
                 ps.setLong(5, updateUsuarioDTO.telefono);
                 ps.setString(6, updateUsuarioDTO.tipo);
+                ps.setLong(7, updateUsuarioDTO.id);
                 int filas = ps.executeUpdate();
                 if (filas == 0) {
-                    // En caso de carrera o eliminación entre pasos
                     return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.\r\n";
                 }
                 return "Actualización exitosa (" + filas + " fila(s)).\r\n";
