@@ -9,7 +9,7 @@ import Utils.*;
 import java.util.List;
 
 public class Create {
-    public static void main(String args[]){
+    public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = "createuser[\"9L\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";

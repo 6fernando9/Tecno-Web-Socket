@@ -13,7 +13,7 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class Delete {
-    public static void main(String args[]){
+    public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
