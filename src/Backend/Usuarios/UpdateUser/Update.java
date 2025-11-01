@@ -1,20 +1,23 @@
-package Backend.Usuarios.CreateUser;
+package Backend.Usuarios.UpdateUser;
 
+import Backend.Usuarios.CreateUser.CreateSQLQuery;
+import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Backend.Usuarios.dto.UsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
-import Utils.*;
+import Utils.Filtrador;
+import Utils.SQLUtils;
+import Utils.SocketUtils;
+import Utils.TecnoUtils;
 
 import java.util.List;
 
-public class Create {
+public class Update {
     public static void main(String args[]){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
-        String subject = """
-                createuser["8","TTR","SSSSSS","123333","SSS@gmail.com","7563872","admin"]
-                """;
+        String subject = "updateuser";
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -40,25 +43,16 @@ public class Create {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
             //TODO -> extraer informacion de insercion de usuario [,,,,,],pasar a DTO
+            UpdateUsuarioDTO usuarioDTO = new UpdateUsuarioDTO("TTR","SSSSSS","123333","SSS@gmail.com",7563872L,"admin");
 
-            UsuarioDTO usuarioDTO = new UsuarioDTO(7L,"TTR","SSSSSS","123333","SSS@gmail.com",7563872L,"admin");
-            System.out.println("dto" + usuarioDTO.id);
-            CreateSQLQuery createSQLQuery = new CreateSQLQuery();
-            String queryCreateUser = createSQLQuery.getCreateUserQuery(usuarioDTO);
-            System.out.println("Query: "+ queryCreateUser);
-            String resultadoCreateUser = createSQLQuery.executeInsertUserQuery(pgsqlClient, queryCreateUser);
-//            String cuerpoRespuesta = resultadoCreateUser +
-//                    "\r\n" +
-//                    "Datos del Usuario Insertado:\r\n" +
-//                    "=============================\r\n" +
-//                    usuarioDTO.toStringCorreo() +
-//                    "\r\n" + // Otra línea en blanco
-//                    "Comando Inicial Procesado (Subject): " + subject + "\r\n";
-            smtpClientResponse.sendDataToServer("SQL CreateUser",resultadoCreateUser);
+            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
+            String queryUpdateUser = updateSQLQuery.getCreateUserQuery(usuarioDTO);
+            System.out.println("Query: "+ queryUpdateUser);
+            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, queryUpdateUser);
+            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Create User","Fallo al crear Usuario\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
         }
 
     }
-
 }

@@ -1,7 +1,6 @@
 package Backend.Usuarios.dto;
 
-public class UsuarioDTO {
-    public Long id;
+public class UpdateUsuarioDTO {
     public String username;
     public String nombre;
     public String password;
@@ -9,21 +8,19 @@ public class UsuarioDTO {
     public Long telefono;
     public String tipo;
 
-    public UsuarioDTO(Long id,String username,String nombre, String password,String correo, Long telefono,String tipo){
-          this.id = id;
-          this.username = username;
-          this.nombre = nombre;
-          this.password = password;
-          this.correo = correo;
-          this.telefono = telefono;
-          this.tipo = tipo;
+    public UpdateUsuarioDTO(String username,String nombre, String password,String correo, Long telefono,String tipo){
+        this.username = username;
+        this.nombre = nombre;
+        this.password = password;
+        this.correo = correo;
+        this.telefono = telefono;
+        this.tipo = tipo;
     }
 
     @Override
     public String toString() {
         return "Usuario creado {" +
-                "id=" + id +
-                ", username='" + username + '\'' +
+                "username='" + username + '\'' +
                 ", nombre='" + nombre + '\'' +
                 ", password='" + password + '\'' +
                 ", correo='" + correo + '\'' +
@@ -32,8 +29,7 @@ public class UsuarioDTO {
                 '}';
     }
     public String toStringCorreo(){
-        return "Usuario creado {" + "\r\n" + // Inicia con un salto de línea si quieres
-                "id=" + id + "\r\n" +
+        return "Usuario creado {" + "\r\n" +
                 "username='" + username + '\'' + "\r\n" +
                 "nombre='" + nombre + '\'' + "\r\n" +
                 "password='" + password + '\'' + "\r\n" +

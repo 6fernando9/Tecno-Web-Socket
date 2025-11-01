@@ -32,6 +32,15 @@ public class TecnoUtils {
 //            throw new InvalidGroupException();
 //        }
 //    }
+    //se asume que vendra inputs tipo LIST["*"], algo que tenga corchetes y data dentro
+    public static String[] procesarString(String cadena) {
+        int indexCorcheteInicial = cadena.indexOf("[");
+        int indexCorcheteFinal = cadena.indexOf("]");
+        String data = cadena.substring(indexCorcheteInicial,indexCorcheteFinal + 1);
+        String contenido = data.replaceAll("[\\[\\]]", "");
+        String limpio = contenido.replace("\"", "");
+        return limpio.split(",");
+    }
 
 
 

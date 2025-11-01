@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import Utils.SocketUtils;
+import Utils.TecnoUtils;
 
 public class SMTPClient {
     private String server;
@@ -13,7 +14,7 @@ public class SMTPClient {
     private int port;
 
     //para usarlo en el parcial
-    public SMTPClient(String server, String receptorUser,String emisorUser){
+    public SMTPClient(String server, String emisorUser,String receptorUser){
         this.server = server;
         this.receptorUser = receptorUser;
         this.emisorUser = emisorUser;
@@ -83,41 +84,54 @@ public class SMTPClient {
         }
     }
 
-    public static void executeMailFrom(String emisor,BufferedReader input,DataOutputStream output) throws IOException {
-        String command = "MAIL FROM: " + emisor + "\r\n";
+    public void executeMailFrom(BufferedReader input,DataOutputStream output) throws IOException {
+        String command = "MAIL FROM: " + this.getEmisorUser() + "\r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
         System.out.println("Respuesta servidor a Mail From: " + input.readLine());
     }
-    public static void executeReceivedTo(String receptor,BufferedReader input,DataOutputStream output) throws IOException {
-        String command = "RCPT TO: " + receptor + "\r\n";
+    public void executeHelo(BufferedReader input,DataOutputStream output) throws IOException {
+        String command = "HELO " + this.getServer() + " \r\n";
+        System.out.println("Comando: " + command);
+        output.writeBytes(command);
+        System.out.println("Respuesta servidor a HELO: " + input.readLine());
+    }
+    public void executeReceivedTo(BufferedReader input,DataOutputStream output) throws IOException {
+        String command = "RCPT TO: " + this.getReceptorUser() + "\r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
         System.out.println("Respuesta servidor a RCPT TO: " + input.readLine());
     }
-    public static void executeData(BufferedReader input,DataOutputStream output) throws IOException {
+    public void executeData(BufferedReader input,DataOutputStream output) throws IOException {
         String command = "DATA \r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
         System.out.println("Respuesta servidor a DATA: " + input.readLine());
     }
-    public static void executeOnlySubject(String subject,BufferedReader input,DataOutputStream output) throws IOException {
+    public void executeOnlySubject(String subject,BufferedReader input,DataOutputStream output) throws IOException {
         String command = "SUBJECT: " + subject + "\r\n";
         command += ".\r\n";
         output.writeBytes(command);
         System.out.println("Respuesta servidor a Data Subject: " + input.readLine());
     }
-    public static void executeDataSubject(String subject,String context,BufferedReader input,DataOutputStream output) throws IOException {
+    public void executeDataSubject(String subject,String context,BufferedReader input,DataOutputStream output) throws IOException {
         String command = "SUBJECT: " + subject + "\r\n";
         command += "\r\n";
         if (context != null) {
             command += context + "\r\n";
         }
         command += ".\r\n";
+        System.out.println("comando: "+ command);
         output.writeBytes(command);
         System.out.println("Respuesta servidor a Data Subject: " + input.readLine());
     }
 
+    public void executeQuitCommand(BufferedReader input, DataOutputStream output) throws IOException{
+        String command = "QUIT\r\n";
+        System.out.println("Comando: " + command);
+        output.writeBytes(command);
+        System.out.println("Respuesta servidor a QUIT: " + input.readLine());
+    }
     //antes de usar el metodo requiero instanciar el emisor y receptor
     public void sendDataToServer(String subject,String context){
         try{
@@ -125,10 +139,12 @@ public class SMTPClient {
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             if (SocketUtils.esEntradaValida(socket,input,output)) {
-                executeMailFrom(this.getEmisorUser(),input,output);
-                executeReceivedTo(this.getReceptorUser(),input,output);
-                executeData(input,output);
-                executeDataSubject(subject,context,input,output);
+                this.executeHelo(input,output);
+                this.executeMailFrom(input,output);
+                this.executeReceivedTo(input,output);
+                this.executeData(input,output);
+                this.executeDataSubject(subject,context,input,output);
+                this.executeQuitCommand(input,output);
             }
             SocketUtils.closeServices(socket,input,output);
         } catch (IOException e) {
@@ -144,7 +160,15 @@ public class SMTPClient {
 
 
     public static void main(String[] args) {
-        executeTask();
+        String emisor = "muerte201469@gmail.com";
+        String receptor = "grupo14sc@tecnoweb.org.bo";
+        String subject = "updateuser";
+        String context = null;
+        String server = SocketUtils.MAIL_SERVER;
+        TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
+        SMTPClient smtpClient = new SMTPClient(server,emisor,receptor);
+        smtpClient.sendDataToServer(subject,context);
+        //executeTask();
     }
 
 

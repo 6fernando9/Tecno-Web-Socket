@@ -35,14 +35,14 @@ public class Pop3Client {
         this.password = password;
         this.port = SocketUtils.POP3_PORT;
     }
-    public void executeUserCommand(String user,BufferedReader input, DataOutputStream output) throws IOException {
+    public void executeUserCommand(BufferedReader input, DataOutputStream output) throws IOException {
         String command = "USER " + this.getUser() + "\r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
         System.out.println("Respuesta servidor a USER: " + input.readLine());
     }
-    public void executePassCommand(String password,BufferedReader input, DataOutputStream output) throws IOException {
-        String command = "PASS " + password + "\r\n";
+    public void executePassCommand(BufferedReader input, DataOutputStream output) throws IOException {
+        String command = "PASS " + this.getPassword() + "\r\n";
         System.out.println("Command: " + command);
         output.writeBytes(command);
         System.out.println("Respuesta del servidor: " + input.readLine());
@@ -84,6 +84,7 @@ public class Pop3Client {
         String command = "RETR " + messageNumber + "\r\n";
         System.out.println("Command: " + command);
         output.writeBytes(command);
+        //System.out.println("Respuesta del servidor: " + SocketUtils.getMultiline(input));
         return SocketUtils.getData(input);
     }
     //el List solo retorna el id y la dimension ejem:
@@ -103,7 +104,12 @@ public class Pop3Client {
         }
         return listaDeDatas;
     }
-
+    public void executeHelo(BufferedReader input,DataOutputStream output) throws IOException {
+        String command = "HELO " + this.getServer() + " \r\n";
+        System.out.println("Comando: " + command);
+        output.writeBytes(command);
+        System.out.println("Respuesta servidor a HELO: " + input.readLine());
+    }
 
     public List<String> executeTaskPop3(){
         List<String> listaData = new ArrayList<>();
@@ -113,8 +119,9 @@ public class Pop3Client {
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             if ( SocketUtils.esEntradaValida(socket,input,output) ) {
                 System.out.println("Mensaje del servidor: " + input.readLine());
-                this.executeUserCommand(this.getUser(),input,output);
-                this.executePassCommand(this.getPassword(),input,output);
+//                this.executeHelo(input,output);
+                this.executeUserCommand(input,output);
+                this.executePassCommand(input,output);
                 List<String> listaIds = this.executeListCommandForTask(input,output);
                 listaData = this.cargarListaDeData(listaIds,input,output);
                 this.executeQuitCommand(input,output);
@@ -137,6 +144,7 @@ public class Pop3Client {
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             if ( SocketUtils.esEntradaValida(socket,input,output) ) {
                 System.out.println("Mensaje del servidor: " + input.readLine());
+//                this.executeHelo(input,output);
                 command = "USER " + this.getUser() + "\r\n";
                 System.out.println("Comando: " + command);
                 output.writeBytes(command);
@@ -175,8 +183,16 @@ public class Pop3Client {
         }
     }
     public static void main(String[] args) {
-        Pop3Client pop3Client = new Pop3Client();
-        pop3Client.executePop3Client();
+        String emisor = "muerte201469@gmail.com";
+        String receptor = "grupo14sc@tecnoweb.org.bo";
+        String user = TecnoUtils.getUserForPop3(receptor);
+        System.out.println("Usuario");
+        System.out.println(user);
+        System.out.println("Password");
+        String password = TecnoUtils.generatePasswordForPop3(user);
+        System.out.println(password);
+        Pop3Client pop3Client = new Pop3Client(SocketUtils.MAIL_SERVER,user,password);
+        System.out.println(pop3Client.executeTaskPop3());
     }
 
     public String getUser() {
