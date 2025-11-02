@@ -18,7 +18,7 @@ public class ListarStockActualIntervalo {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                listarproductosintervalo["10","100"]
+                listarproductosintervalo["10","15"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

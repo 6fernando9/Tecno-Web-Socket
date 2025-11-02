@@ -72,6 +72,12 @@ public class ComparadorSigno {
         }
         String extremoInferior = data[0];
         String extremoSuperior = data[1];
+        if(extremoSuperior == null || extremoSuperior.equalsIgnoreCase("null")){
+            return Resultado.error("error... el extremo superior no puede ser nulo");
+        }
+        if(extremoInferior == null || extremoInferior.equalsIgnoreCase("null")){
+            return Resultado.error("error... el extremo inferior no puede ser nulo");
+        }
         int extremoInferiorDTO;
         int extremoSuperiorDTO;
         try{
@@ -87,6 +93,35 @@ public class ComparadorSigno {
         intervalo[0] = extremoInferiorDTO;
         intervalo[1] = extremoSuperiorDTO;
         return Resultado.ok(intervalo);
+    }
+
+
+    public static Resultado<Long[]> obtenerVentaPagoIdFromSubject(String subject){
+        String[] data = TecnoUtils.procesarString(subject);
+        if (data.length < 2) {
+            return Resultado.error("Error se esperaba al menos 2 campos(venta_id,pago_id)");
+        }
+        String ventaId = data[0];
+        String pagoId = data[1];
+        if(pagoId == null || pagoId.equalsIgnoreCase("null")){
+            return Resultado.error("error... el extremo superior no puede ser nulo");
+        }
+        if(ventaId == null || ventaId.equalsIgnoreCase("null")){
+            return Resultado.error("error... el extremo inferior no puede ser nulo");
+        }
+        Long ventaIdDto;
+        Long pagoIdDto;
+        try{
+            ventaIdDto = Long.parseLong(ventaId);
+            pagoIdDto = Long.parseLong(pagoId);
+        }catch (NumberFormatException e){
+            return Resultado.error("Error al campos no numericos!");
+        }
+
+        Long[] ventaPagos = new Long[2];
+        ventaPagos[0] = ventaIdDto;
+        ventaPagos[1] = pagoIdDto;
+        return Resultado.ok(ventaPagos);
     }
     @Override
     public String toString() {

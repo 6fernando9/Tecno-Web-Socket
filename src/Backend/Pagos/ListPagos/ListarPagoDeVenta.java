@@ -18,7 +18,7 @@ public class ListarPagoDeVenta {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                listarPagosDeVenta["22"]
+                listarPagosDeVenta["1"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

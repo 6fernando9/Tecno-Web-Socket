@@ -1,8 +1,8 @@
-package Backend.Productos.ListarProducto;
+package Backend.Pagos.DeletePago;
 
 import Backend.Utils.GeneralMethods.GeneralMethods;
-import Backend.Utils.dto.ComparadorSigno;
 import Backend.Utils.GeneralMethods.Resultado;
+import Backend.Utils.dto.ComparadorSigno;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -12,19 +12,16 @@ import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
-//lista respecto del stock_actual
-public class ListarStockActualSimple {
+
+public class Delete {
+
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                listarproductossimple["<15"]
-                """;
-        String listarTodosCommand = """
-                listarproductossimple["*"]
+                eliminarPago["1","1"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
-        listarTodosCommand = GeneralMethods.parsearSubjectComillaTriple(listarTodosCommand);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -49,24 +46,18 @@ public class ListarStockActualSimple {
 
         if( existeMensajeEnPop3 ){
             System.out.println("subject" + subject);
-            System.out.println("perfect" + listarTodosCommand);
-            if(subject.equals(listarTodosCommand)){
-                ComparadorSigno comparadorSigno = null;
-                ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
-                String strListarProducto = listarStockActualSQLQuery.executeListarProductos(pgsqlClient,comparadorSigno);
-                smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
+
+            Resultado<Long[]> resultadoVentaPago = ComparadorSigno.obtenerVentaPagoIdFromSubject(subject);
+            if(!resultadoVentaPago.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Listar Productos: Fallo Campos", resultadoVentaPago.getError() + "\r\n");
                 return;
             }
-            Resultado<ComparadorSigno> resultadoListaSimple = ComparadorSigno.crearComparadorFromSubject(subject);
-            if(!resultadoListaSimple.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Listar Productos: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
-                return;
-            }
-            ComparadorSigno comparadorSigno = resultadoListaSimple.getValor();
-            System.out.println(comparadorSigno);
-            ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
-            String strListarProducto = listarStockActualSQLQuery.executeListarProductos(pgsqlClient,comparadorSigno);
-            smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
+            Long[] ventaPago = resultadoVentaPago.getValor();
+            Long ventaId = ventaPago[0];
+            Long pagoId = ventaPago[1];
+            DeletePagoSQLQuery deletePagoSQLQuery = new DeletePagoSQLQuery();
+            String strEliminarPago = deletePagoSQLQuery.executeEliminarPago(pgsqlClient,ventaId,pagoId);
+            smtpClientResponse.sendDataToServer("SQL Listar Productos ", strEliminarPago + "\r\n");
         }else{
             smtpClientResponse.sendDataToServer("SQL Fail Listar Producto","Fallo al Listar Producto\r\n");
         }

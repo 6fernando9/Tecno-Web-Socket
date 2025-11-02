@@ -1,10 +1,12 @@
 package Backend.Pagos;
 
 import Backend.Pagos.dto.PagoDTO;
+import Backend.Pagos.dto.TipoPagoDTO;
 import Backend.Pagos.dto.VentaSimpleDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GeneralPagoSQLUtils {
@@ -30,8 +32,16 @@ public class GeneralPagoSQLUtils {
         WHERE dp.venta_id = ?
         ORDER BY dp.id ASC
         """;
-
-
+    private static final String SQL_FIND_TIPO_PAGO = """
+            SELECT
+                tp.id,
+                tp.nombre
+            FROM public.tipo_pagos tp
+            WHERE tp.nombre = ?
+            """;
+    private static final String[] PAGOS_ACEPTADOS = {
+            "contado","transferencia","tarjeta","qr","efectivo","stripe","pago facil"
+    };
 
     public static VentaSimpleDTO findVentaConPagos(Connection connection, long ventaId) throws SQLException {
         VentaSimpleDTO venta = findVentaById(connection, ventaId);
@@ -64,7 +74,29 @@ public class GeneralPagoSQLUtils {
             }
         }
     }
-
+    public static float calcularMontoTotalDePago(VentaSimpleDTO ventaSimpleDTO){
+        float totalPagado = 0f;
+        if (ventaSimpleDTO.getListaPagos() != null) {
+            totalPagado = (float) ventaSimpleDTO.getListaPagos().stream()
+                    .mapToDouble(p -> p.monto)
+                    .sum();
+        }
+        return totalPagado;
+    }
+    public static TipoPagoDTO findTipoPagoByName(Connection connection, String nombreTipoPago) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(SQL_FIND_TIPO_PAGO)) {
+            ps.setString(1, nombreTipoPago);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new TipoPagoDTO(
+                            rs.getLong("id"),
+                            rs.getString("nombre")
+                    );
+                }
+                return null;
+            }
+        }
+    }
     /**
      * Lista los pagos asociados a una venta.
      */
@@ -87,4 +119,10 @@ public class GeneralPagoSQLUtils {
 
         return pagos;
     }
+    public static boolean esTipoPagoAceptado(String tipoPago) {
+        if (tipoPago == null) return false;
+        return Arrays.asList(PAGOS_ACEPTADOS)
+                .contains(tipoPago.toLowerCase().trim());
+    }
+
 }
