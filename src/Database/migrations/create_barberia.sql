@@ -76,7 +76,8 @@ CREATE TABLE IF NOT EXISTS Citas (
   cliente_id INT NOT NULL REFERENCES Usuarios(id) ON DELETE CASCADE,
   barbero_id INT NOT NULL REFERENCES Usuarios(id) ON DELETE CASCADE,
   fecha_hora_inicio TIMESTAMP WITH TIME ZONE NOT NULL,
-  fecha_hora_fin_estimada TIMESTAMP WITH TIME ZONE,
+  fecha_hora_fin TIMESTAMP WITH TIME ZONE,
+  pago_inicial NUMERIC(10,2),
   estado cita_estado NOT NULL
 );
 
