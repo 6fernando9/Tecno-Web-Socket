@@ -28,7 +28,7 @@ public class UpdateSQLQuery {
                 ps.setFloat(3, updateProductoDTO.precioVenta);
                 ps.setInt(4, updateProductoDTO.stockActual);
                 ps.setInt(5, updateProductoDTO.stockMinimo);
-
+                ps.setLong(6,updateProductoDTO.id);
                 int filas = ps.executeUpdate();
                 if (filas == 0) {
                     return "El Producto fue modificado/eliminado durante la operación. No se actualizó nada.";

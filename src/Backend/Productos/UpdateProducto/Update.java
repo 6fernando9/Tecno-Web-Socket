@@ -19,7 +19,7 @@ public class Update {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                updateproducto["1","polvos","null","100","10","1"]
+                updateproducto["2","ESTRELLAS","ESTRELLAS BUENAS","1000","102","10"]
                 """;
         subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -53,10 +53,10 @@ public class Update {
             }
             UpdateProductoDTO updateProductoDTO = resultadoUpdateDto.getValor();
             UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
-            String strCreateProducto = updateSQLQuery.executeUpdateProductoQuery(pgsqlClient, updateProductoDTO);
-            smtpClientResponse.sendDataToServer("SQL CreateProducto",strCreateProducto + "\r\n");
+            String strUpdateProducto = updateSQLQuery.executeUpdateProductoQuery(pgsqlClient, updateProductoDTO);
+            smtpClientResponse.sendDataToServer("SQL UpdateProducto", strUpdateProducto + "\r\n");
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Create Producto","Fallo al crear Producto\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Update Producto","Fallo al Actualizar Producto\r\n");
         }
     }
 }
