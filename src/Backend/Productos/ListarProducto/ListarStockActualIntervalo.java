@@ -13,7 +13,7 @@ import Utils.TecnoUtils;
 
 import java.util.List;
 //lista respecto del stock_actual
-public class ListarIntervalo {
+public class ListarStockActualIntervalo {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
@@ -53,8 +53,8 @@ public class ListarIntervalo {
             }
             int[] comparadorSigno = resultadoListaSimple.getValor();
             System.out.println(comparadorSigno);
-            ListarSQLQuery listarSQLQuery = new ListarSQLQuery();
-            String strListarProducto = listarSQLQuery.executeListarProductosBetween(pgsqlClient,comparadorSigno);
+            ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
+            String strListarProducto = listarStockActualSQLQuery.executeListarProductosBetween(pgsqlClient,comparadorSigno);
             smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
         }else{
             smtpClientResponse.sendDataToServer("SQL Fail Listar Producto","Fallo al Listar Producto\r\n");

@@ -6,7 +6,7 @@ import Database.PGSQLClient;
 import java.math.BigDecimal;
 import java.sql.*;
 
-public class ListarSQLQuery {
+public class ListarStockActualSQLQuery {
     private static final String LIST_BASE_SELECT =
             "SELECT id, nombre, descripcion, precio_venta, stock_actual, stock_minimo FROM productos";
 
