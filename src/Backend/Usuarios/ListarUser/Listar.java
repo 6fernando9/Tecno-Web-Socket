@@ -39,8 +39,6 @@ public class Listar {
         List<String> dataList = pop3Client.executeTaskPop3();
 
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
-        //List<String> mockList = MockMessage.obtenerListaMockMessage();
-        //System.out.println(mockList);
         Filtrador filtrador = new Filtrador(emisor,subject,context,dataList);
         boolean existeMensajeEnPop3 = filtrador.existeMensajeDelUsuario();
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
