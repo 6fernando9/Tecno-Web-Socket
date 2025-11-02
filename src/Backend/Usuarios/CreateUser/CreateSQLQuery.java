@@ -32,10 +32,8 @@ public class CreateSQLQuery {
                 if (filas == 0) {
                     return "Error: no se pudo insertar el usuario.";
                 }
-
-                return "Usuario insertado con exito!";
             }
-
+            return "Usuario insertado con exito!";
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
             return "ERROR DE BASE DE DATOS: " + e.getMessage();

@@ -15,7 +15,7 @@ public class Create {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createuser["evans","balcazar veizaga","evans0@gmail.com","76773834","12345678","barbero"]
+                createuser["evans","balcazar veizaga","evans@gmail.com","76773834","12345678","barbero"]
                 """;
         subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
         String context = null;

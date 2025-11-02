@@ -72,6 +72,7 @@ public class GeneralUsuarioSQLUtils {
     }
 
     public static String parsearSubjectComillaTriple(String subject){
+        subject = subject.trim();
         return subject.replace("\r", "").replace("\n", " ");
     }
 

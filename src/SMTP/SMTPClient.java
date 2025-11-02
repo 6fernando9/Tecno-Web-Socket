@@ -4,6 +4,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
@@ -223,7 +225,11 @@ public class SMTPClient {
         //String receptor = "grupo14sc@tecnoweb.org.bo";
         String receptor = "muerte201469@gmail.com";
         String emisor = "grupo14sc@tecnoweb.org.bo";
-        String subject = "createuser[\"8\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
+        String subject = """
+                createuser["evans","balcazar veizaga","evans@gmail.com","76773834","12345678","barbero"]
+                """;
+        //String subject = "createuser[\"8\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
+        subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
