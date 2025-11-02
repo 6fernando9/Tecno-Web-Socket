@@ -1,6 +1,7 @@
 package Backend.Productos.ListarProducto;
 
-import Backend.Productos.dto.ComparadorSigno;
+import Backend.Utils.GeneralMethods.GeneralMethods;
+import Backend.Utils.dto.ComparadorSigno;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.Resultado;
 import Database.PGSQLClient;
@@ -23,8 +24,8 @@ public class ListarStockActualSimple {
         String listarTodosCommand = """
                 listarproductossimple["*"]
                 """;
-        subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
-        listarTodosCommand = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(listarTodosCommand);
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
+        listarTodosCommand = GeneralMethods.parsearSubjectComillaTriple(listarTodosCommand);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

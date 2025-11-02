@@ -3,6 +3,7 @@ package Backend.Productos.CreateProducto;
 import Backend.Productos.dto.CreateProductoDTO;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -20,7 +21,7 @@ public class Create {
         String subject = """
                 createproducto["estrellas","buenas estrellas","10","10","1"]
                 """;
-        subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

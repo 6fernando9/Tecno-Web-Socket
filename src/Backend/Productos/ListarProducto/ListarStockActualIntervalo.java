@@ -1,6 +1,7 @@
 package Backend.Productos.ListarProducto;
 
-import Backend.Productos.dto.ComparadorSigno;
+import Backend.Utils.GeneralMethods.GeneralMethods;
+import Backend.Utils.dto.ComparadorSigno;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.Resultado;
 import Database.PGSQLClient;
@@ -20,7 +21,7 @@ public class ListarStockActualIntervalo {
         String subject = """
                 listarproductosintervalo["10","100"]
                 """;
-        subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

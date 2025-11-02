@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
@@ -229,7 +230,7 @@ public class SMTPClient {
                 createuser["evans","balcazar veizaga","evans@gmail.com","76773834","12345678","barbero"]
                 """;
         //String subject = "createuser[\"8\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
-        subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

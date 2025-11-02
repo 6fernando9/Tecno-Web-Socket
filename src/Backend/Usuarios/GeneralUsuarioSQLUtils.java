@@ -71,11 +71,6 @@ public class GeneralUsuarioSQLUtils {
         }
     }
 
-    public static String parsearSubjectComillaTriple(String subject){
-        subject = subject.trim();
-        return subject.replace("\r", "").replace("\n", " ");
-    }
-
     public static boolean esRolPermitido(String rol) {
         return Arrays.asList(ROLES_PERMITIDOS).contains(rol.toLowerCase());
     }

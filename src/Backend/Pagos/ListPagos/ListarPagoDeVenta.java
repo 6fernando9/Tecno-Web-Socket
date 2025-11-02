@@ -1,9 +1,9 @@
 package Backend.Pagos.ListPagos;
 
-import Backend.Productos.ListarProducto.ListarStockActualSQLQuery;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.Resultado;
-import Backend.Usuarios.dto.DeleteUsuarioDTO;
+import Backend.Utils.GeneralMethods.GeneralMethods;
+import Backend.Utils.dto.IdentificadorPrimarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -21,7 +21,7 @@ public class ListarPagoDeVenta {
         String subject = """
                 listarPagosDeVenta["22"]
                 """;
-        subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -47,12 +47,12 @@ public class ListarPagoDeVenta {
         if( existeMensajeEnPop3 ){
             System.out.println("subject" + subject);
 
-            Resultado<DeleteUsuarioDTO> resultadoListaSimple = DeleteUsuarioDTO.createDeleteUsuarioDTO(subject);
+            Resultado<IdentificadorPrimarioDTO> resultadoListaSimple = IdentificadorPrimarioDTO.createDeleteUsuarioDTO(subject);
             if(!resultadoListaSimple.esExitoso()){
                 smtpClientResponse.sendDataToServer("SQL Listar Pago De venta: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
                 return;
             }
-            DeleteUsuarioDTO deleteUsuarioDTO = resultadoListaSimple.getValor();
+            IdentificadorPrimarioDTO deleteUsuarioDTO = resultadoListaSimple.getValor();
             ListarPagoDeVentaSQLQuery listarPagoDeVentaSQLQuery = new ListarPagoDeVentaSQLQuery();
             String str = listarPagoDeVentaSQLQuery.executeListarPagosDeVentaQuery(pgsqlClient,deleteUsuarioDTO.id);
             smtpClientResponse.sendDataToServer("SQL Listar Productos ",str + "\r\n");

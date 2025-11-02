@@ -1,4 +1,4 @@
-package Backend.Productos.dto;
+package Backend.Utils.dto;
 
 import Backend.Usuarios.Resultado;
 import Utils.TecnoUtils;

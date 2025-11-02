@@ -1,6 +1,6 @@
 package Backend.Productos.ListarProducto;
 
-import Backend.Productos.dto.ComparadorSigno;
+import Backend.Utils.dto.ComparadorSigno;
 import Database.PGSQLClient;
 
 import java.math.BigDecimal;

@@ -1,15 +1,14 @@
-package Backend.Usuarios.dto;
+package Backend.Utils.dto;
 
 import Backend.Usuarios.Resultado;
-import Exceptions.InvalidDataException;
 import Utils.TecnoUtils;
-
-public class DeleteUsuarioDTO {
+//clase para usarla solamente para extraer un campo ID de tipo Long, ejemplo Accion["2"]
+public class IdentificadorPrimarioDTO {
     public Long id;
-    public DeleteUsuarioDTO(Long id){
+    public IdentificadorPrimarioDTO(Long id){
         this.id = id;
     }
-    public static Resultado<DeleteUsuarioDTO> createDeleteUsuarioDTO(String subject){
+    public static Resultado<IdentificadorPrimarioDTO> createDeleteUsuarioDTO(String subject){
         String[] data = TecnoUtils.procesarString(subject);
         if(data.length < 1){
             return Resultado.error("Error..se esperaba que el usuario introduzca al menos 1 campo");
@@ -21,10 +20,10 @@ public class DeleteUsuarioDTO {
             return Resultado.error("Error data id no puede ser null");
         }
         Long idDto = Long.parseLong(id);
-        return Resultado.ok(new DeleteUsuarioDTO(idDto));
+        return Resultado.ok(new IdentificadorPrimarioDTO(idDto));
     }
     public String toStringCorreo(){
-        return "Usuario eliminado {" + "\r\n" +
+        return "dtoId {" + "\r\n" +
                 "id=" + id +'\'' + "\r\n" +
                 '}';
     }

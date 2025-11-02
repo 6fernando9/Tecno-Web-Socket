@@ -1,8 +1,7 @@
 package Backend.Usuarios.DeleteUser;
 
-import Backend.Usuarios.CreateUser.CreateSQLQuery;
 import Backend.Usuarios.Resultado;
-import Backend.Usuarios.dto.DeleteUsuarioDTO;
+import Backend.Utils.dto.IdentificadorPrimarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -41,7 +40,7 @@ public class Delete {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            Resultado<DeleteUsuarioDTO> resultadoDeleteDTO = DeleteUsuarioDTO.createDeleteUsuarioDTO(subject);
+            Resultado<IdentificadorPrimarioDTO> resultadoDeleteDTO = IdentificadorPrimarioDTO.createDeleteUsuarioDTO(subject);
             if(!resultadoDeleteDTO.esExitoso()){
                 smtpClientResponse.sendDataToServer("SQL Delete User: fallo en campos",resultadoDeleteDTO.getError() + "\r\n");
             }
