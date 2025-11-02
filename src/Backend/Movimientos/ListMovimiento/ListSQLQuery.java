@@ -45,8 +45,8 @@ public class ListSQLQuery {
                         String mov = rs.getString("tipo_movimiento");
                         int cantidad = rs.getInt("cantidad");
                         Timestamp fecha = rs.getTimestamp("fecha");
-                        String motivo = rs.getString("motivo");
-                        rows.add(String.format("%d | producto=%d | usuario=%d | %s | cantidad=%d | fecha=%s | motivo=%s", id, pid, uid, mov, cantidad, fecha, motivo));
+                        String motivo1 = rs.getString("motivo");
+                        rows.add(String.format("%d | producto=%d | usuario=%d | %s | cantidad=%d | fecha=%s | motivo=%s", id, pid, uid, mov, cantidad, fecha, motivo1));
                     }
                 }
             }

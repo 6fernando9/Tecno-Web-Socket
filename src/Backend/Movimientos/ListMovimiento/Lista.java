@@ -7,7 +7,7 @@ import Utils.*;
 
 import java.util.List;
 
-public class List {
+public class Lista {
     public static void main(String[] args){
         String emisor = "2003miguelito.mgs@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
