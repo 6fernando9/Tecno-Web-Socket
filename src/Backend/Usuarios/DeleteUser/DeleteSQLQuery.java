@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
 public class DeleteSQLQuery {
-    private static final String SQL_DELETE = "DELETE FROM usuario WHERE id = ?";
+    private static final String SQL_DELETE = "DELETE FROM usuarios WHERE id = ?";
     public String executeDeleteUserQuery(PGSQLClient pgsqlClient, long id) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 

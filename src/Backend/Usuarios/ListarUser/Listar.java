@@ -1,5 +1,6 @@
 package Backend.Usuarios.ListarUser;
 
+import Backend.Usuarios.Resultado;
 import Backend.Usuarios.dto.MensajeUsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
@@ -16,7 +17,7 @@ public class Listar {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                listarusuario["admins"]
+                listarusuario["*"]
                 """;
         //pa evitar la cagada de /r/n
         subject = subject.replace("\r", "").replace("\n", " ");
@@ -45,7 +46,12 @@ public class Listar {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            MensajeUsuarioDTO mensajeUsuarioDTO = MensajeUsuarioDTO.createMensajePatronDTO(subject);
+            Resultado<MensajeUsuarioDTO> resultadoMensajeDTO = MensajeUsuarioDTO.createMensajePatronDTO(subject);
+            if (!resultadoMensajeDTO.esExitoso()) {
+                smtpClientResponse.sendDataToServer("SQL ListUser -  fallo en campos",resultadoMensajeDTO.getError());
+                return;
+            }
+            MensajeUsuarioDTO mensajeUsuarioDTO = resultadoMensajeDTO.getValor();
             ListarSQLUser listarSQLUser = new ListarSQLUser();
             String resultList = listarSQLUser.executeListarUsuarios(pgsqlClient,mensajeUsuarioDTO.message);
             smtpClientResponse.sendDataToServer("SQL ListUser",resultList);

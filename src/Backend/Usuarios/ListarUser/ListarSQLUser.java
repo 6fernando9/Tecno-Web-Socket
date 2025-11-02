@@ -5,13 +5,13 @@ import java.sql.*;
 public class ListarSQLUser {
 
     private static final String SQL_LISTAR_TODOS =
-            "SELECT id, \"user\", pass, correo, nombre, telefono, tipo FROM usuario ORDER BY id ASC";
+            "SELECT id, nombre, apellido, email, telefono, password, rol FROM usuarios ORDER BY id ASC";
 
-    private static final String SQL_LISTAR_POR_TIPO =
-            "SELECT id, \"user\", pass, correo, nombre, telefono, tipo FROM usuario WHERE tipo = ? ORDER BY id ASC";
+    private static final String SQL_LISTAR_POR_ROL =
+            "SELECT id, nombre, apellido, email, telefono, password, rol FROM usuarios WHERE rol = ? ORDER BY id ASC";
 
 
-    public String executeListarUsuarios(PGSQLClient pgsqlClient, String filtroTipo) {
+    public String executeListarUsuarios(PGSQLClient pgsqlClient, String filtroRol) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 
         try (Connection connection = DriverManager.getConnection(
@@ -20,38 +20,22 @@ public class ListarSQLUser {
             System.out.println("Connecting successfully to database");
 
             PreparedStatement ps;
-            if (filtroTipo.equals("*")) {
+            if (filtroRol.equals("*")) {
                 ps = connection.prepareStatement(SQL_LISTAR_TODOS);
             } else {
-                ps = connection.prepareStatement(SQL_LISTAR_POR_TIPO);
-                ps.setString(1, filtroTipo);
+                ps = connection.prepareStatement(SQL_LISTAR_POR_ROL);
+                ps.setString(1, filtroRol);
             }
 
             try (ResultSet rs = ps.executeQuery()) {
                 StringBuilder result = new StringBuilder();
 
                 while (rs.next()) {
-                    long id = rs.getLong("id");
-                    String user = rs.getString("user");
-                    String pass = rs.getString("pass");
-                    String correo = rs.getString("correo");
-                    String nombre = rs.getString("nombre");
-                    String telefono = rs.getString("telefono");
-                    String tipo = rs.getString("tipo");
-
-                    result.append("========================RESULT========================\r\n")
-                            .append("id: ").append(id).append("\r\n")
-                            .append("user: ").append(user).append("\r\n")
-                            .append("pass: ").append(pass).append("\r\n")
-                            .append("correo: ").append(correo).append("\r\n")
-                            .append("nombre: ").append(nombre).append("\r\n")
-                            .append("telefono: ").append(telefono).append("\r\n")
-                            .append("tipo: ").append(tipo).append("\r\n")
-                            .append("=====================================================================\r\n");
+                    result.append(formatearUsuario(rs));
                 }
 
                 if (result.length() == 0) {
-                    return "No se encontraron usuarios con el filtro: " + filtroTipo + "\r\n";
+                    return "[]\r\n";
                 }
 
                 result.append(".\r\n");
@@ -62,5 +46,28 @@ public class ListarSQLUser {
             System.out.println("Throw: " + e.getMessage());
             return "ERROR DE BASE DE DATOS: " + e.getMessage() + "\r\n";
         }
+    }
+
+    private String formatearUsuario(ResultSet rs) throws SQLException {
+        long id = rs.getLong("id");
+        String nombre = rs.getString("nombre");
+        String apellido = rs.getString("apellido");
+        String email = rs.getString("email");
+        String telefono = rs.getString("telefono");
+        String password = rs.getString("password");
+        String rol = rs.getString("rol");
+
+        return String.format(
+                "======================== USUARIO ========================\r\n" +
+                        "id: %d\r\n" +
+                        "nombre: %s\r\n" +
+                        "apellido: %s\r\n" +
+                        "email: %s\r\n" +
+                        "telefono: %s\r\n" +
+                        "password: %s\r\n" +
+                        "rol: %s\r\n" +
+                        "==========================================================\r\n",
+                id, nombre, apellido, email, telefono, password, rol
+        );
     }
 }
