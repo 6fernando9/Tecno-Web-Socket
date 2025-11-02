@@ -1,6 +1,6 @@
 package Backend.Utils.dto;
 
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 //clase para usarla solamente para extraer un campo ID de tipo Long, ejemplo Accion["2"]
 public class IdentificadorPrimarioDTO {

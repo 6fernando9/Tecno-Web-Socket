@@ -1,6 +1,6 @@
 package Backend.Usuarios.DeleteUser;
 
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Backend.Utils.dto.IdentificadorPrimarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;

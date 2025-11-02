@@ -1,6 +1,6 @@
 package Backend.Productos.dto;
 
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
 public class CreateProductoDTO {

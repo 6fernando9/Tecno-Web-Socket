@@ -1,6 +1,6 @@
 package Backend.Usuarios.UpdateUser;
 
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;

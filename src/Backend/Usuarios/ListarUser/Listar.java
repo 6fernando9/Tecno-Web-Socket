@@ -1,6 +1,6 @@
 package Backend.Usuarios.ListarUser;
 
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Backend.Utils.dto.IdentificadorStrDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;

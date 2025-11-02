@@ -1,6 +1,6 @@
 package Backend.Utils.dto;
 
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
 import java.util.regex.Matcher;

@@ -1,6 +1,6 @@
 package Backend.Movimientos.dto;
 
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Exceptions.InvalidDataException;
 import Utils.TecnoUtils;
 

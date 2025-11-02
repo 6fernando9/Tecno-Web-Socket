@@ -1,5 +1,5 @@
 package Backend.Utils.dto;
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 //clase para usar solamente para extraer el campo string , ejemplo accion["cadena"]
 public class IdentificadorStrDTO {

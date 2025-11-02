@@ -1,7 +1,6 @@
 package Backend.Pagos.ListPagos;
 
-import Backend.Usuarios.GeneralUsuarioSQLUtils;
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.dto.IdentificadorPrimarioDTO;
 import Database.PGSQLClient;

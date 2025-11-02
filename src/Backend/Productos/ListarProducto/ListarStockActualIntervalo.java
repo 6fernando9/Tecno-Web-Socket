@@ -2,8 +2,7 @@ package Backend.Productos.ListarProducto;
 
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.dto.ComparadorSigno;
-import Backend.Usuarios.GeneralUsuarioSQLUtils;
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;

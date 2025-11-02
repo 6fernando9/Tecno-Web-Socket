@@ -1,45 +1,38 @@
 package Backend.Pagos.ListPagos;
 
+import Backend.Pagos.GeneralPagoSQLUtils;
+import Backend.Pagos.dto.PagoDTO;
+import Backend.Pagos.dto.VentaSimpleDTO;
 import Database.PGSQLClient;
-
-import java.math.BigDecimal;
 import java.sql.*;
 
 public class ListarPagoDeVentaSQLQuery {
 
-    private static final String BASE_QUERY = """
-        SELECT 
-            dp.id AS id_detalle,
-            dp.monto,
-            tp.nombre AS tipo_pago
-        FROM public.detalle_pagos dp
-        JOIN public.tipo_pagos tp ON dp.tipo_pago_id = tp.id
-        WHERE dp.venta_id = ?
-        ORDER BY dp.id ASC
-        """;
 
     public String executeListarPagosDeVentaQuery(PGSQLClient pgsqlClient, long ventaId) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 
         try (Connection connection = DriverManager.getConnection(
-                databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword());
-             PreparedStatement ps = connection.prepareStatement(BASE_QUERY)) {
+                databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
+            VentaSimpleDTO venta = GeneralPagoSQLUtils.findVentaConPagos(connection, ventaId);
 
-            ps.setLong(1, ventaId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                StringBuilder result = new StringBuilder();
-
-                while (rs.next()) {
-                    result.append(formatearPago(rs));
-                }
-
-                if (result.length() == 0) {
-                    return "No existen pagos registrados para la venta ID " + ventaId;
-                }
-
-                return result.toString();
+            if (venta == null) {
+                return "No existe una venta con ID " + ventaId;
             }
+            StringBuilder result = new StringBuilder();
+            //result.append(formatearVenta(venta));
+
+            if (venta.getListaPagos() == null || venta.getListaPagos().isEmpty()) {
+                result.append("No hay pagos registrados para esta venta.");
+            } else {
+                result.append("========= PAGOS ASOCIADOS =========\r\n");
+                for (PagoDTO pago : venta.getListaPagos()) {
+                    result.append(formatearPago(pago));
+                }
+                result.append("===================================\r\n");
+            }
+
+            return result.toString();
 
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
@@ -47,18 +40,29 @@ public class ListarPagoDeVentaSQLQuery {
         }
     }
 
-    private String formatearPago(ResultSet rs) throws SQLException {
-        long idDetalle = rs.getLong("id_detalle");
-        BigDecimal monto = rs.getBigDecimal("monto");
-        String tipoPago = rs.getString("tipo_pago");
-
+    // =========================================================
+    // MÉTODOS DE FORMATEO
+    // =========================================================
+    private String formatearVenta(VentaSimpleDTO venta) {
         return String.format(
-                "======================== DETALLE PAGO ======================\r\n" +
-                        "id_detalle: %d\r\n" +
-                        "monto: %s\r\n" +
+                "======================== VENTA ========================\r\n" +
+                        "id: %d\r\n" +
+                        "monto_total: %.2f\r\n" +
+                        "estado: %s\r\n" +
                         "tipo_pago: %s\r\n" +
-                        "============================================================\r\n",
-                idDetalle, monto, tipoPago
+                        "fecha: %s\r\n" +
+                        "========================================================\r\n",
+                venta.id, venta.montoTotal, venta.estado, venta.tipoPago, venta.fecha
+        );
+    }
+
+    private String formatearPago(PagoDTO pago) {
+        return String.format(
+                "id_pago: %d\r\n" +
+                        "monto: %.2f\r\n" +
+                        "tipo_pago: %s\r\n" +
+                        "-------------------------------------------------------\r\n",
+                pago.id, pago.monto, pago.tipoPago
         );
     }
 }

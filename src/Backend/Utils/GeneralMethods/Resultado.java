@@ -1,4 +1,4 @@
-package Backend.Usuarios;
+package Backend.Utils.GeneralMethods;
 
 //patron para errores
 public class Resultado<T> {

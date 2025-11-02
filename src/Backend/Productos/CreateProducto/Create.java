@@ -1,8 +1,7 @@
 package Backend.Productos.CreateProducto;
 
 import Backend.Productos.dto.CreateProductoDTO;
-import Backend.Usuarios.GeneralUsuarioSQLUtils;
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Database.PGSQLClient;
 import POP3.Pop3Client;

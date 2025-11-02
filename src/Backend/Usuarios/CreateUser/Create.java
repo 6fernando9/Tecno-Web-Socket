@@ -1,7 +1,6 @@
 package Backend.Usuarios.CreateUser;
 
-import Backend.Usuarios.GeneralUsuarioSQLUtils;
-import Backend.Usuarios.Resultado;
+import Backend.Utils.GeneralMethods.Resultado;
 import Backend.Usuarios.dto.CreateUsuarioDTO;
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Database.PGSQLClient;
