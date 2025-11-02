@@ -83,6 +83,65 @@ public class SMTPClient {
             System.out.println("throw - "+ e.getMessage());
         }
     }
+    //execute for HTML MEssage
+
+    public void executeSMTPClientHTML() {
+        try {
+            Socket socket = new Socket(this.getServer(), this.getPort());
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+
+            if (SocketUtils.esEntradaValida(socket, input, output)) {
+                System.out.println("Mensaje del servidor: " + input.readLine());
+
+                // 🔹 HELO
+                output.writeBytes("HELO " + this.getServer() + "\r\n");
+                System.out.println("Respuesta servidor a HELO: " + input.readLine());
+
+                // 🔹 MAIL FROM
+                output.writeBytes("MAIL FROM: " + this.getEmisorUser() + "\r\n");
+                System.out.println("Respuesta servidor a MAIL FROM: " + input.readLine());
+
+                // 🔹 RCPT TO
+                output.writeBytes("RCPT TO: " + this.getReceptorUser() + "\r\n");
+                System.out.println("Respuesta servidor a RCPT TO: " + input.readLine());
+
+                // 🔹 DATA
+                output.writeBytes("DATA\r\n");
+                System.out.println("Respuesta servidor a DATA: " + input.readLine());
+
+                // 🔹 Encabezados MIME + cuerpo HTML
+                String htmlMessage =
+                        "MIME-Version: 1.0\r\n" +
+                                "Content-Type: text/html; charset=UTF-8\r\n" +
+                                "Subject: 📨 Correo HTML desde Java\r\n" +
+                                "\r\n" +
+                                "<html>\r\n" +
+                                "<body style=\"font-family: Arial, sans-serif;\">\r\n" +
+                                "  <h2 style=\"color:#4CAF50;\">✅ Usuario creado exitosamente</h2>\r\n" +
+                                "  <p><b>Nombre:</b> Evans Balcázar</p>\r\n" +
+                                "  <p><b>Email:</b> evans@gmail.com</p>\r\n" +
+                                "  <p><b>Teléfono:</b> 76773834</p>\r\n" +
+                                "  <p><b>Rol:</b> barbero</p>\r\n" +
+                                "  <hr>\r\n" +
+                                "  <p>Bienvenido al sistema 🎉</p>\r\n" +
+                                "</body>\r\n" +
+                                "</html>\r\n" +
+                                ".\r\n";
+
+                output.writeBytes(htmlMessage);
+                System.out.println("Respuesta servidor a HTML: " + input.readLine());
+
+                // 🔹 QUIT
+                output.writeBytes("QUIT\r\n");
+                System.out.println("Respuesta servidor a QUIT: " + input.readLine());
+            }
+
+            SocketUtils.closeServices(socket, input, output);
+        } catch (Exception e) {
+            System.out.println("throw - " + e.getMessage());
+        }
+    }
 
     public void executeMailFrom(BufferedReader input,DataOutputStream output) throws IOException {
         String command = "MAIL FROM: " + this.getEmisorUser() + "\r\n";
@@ -162,7 +221,7 @@ public class SMTPClient {
     public static void main(String[] args) {
         //String emisor = "muerte201469@gmail.com";
         //String receptor = "grupo14sc@tecnoweb.org.bo";
-        String receptor = "fernandopadilla170@gmail.com";
+        String receptor = "muerte201469@gmail.com";
         String emisor = "grupo14sc@tecnoweb.org.bo";
         String subject = "createuser[\"8\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
         String context = null;
@@ -170,7 +229,7 @@ public class SMTPClient {
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
         SMTPClient smtpClient = new SMTPClient(server,emisor,receptor);
         smtpClient.sendDataToServer(subject,context);
-        //executeTask();
+        //smtpClient.executeSMTPClientHTML();
     }
 
 

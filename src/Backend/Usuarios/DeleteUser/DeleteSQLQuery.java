@@ -16,22 +16,22 @@ public class DeleteSQLQuery {
             Connection connection = DriverManager.getConnection(databaseUrl,pgsqlClient.getUser(),pgsqlClient.getPassword());
             System.out.println("Connecting successfully to database");
             if (!GeneralUsuarioSQLUtils.existsUser(connection, id)) {
-                return "No existe un usuario con id=" + id + ". No se realizó ninguna eliminación.\r\n";
+                return "No existe un usuario con id=" + id + ". No se realizó ninguna eliminación.";
             }
             try (PreparedStatement ps = connection.prepareStatement(SQL_DELETE)) {
                 ps.setLong(1, id);
                 int filas = ps.executeUpdate();
 
                 if (filas == 0) {
-                    return "El usuario fue eliminado/modificado durante la operación. No se eliminó ninguna fila.\r\n";
+                    return "El usuario fue eliminado/modificado durante la operación. No se eliminó ninguna fila.";
                 }
 
-                return "Eliminación exitosa (" + filas + " fila(s)).\r\n";
+                return "Eliminación exitosa (" + filas + " fila(s)).";
             }
 
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
-            return "ERROR DE BASE DE DATOS: " + e.getMessage() + "\r\n";
+            return "ERROR DE BASE DE DATOS: " + e.getMessage() ;
         }
     }
 }

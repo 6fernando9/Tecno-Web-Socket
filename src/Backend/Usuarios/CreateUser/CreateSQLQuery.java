@@ -16,7 +16,7 @@ public class CreateSQLQuery {
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Connecting successfully to database");
             if (GeneralUsuarioSQLUtils.existeUsuarioPorEmail(connection, createUsuarioDTO.email)) {
-                return "Error: ya existe un usuario con el correo '" + createUsuarioDTO.email + "'.\r\n";
+                return "Error: ya existe un usuario con el correo '" + createUsuarioDTO.email + "'.";
             }
 
             try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT)) {
@@ -30,20 +30,15 @@ public class CreateSQLQuery {
                 int filas = ps.executeUpdate();
 
                 if (filas == 0) {
-                    return "Error: no se pudo insertar el usuario.\r\n";
+                    return "Error: no se pudo insertar el usuario.";
                 }
 
-                String command = "MIME-Version: 1.0\r\n";
-                command += "Content-Type: text/html; charset=UTF-8\r\n";
-                command += "\r\n"; // separador
-                command += createUsuarioDTO.toStringCorreoHTML();
-                command += "\r\n.\r\n";
-                return command;
+                return "Usuario insertado con exito!";
             }
 
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
-            return "ERROR DE BASE DE DATOS: " + e.getMessage() + "\r\n";
+            return "ERROR DE BASE DE DATOS: " + e.getMessage();
         }
     }
 

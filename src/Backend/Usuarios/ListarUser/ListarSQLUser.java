@@ -35,16 +35,16 @@ public class ListarSQLUser {
                 }
 
                 if (result.length() == 0) {
-                    return "[]\r\n";
+                    return "[]";
                 }
 
-                result.append(".\r\n");
+                ///result.append(".");
                 return result.toString();
             }
 
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
-            return "ERROR DE BASE DE DATOS: " + e.getMessage() + "\r\n";
+            return "ERROR DE BASE DE DATOS: " + e.getMessage();
         }
     }
 

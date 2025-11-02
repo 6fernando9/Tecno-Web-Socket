@@ -1,12 +1,15 @@
-package Backend.Usuarios.CreateUser;
+package Backend.Productos.CreateProducto;
 
+import Backend.Productos.dto.CreateProductoDTO;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.Resultado;
-import Backend.Usuarios.dto.CreateUsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
-import Utils.*;
+import Utils.Filtrador;
+import Utils.SQLUtils;
+import Utils.SocketUtils;
+import Utils.TecnoUtils;
 
 import java.util.List;
 
@@ -15,7 +18,7 @@ public class Create {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createuser["evans","balcazar veizaga","evans0@gmail.com","76773834","12345678","barbero"]
+                createproducto["polvos","null","100","10","1"]
                 """;
         subject = GeneralUsuarioSQLUtils.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -42,20 +45,17 @@ public class Create {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            Resultado<CreateUsuarioDTO> resultadoCreateUser = CreateUsuarioDTO.crearUsuarioMedianteSubject(subject);
-            if(!resultadoCreateUser.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Create User: Fallo Campos",resultadoCreateUser.getError() + "\r\n");
+            Resultado<CreateProductoDTO> resultadoCreateProducto = CreateProductoDTO.createProductoFromSubject(subject);
+            if(!resultadoCreateProducto.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Create Producto: Fallo Campos", resultadoCreateProducto.getError() + "\r\n");
                 return;
             }
-            CreateUsuarioDTO createUsuarioDTO = resultadoCreateUser.getValor();
+            CreateProductoDTO createProductoDTO = resultadoCreateProducto.getValor();
             CreateSQLQuery createSQLQuery = new CreateSQLQuery();
-
-            String strCreateUser = createSQLQuery.executeInsertUserQuery(pgsqlClient, createUsuarioDTO);
-            smtpClientResponse.sendDataToServer("SQL CreateUser",strCreateUser + "\r\n");
+            String strCreateProducto = createSQLQuery.executeInsertProductoQuery(pgsqlClient,createProductoDTO);
+            smtpClientResponse.sendDataToServer("SQL CreateProducto",strCreateProducto + "\r\n");
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Create User","Fallo al crear Usuario\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Create Producto","Fallo al crear Producto\r\n");
         }
-
     }
-
 }

@@ -46,13 +46,13 @@ public class Listar {
         if( existeMensajeEnPop3 ){
             Resultado<MensajeUsuarioDTO> resultadoMensajeDTO = MensajeUsuarioDTO.createMensajePatronDTO(subject);
             if (!resultadoMensajeDTO.esExitoso()) {
-                smtpClientResponse.sendDataToServer("SQL ListUser -  fallo en campos",resultadoMensajeDTO.getError());
+                smtpClientResponse.sendDataToServer("SQL ListUser -  fallo en campos",resultadoMensajeDTO.getError() + "\r\n");
                 return;
             }
             MensajeUsuarioDTO mensajeUsuarioDTO = resultadoMensajeDTO.getValor();
             ListarSQLUser listarSQLUser = new ListarSQLUser();
             String resultList = listarSQLUser.executeListarUsuarios(pgsqlClient,mensajeUsuarioDTO.message);
-            smtpClientResponse.sendDataToServer("SQL ListUser",resultList);
+            smtpClientResponse.sendDataToServer("SQL ListUser",resultList + "\r\n");
         }else{
             smtpClientResponse.sendDataToServer("SQL Fail List User","Fallo al crear Usuario\r\n");
         }

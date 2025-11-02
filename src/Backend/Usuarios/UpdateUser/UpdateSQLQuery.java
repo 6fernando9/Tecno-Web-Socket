@@ -18,7 +18,7 @@ public class UpdateSQLQuery {
             UpdateUsuarioDTO usuarioDTODB = GeneralUsuarioSQLUtils.findUserById(connection,updateUsuarioDTO.id);
             //usuario no esta en la base de datos
             if (usuarioDTODB == null) {
-                return "No existe un usuario con id=" + updateUsuarioDTO.id + ". No se realizó ninguna actualización.\r\n";
+                return "No existe un usuario con id=" + updateUsuarioDTO.id + ". No se realizó ninguna actualización.";
             }
             //si el usuario si esta presente
             //emails diferentes
@@ -40,13 +40,13 @@ public class UpdateSQLQuery {
                 ps.setLong(7, updateUsuarioDTO.id);
                 int filas = ps.executeUpdate();
                 if (filas == 0) {
-                    return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.\r\n";
+                    return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.";
                 }
-                return "Actualización exitosa (" + filas + " fila(s)).\r\n";
+                return "Actualización exitosa (" + filas + " fila(s)).";
             }
         }catch(Exception e){
             System.out.println("Throw: " + e.getMessage());
-            return "ERROR DE BASE DE DATOS: " + e.getMessage() + "\r\n";
+            return "ERROR DE BASE DE DATOS: " + e.getMessage() ;
         }
     }
 }

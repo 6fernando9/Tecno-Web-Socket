@@ -44,13 +44,13 @@ public class Update {
         if( existeMensajeEnPop3 ){
             Resultado<UpdateUsuarioDTO> resultadoUpdate = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
             if(!resultadoUpdate.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Update User: Fallo de campos",resultadoUpdate.getError());
+                smtpClientResponse.sendDataToServer("SQL Update User: Fallo de campos",resultadoUpdate.getError() + "\r\n");
                 return;
             }
             UpdateUsuarioDTO updateUsuarioDTO = resultadoUpdate.getValor();
             UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
             String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, updateUsuarioDTO);
-            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser);
+            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser + "\r\n");
         }else{
             smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
         }

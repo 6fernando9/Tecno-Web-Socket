@@ -43,11 +43,11 @@ public class Delete {
         if( existeMensajeEnPop3 ){
             Resultado<DeleteUsuarioDTO> resultadoDeleteDTO = DeleteUsuarioDTO.createDeleteUsuarioDTO(subject);
             if(!resultadoDeleteDTO.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Delete User: fallo en campos",resultadoDeleteDTO.getError());
+                smtpClientResponse.sendDataToServer("SQL Delete User: fallo en campos",resultadoDeleteDTO.getError() + "\r\n");
             }
             DeleteSQLQuery deleteSQLQuery = new DeleteSQLQuery();
             String resultadoDeleteUser = deleteSQLQuery.executeDeleteUserQuery(pgsqlClient,resultadoDeleteDTO.getValor().id);
-            smtpClientResponse.sendDataToServer("SQL Delete User",resultadoDeleteUser);
+            smtpClientResponse.sendDataToServer("SQL Delete User",resultadoDeleteUser + "\r\n");
         }else{
             smtpClientResponse.sendDataToServer("SQL Fail Delete User","Fallo al eliminar Usuario\r\n");
         }
