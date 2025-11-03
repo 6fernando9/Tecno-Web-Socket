@@ -61,101 +61,101 @@ public class TestExamen {
             if(comando.equalsIgnoreCase("createUser")){
                 System.out.println("Ejecutando Insercion de Usuario...");
                 CreateUsuario.executeCreateUsuario(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("updateUser")){
                 System.out.println("Ejecutando Actualizacion de Usuario...");
                 UpdateUsuario.executeUpdateUsuario(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
 //            if(comando.equalsIgnoreCase("deleteUser")){
 //                System.out.println("Ejecutando Eliminar de Usuario...");
 //                DeleteUsuario.executeDeleteUsuario(emisor,receptor,server,entrada);
-//                break;
+//                continue;
 //            }
             if(comando.equalsIgnoreCase("listarUsuarios")){
                 System.out.println("Ejecutando Listar Usuario...");
                 ListarUsuario.executeListarUsuario(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             //Para Productos
             if(comando.equalsIgnoreCase("createProducto")){
                 System.out.println("Ejecutando Crear Producto");
                 CreateProducto.executeCreateProducto(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("updateProducto")){
                 System.out.println("Ejecutando Update Producto");
                 UpdateProducto.executeUpdateProducto(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("listarProductoSimple")){
                 System.out.println("Ejecutando Listar Producto Simple");
                 ListarStockActualSimple.executeListarStockActualSimple(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("listarProductoIntervalo")){
                 System.out.println("Ejecutando Listar Producto Intervalo");
                 ListarStockActualIntervalo.executeListarStockActualIntervalo(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             //Para Servicios
             if(comando.equalsIgnoreCase("createServicio")){
                 System.out.println("Ejecutando Crear Servicio");
                 CreateServicio.executeCreateServicio(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("updateServicio")){
                 System.out.println("Ejecutando Update Servicio");
                 UpdateServicio.executeUpdateServicio(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("listarServicioSimple")){
                 System.out.println("Ejecutando Listar Servicio Simple");
                 ListarServicioPrecioSimple.executeListarServicioPrecioSimple(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("listarServicioIntervalo")){
                 System.out.println("Ejecutando Listar Servicio Intervalo");
                 ListarServicioPrecioIntervalo.executeListarServiciosPrecioIntervalo(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             //Para Pagos
             if(comando.equalsIgnoreCase("createPago")){
                 System.out.println("Ejecutando Crear Pago");
                 CreatePago.executeCrearPago(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("deletePago")){
                 System.out.println("Ejecutando Delete Pago");
                 DeletePago.executeDeletePago(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("listarPagosDeVenta")){
                 System.out.println("Ejecutando Listar pago de venta");
                 ListarPagoDeVenta.executeListarPagoDeVenta(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             //Para Horarios
             if(comando.equalsIgnoreCase("createHorario")){
                 System.out.println("Ejecutando Crear Horario");
                 CreateHorario.executeCrearHorario(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("updateHorario")){
                 System.out.println("Ejecutando Delete Pago");
                 UpdateHorario.executeUpdateHorario(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("deleteHorario")){
                 System.out.println("Ejecutando Listar pago de venta");
                 DeleteHorario.executeDeleteHorario(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             if(comando.equalsIgnoreCase("listarHorarioDeBarbero")){
                 System.out.println("Ejecutando Listar pago de venta");
                 ListarHorarioDeBarbero.executeListarHorarioDeBarbero(emisor,receptor,server,entrada);
-                break;
+                continue;
             }
             /// demas metodos
 

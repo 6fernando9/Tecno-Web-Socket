@@ -1,6 +1,7 @@
 package Backend.Movimientos.UpdateMovimiento;
 
 import Backend.Movimientos.dto.UpdateMovimientoDTO;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -13,7 +14,11 @@ public class Update {
         String emisor = "2003miguelito.mgs@gmail.com"; // using same requestor email pattern
         String receptor = "grupo14sc@tecnoweb.org.bo";
         // subject: movimiento_inventario_update["movement_id","cantidad?","motivo?","fecha?"]
-        String subject = "movimiento_inventario_update[\"45\",\"40\",\"Corrección manual\",\"2025-11-02\"]";
+        String subject = """
+                    movimiento_inventario_update["45","40","Corrección manual","2025-11-02"]
+                """;
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
+        //String subject = "movimiento_inventario_update[\"45\",\"40\",\"Corrección manual\",\"2025-11-02\"]";
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
