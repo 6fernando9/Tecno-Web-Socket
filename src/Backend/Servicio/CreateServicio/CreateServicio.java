@@ -14,6 +14,26 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class CreateServicio {
+
+    public static void executeCreateServicioDemon(String emisor,String receptor,String server,String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<CreateServicioDTO> resultCreateService = CreateServicioDTO.createServicioFromSubject(subject);
+        if(!resultCreateService.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Create Servicio: Fallo Campos", resultCreateService.getError() + "\r\n");
+            return;
+        }
+
+        CreateServicioDTO createServicioDTO = resultCreateService.getValor();
+        CreateServicioSQLQuery createServicioSQLQuery = new CreateServicioSQLQuery();
+
+        String strCreateServicio = createServicioSQLQuery.executeInsertServicioQuery(pgsqlClient, createServicioDTO);
+        smtpClientResponse.sendDataToServer("SQL Create Servicio", strCreateServicio + "\r\n");
+
+
+
+    }
     public static void executeCreateServicio(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

@@ -14,6 +14,35 @@ import Utils.TecnoUtils;
 import java.util.List;
 //lista respecto del stock_actual
 public class ListarStockActualSimple {
+
+    public static void executeListarStockActualSimpleDemon(String emisor,String receptor,String server,String subject){
+        String listarTodosCommand = """
+                listarproductossimple["*"]
+                """;
+        //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
+        listarTodosCommand = GeneralMethods.parsearSubjectComillaTriple(listarTodosCommand);
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        System.out.println("subject" + subject);
+        System.out.println("perfect" + listarTodosCommand);
+        if(subject.equals(listarTodosCommand)){
+            ComparadorSigno comparadorSigno = null;
+            ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
+            String strListarProducto = listarStockActualSQLQuery.executeListarProductos(pgsqlClient,comparadorSigno);
+            smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
+            return;
+        }
+        Resultado<ComparadorSigno> resultadoListaSimple = ComparadorSigno.crearComparadorFromSubject(subject);
+        if(!resultadoListaSimple.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Listar Productos: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
+            return;
+        }
+        ComparadorSigno comparadorSigno = resultadoListaSimple.getValor();
+        System.out.println(comparadorSigno);
+        ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
+        String strListarProducto = listarStockActualSQLQuery.executeListarProductos(pgsqlClient,comparadorSigno);
+        smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
+    }
     public static void executeListarStockActualSimple(String emisor,String receptor,String server,String subject){
         String listarTodosCommand = """
                 listarproductossimple["*"]

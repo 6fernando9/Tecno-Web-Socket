@@ -14,6 +14,23 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class UpdateServicio {
+    public static void executeUpdateServicioDemon(String emisor,String receptor,String server,String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<UpdateServicioDTO> resultadoServicioDTO = UpdateServicioDTO.crearUpdateServicioMedianteSubject(subject);
+        if(!resultadoServicioDTO.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Update Servicio: Fallo Campos", resultadoServicioDTO.getError() + "\r\n");
+            return;
+        }
+        UpdateServicioDTO updateServicioDTO = resultadoServicioDTO.getValor();
+        UpdateServicioSQLQuery updateServicioSQLQuery = new UpdateServicioSQLQuery();
+        String strCreateServicio = updateServicioSQLQuery.executeUpdateServicio(pgsqlClient, updateServicioDTO);
+        smtpClientResponse.sendDataToServer("SQL Update Servicio", strCreateServicio + "\r\n");
+
+
+
+    }
     public static void executeUpdateServicio(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

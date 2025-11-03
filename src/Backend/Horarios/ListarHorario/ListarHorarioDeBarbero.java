@@ -15,6 +15,19 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class ListarHorarioDeBarbero {
+    public static void executeListarHorarioDeBarberoDemon(String emisor,String receptor,String server,String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<IdentificadorPrimarioDTO> resultadoDeleteDTO = IdentificadorPrimarioDTO.createDeleteUsuarioDTO(subject);
+        if(!resultadoDeleteDTO.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Fail Listar Horario de Barbero: fallo en campos",resultadoDeleteDTO.getError() + "\r\n");
+            return;
+        }
+        IdentificadorPrimarioDTO identificadorPrimarioDTO = resultadoDeleteDTO.getValor();
+        ListarHorarioDeBarberoSQLQuery listarHorarioDeBarberoSQLQuery = new ListarHorarioDeBarberoSQLQuery();
+        String resultadoListado = listarHorarioDeBarberoSQLQuery.executeListarHorarioDeBarbero(pgsqlClient, identificadorPrimarioDTO.id);
+        smtpClientResponse.sendDataToServer("SQL Listar Horario de Barbero",resultadoListado + "\r\n");
+    }
     public static void executeListarHorarioDeBarbero(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

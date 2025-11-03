@@ -14,6 +14,25 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class DeleteHorario {
+
+    public static void executeDeleteHorarioDemon(String emisor,String receptor,String server,String subject){
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        System.out.println("subject" + subject);
+
+        Resultado<Long[]> resultadoVentaPago = ComparadorSigno.obtenerDobleIdFromSubject(subject);
+        if(!resultadoVentaPago.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL FAIL DELETE HORARIO: Fallo Campos", resultadoVentaPago.getError() + "\r\n");
+            return;
+        }
+        Long[] barberoHorario = resultadoVentaPago.getValor();
+        Long barberoId = barberoHorario[0];
+        Long horarioId = barberoHorario[1];
+        DeleteHorarioSQLQuery deleteHorarioSQLQuery = new DeleteHorarioSQLQuery();
+        String strEliminarPago = deleteHorarioSQLQuery.executeEliminarHorario(pgsqlClient,barberoId,horarioId);
+        smtpClientResponse.sendDataToServer("SQL Eliminar Horario con exito ", strEliminarPago + "\r\n");
+    }
     public static void executeDeleteHorario(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

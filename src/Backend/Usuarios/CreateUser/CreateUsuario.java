@@ -17,6 +17,21 @@ import java.util.List;
 //TIENE VALIDACION DE GRUPOS
 //TIENE VALIDACION DE EMAIL UNICO
 public class CreateUsuario {
+    public static void executeCreateUsuarioDemon(String emisor,String receptor,String server,String subject){
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<CreateUsuarioDTO> resultadoCreateUser = CreateUsuarioDTO.crearUsuarioMedianteSubject(subject);
+        if(!resultadoCreateUser.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Create User: Fallo Campos",resultadoCreateUser.getError() + "\r\n");
+            return;
+        }
+        CreateUsuarioDTO createUsuarioDTO = resultadoCreateUser.getValor();
+        CreateSQLQuery createSQLQuery = new CreateSQLQuery();
+
+        String strCreateUser = createSQLQuery.executeInsertUserQuery(pgsqlClient, createUsuarioDTO);
+        smtpClientResponse.sendDataToServer("SQL CreateUser",strCreateUser + "\r\n");
+    }
     public static void executeCreateUsuario(String emisor,String receptor,String server,String subject){
         ///subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

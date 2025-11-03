@@ -16,6 +16,23 @@ import java.util.List;
 //Soporta List["*"] -> retorna todo
 //Soporta List["rol"] -> retorna solo usuarios con ese rol
 public class ListarUsuario {
+    public static void executeListarUsuarioDemon(String emisor,String receptor,String server,String subject){
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+
+        Resultado<IdentificadorStrDTO> resultadoMensajeDTO = IdentificadorStrDTO.createMensajePatronDTO(subject);
+        if (!resultadoMensajeDTO.esExitoso()) {
+            smtpClientResponse.sendDataToServer("SQL ListUser -  fallo en campos",resultadoMensajeDTO.getError() + "\r\n");
+            return;
+        }
+        IdentificadorStrDTO mensajeUsuarioDTO = resultadoMensajeDTO.getValor();
+        ListarSQLUser listarSQLUser = new ListarSQLUser();
+        String resultList = listarSQLUser.executeListarUsuarios(pgsqlClient,mensajeUsuarioDTO.message);
+        smtpClientResponse.sendDataToServer("SQL ListUser",resultList + "\r\n");
+
+
+    }
     public static void executeListarUsuario(String emisor,String receptor,String server,String subject){
         //pa evitar la cagada de /r/n
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);

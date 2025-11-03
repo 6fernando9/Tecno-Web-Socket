@@ -14,6 +14,35 @@ import Utils.TecnoUtils;
 import java.util.List;
 //lista respecto del stock_actual
 public class ListarServicioPrecioSimple {
+    public static void executeListarServicioPrecioSimpleDemon(String emisor,String receptor,String server,String subject){
+
+        String listarTodosCommand = """
+                listarServicioSimple["*"]
+                """;
+        //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
+        listarTodosCommand = GeneralMethods.parsearSubjectComillaTriple(listarTodosCommand);
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        System.out.println("subject" + subject);
+        System.out.println("perfect" + listarTodosCommand);
+        if(subject.equalsIgnoreCase(listarTodosCommand)){
+            ComparadorSigno comparadorSigno = null;
+            ListarServicioPrecioSQLQuery listarServicioPrecioSQLQuery = new ListarServicioPrecioSQLQuery();
+            String strListarProducto = listarServicioPrecioSQLQuery.executeListarServicios(pgsqlClient,comparadorSigno);
+            smtpClientResponse.sendDataToServer("SQL Listar Servicios ",strListarProducto + "\r\n");
+            return;
+        }
+        Resultado<ComparadorSigno> resultadoListaSimple = ComparadorSigno.crearComparadorFromSubject(subject);
+        if(!resultadoListaSimple.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Listar Servicios: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
+            return;
+        }
+        ComparadorSigno comparadorSigno = resultadoListaSimple.getValor();
+        ListarServicioPrecioSQLQuery listarServicioPrecioSQLQuery = new ListarServicioPrecioSQLQuery();
+        String strListarProducto = listarServicioPrecioSQLQuery.executeListarServicios(pgsqlClient,comparadorSigno);
+        smtpClientResponse.sendDataToServer("SQL Listar Servicios ",strListarProducto + "\r\n");
+    }
     public static void executeListarServicioPrecioSimple(String emisor,String receptor,String server,String subject){
 
         String listarTodosCommand = """

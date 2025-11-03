@@ -15,6 +15,23 @@ import java.util.List;
 
 public class DeletePago {
 
+    public static void executeDeletePagoDemon(String emisor,String receptor,String server,String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        System.out.println("subject" + subject);
+
+        Resultado<Long[]> resultadoVentaPago = ComparadorSigno.obtenerDobleIdFromSubject(subject);
+        if(!resultadoVentaPago.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Listar Productos: Fallo Campos", resultadoVentaPago.getError() + "\r\n");
+            return;
+        }
+        Long[] ventaPago = resultadoVentaPago.getValor();
+        Long ventaId = ventaPago[0];
+        Long pagoId = ventaPago[1];
+        DeletePagoSQLQuery deletePagoSQLQuery = new DeletePagoSQLQuery();
+        String strEliminarPago = deletePagoSQLQuery.executeEliminarPago(pgsqlClient,ventaId,pagoId);
+        smtpClientResponse.sendDataToServer("SQL Listar Productos ", strEliminarPago + "\r\n");
+    }
     public static void executeDeletePago(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

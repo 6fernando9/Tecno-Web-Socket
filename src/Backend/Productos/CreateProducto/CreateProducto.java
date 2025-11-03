@@ -16,6 +16,22 @@ import java.util.List;
 //TIENE VALIDACIONES CON 0 Y NEGATIVOS
 //TIENE VALIDACION PARA VALORES NULOS
 public class CreateProducto {
+
+    public static void executeCreateProductoDemon(String emisor,String receptor,String server,String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        //List<String> mockList = MockMessage.obtenerListaMockMessage();
+        //System.out.println(mockList);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<CreateProductoDTO> resultadoCreateProducto = CreateProductoDTO.createProductoFromSubject(subject);
+        if(!resultadoCreateProducto.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Create Producto: Fallo Campos", resultadoCreateProducto.getError() + "\r\n");
+            return;
+        }
+        CreateProductoDTO createProductoDTO = resultadoCreateProducto.getValor();
+        CreateSQLQuery createSQLQuery = new CreateSQLQuery();
+        String strCreateProducto = createSQLQuery.executeInsertProductoQuery(pgsqlClient,createProductoDTO);
+        smtpClientResponse.sendDataToServer("SQL CreateProducto",strCreateProducto + "\r\n");
+    }
     public static void executeCreateProducto(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

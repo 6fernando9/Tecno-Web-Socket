@@ -14,6 +14,23 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class ListarPagoDeVenta {
+    public static void executeListarPagoDeVentaDemon(String emisor,String receptor,String server,String subject){
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        System.out.println("subject" + subject);
+
+        Resultado<IdentificadorPrimarioDTO> resultadoListaSimple = IdentificadorPrimarioDTO.createDeleteUsuarioDTO(subject);
+        if(!resultadoListaSimple.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Listar Pago De venta: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
+            return;
+        }
+        IdentificadorPrimarioDTO deleteUsuarioDTO = resultadoListaSimple.getValor();
+        ListarPagoDeVentaSQLQuery listarPagoDeVentaSQLQuery = new ListarPagoDeVentaSQLQuery();
+        String str = listarPagoDeVentaSQLQuery.executeListarPagosDeVentaQuery(pgsqlClient,deleteUsuarioDTO.id);
+        smtpClientResponse.sendDataToServer("SQL Listar Pago de Venta ",str + "\r\n");
+
+    }
     public static void executeListarPagoDeVenta(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -48,9 +65,9 @@ public class ListarPagoDeVenta {
             IdentificadorPrimarioDTO deleteUsuarioDTO = resultadoListaSimple.getValor();
             ListarPagoDeVentaSQLQuery listarPagoDeVentaSQLQuery = new ListarPagoDeVentaSQLQuery();
             String str = listarPagoDeVentaSQLQuery.executeListarPagosDeVentaQuery(pgsqlClient,deleteUsuarioDTO.id);
-            smtpClientResponse.sendDataToServer("SQL Listar Productos ",str + "\r\n");
+            smtpClientResponse.sendDataToServer("SQL Listar Pago de venta ",str + "\r\n");
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Listar Producto","Fallo al Listar Producto\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Listar Pago de venta","Fallo al Listar Producto\r\n");
         }
     }
     public static void main(String[] args){

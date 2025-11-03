@@ -222,10 +222,10 @@ public class SMTPClient {
 
 
     public static void main(String[] args) {
-        //String emisor = "muerte201469@gmail.com";
-        //String receptor = "grupo14sc@tecnoweb.org.bo";
-        String receptor = "muerte201469@gmail.com";
-        String emisor = "grupo14sc@tecnoweb.org.bo";
+        String emisor = "muerte201469@gmail.com";
+        String receptor = "grupo14sc@tecnoweb.org.bo";
+//        String receptor = "muerte201469@gmail.com";
+//        String emisor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
                 listarproductossimple[">=15"]
                 """;

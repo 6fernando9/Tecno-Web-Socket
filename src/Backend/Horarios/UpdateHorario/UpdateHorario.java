@@ -14,6 +14,21 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class UpdateHorario {
+    public static void executeUpdateHorarioDemon(String emisor,String receptor,String server,String subject){
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<HorarioUpdateDTO> resultadoUpdate = HorarioUpdateDTO.createUpdateHorarioDtoFromSubject(subject);
+        if(!resultadoUpdate.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Fail Update Horario: Fallo Campos", resultadoUpdate.getError() + "\r\n");
+            return;
+        }
+        HorarioUpdateDTO horarioDto = resultadoUpdate.getValor();
+        UpdateHorarioSQLQuery updateHorarioSQLQuery = new UpdateHorarioSQLQuery();
+        String strUpdateUser = updateHorarioSQLQuery.executeUpdateHorarioQuery(pgsqlClient,horarioDto);
+        smtpClientResponse.sendDataToServer("SQL Update Horario",strUpdateUser + "\r\n");
+    }
     public static void executeUpdateHorario(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

@@ -15,6 +15,24 @@ import java.util.List;
 
 public class CreateHorario {
     //createHorario["barberoId","dia","horaInicio"."horaFin"]
+    public static void executeCrearHorarioDemon(String emisor,String receptor,String server,String subject){
+
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<HorarioDTO> resultadoCrearHorario = HorarioDTO.createHorarioDtoFromSubject(subject);
+        if(!resultadoCrearHorario.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Create Horario: Fallo Campos", resultadoCrearHorario.getError() + "\r\n");
+            return;
+        }
+        HorarioDTO horarioDto = resultadoCrearHorario.getValor();
+        CreateHorarioSQLQuery createHorarioSQLQuery = new CreateHorarioSQLQuery();
+
+        String strCreateUser = createHorarioSQLQuery.executeInsertHorarioQuery(pgsqlClient, horarioDto);
+        smtpClientResponse.sendDataToServer("SQL Create Horario",strCreateUser + "\r\n");
+
+
+    }
     public static void executeCrearHorario(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

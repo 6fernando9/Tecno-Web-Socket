@@ -14,6 +14,22 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class CreatePago {
+
+    public static void executeCrearPagoDemon(String emisor,String receptor,String server,String subject){
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        System.out.println("subject" + subject);
+        Resultado<PagoDTO> resultadoCreatePagoDto = PagoDTO.crearPagoFromSubject(subject);
+        if(!resultadoCreatePagoDto.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Update Pago De venta: Fallo Campos", resultadoCreatePagoDto.getError() + "\r\n");
+            return;
+        }
+        PagoDTO pagoDTO = resultadoCreatePagoDto.getValor();
+        CreatePagoSQLQuery createPagoSQLQuery = new CreatePagoSQLQuery();
+        String str = createPagoSQLQuery.executeCrearPago(pgsqlClient, pagoDTO);
+        smtpClientResponse.sendDataToServer("SQL Crear Pago ",str + "\r\n");
+    }
     public static void executeCrearPago(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

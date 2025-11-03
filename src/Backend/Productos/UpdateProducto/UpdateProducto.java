@@ -16,6 +16,21 @@ import java.util.List;
 //MISMAS VALIDACIONES DEL CREATE
 //TIENE VALIDACION EN CASO DE QUE NO ENCUENTRE EL PRODUCTO
 public class UpdateProducto {
+    public static void executeUpdateProductoDemon(String emisor,String receptor,String server,String subject){
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<UpdateProductoDTO> resultadoUpdateDto = UpdateProductoDTO.createUpdateProductoDTO(subject);
+        if(!resultadoUpdateDto.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Update Producto: Fallo Campos", resultadoUpdateDto.getError() + "\r\n");
+            return;
+        }
+        UpdateProductoDTO updateProductoDTO = resultadoUpdateDto.getValor();
+        UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
+        String strUpdateProducto = updateSQLQuery.executeUpdateProductoQuery(pgsqlClient, updateProductoDTO);
+        smtpClientResponse.sendDataToServer("SQL UpdateProducto", strUpdateProducto + "\r\n");
+    }
     public static void executeUpdateProducto(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

@@ -14,6 +14,23 @@ import Utils.TecnoUtils;
 import java.util.List;
 //lista respecto del stock_actual
 public class ListarServicioPrecioIntervalo {
+    public static void executeListarServiciosPrecioIntervaloDemon(String emisor,String receptor,String server,String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        System.out.println("subject" + subject);
+
+        Resultado<int[]> resultadoListaSimple = ComparadorSigno.crearIntervaloFromSubject(subject);
+        if(!resultadoListaSimple.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Listar Servicios: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
+            return;
+        }
+        int[] comparadorSigno = resultadoListaSimple.getValor();
+        ListarServicioPrecioSQLQuery listarServicioPrecioSQLQuery = new ListarServicioPrecioSQLQuery();
+        String strListarProducto = listarServicioPrecioSQLQuery.executeListarServiciosBetween(pgsqlClient,comparadorSigno);
+        smtpClientResponse.sendDataToServer("SQL Listar Servicios ",strListarProducto + "\r\n");
+
+    }
     public static void executeListarServiciosPrecioIntervalo(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

@@ -20,6 +20,19 @@ import java.util.List;
 //TIENE VALIDACION DE EMAIL UNICO
 //TIENE VALIDACION DE USUARIO QUE NO EXISTE
 public class UpdateUsuario {
+    public static void executeUpdateUsuarioDemon(String emisor,String receptor,String server,String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        Resultado<UpdateUsuarioDTO> resultadoUpdate = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
+        if(!resultadoUpdate.esExitoso()){
+            smtpClientResponse.sendDataToServer("SQL Update User: Fallo de campos",resultadoUpdate.getError() + "\r\n");
+            return;
+        }
+        UpdateUsuarioDTO updateUsuarioDTO = resultadoUpdate.getValor();
+        UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
+        String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, updateUsuarioDTO);
+        smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser + "\r\n");
+    }
     public static void executeUpdateUsuario(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
