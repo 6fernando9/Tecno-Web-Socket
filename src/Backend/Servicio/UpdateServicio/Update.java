@@ -1,7 +1,7 @@
-package Backend.Servicio.CreateServicio;
+package Backend.Servicio.UpdateServicio;
 
-import Backend.Productos.dto.CreateProductoDTO;
-import Backend.Servicio.dto.CreateServicioDTO;
+import Backend.Servicio.CreateServicio.CreateServicioSQLQuery;
+import Backend.Servicio.dto.UpdateServicioDTO;
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Database.PGSQLClient;
@@ -14,12 +14,12 @@ import Utils.TecnoUtils;
 
 import java.util.List;
 
-public class Create {
+public class Update {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createservicio["corte alizado","buenas servicio","10","30"]
+                createServicio["1","corte alizado","buenas servicio","10","30"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -46,20 +46,18 @@ public class Create {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            Resultado<CreateServicioDTO> resultCreateService = CreateServicioDTO.createServicioFromSubject(subject);
-            if(!resultCreateService.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Create Servicio: Fallo Campos", resultCreateService.getError() + "\r\n");
+            Resultado<UpdateServicioDTO> resultadoServicioDTO = UpdateServicioDTO.crearUpdateServicioMedianteSubject(subject);
+            if(!resultadoServicioDTO.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Update Servicio: Fallo Campos", resultadoServicioDTO.getError() + "\r\n");
                 return;
             }
-
-            CreateServicioDTO createServicioDTO = resultCreateService.getValor();
-            CreateServicioSQLQuery createServicioSQLQuery = new CreateServicioSQLQuery();
-
-            String strCreateServicio = createServicioSQLQuery.executeInsertServicioQuery(pgsqlClient, createServicioDTO);
-            smtpClientResponse.sendDataToServer("SQL Create Servicio", strCreateServicio + "\r\n");
+            UpdateServicioDTO updateServicioDTO = resultadoServicioDTO.getValor();
+            UpdateServicioSQLQuery updateServicioSQLQuery = new UpdateServicioSQLQuery();
+            String strCreateServicio = updateServicioSQLQuery.executeUpdateServicio(pgsqlClient, updateServicioDTO);
+            smtpClientResponse.sendDataToServer("SQL Update Servicio", strCreateServicio + "\r\n");
 
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Create Servicio","Fallo al crear Servicio\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Update Servicio","Fallo al crear Servicio\r\n");
         }
     }
 }

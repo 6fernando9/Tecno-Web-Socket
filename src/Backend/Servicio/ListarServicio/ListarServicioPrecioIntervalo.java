@@ -1,9 +1,8 @@
-package Backend.Servicio.CreateServicio;
+package Backend.Servicio.ListarServicio;
 
-import Backend.Productos.dto.CreateProductoDTO;
-import Backend.Servicio.dto.CreateServicioDTO;
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
+import Backend.Utils.dto.ComparadorSigno;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -13,13 +12,13 @@ import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
-
-public class Create {
+//lista respecto del stock_actual
+public class ListarServicioPrecioIntervalo {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createservicio["corte alizado","buenas servicio","10","30"]
+                listarServicioIntervalo["10","15"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -39,27 +38,25 @@ public class Create {
         List<String> dataList = pop3Client.executeTaskPop3();
 
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
-        //List<String> mockList = MockMessage.obtenerListaMockMessage();
-        //System.out.println(mockList);
         Filtrador filtrador = new Filtrador(emisor,subject,context,dataList);
         boolean existeMensajeEnPop3 = filtrador.existeMensajeDelUsuario();
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+
         if( existeMensajeEnPop3 ){
-            Resultado<CreateServicioDTO> resultCreateService = CreateServicioDTO.createServicioFromSubject(subject);
-            if(!resultCreateService.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Create Servicio: Fallo Campos", resultCreateService.getError() + "\r\n");
+            System.out.println("subject" + subject);
+
+            Resultado<int[]> resultadoListaSimple = ComparadorSigno.crearIntervaloFromSubject(subject);
+            if(!resultadoListaSimple.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Listar Servicios: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
                 return;
             }
-
-            CreateServicioDTO createServicioDTO = resultCreateService.getValor();
-            CreateServicioSQLQuery createServicioSQLQuery = new CreateServicioSQLQuery();
-
-            String strCreateServicio = createServicioSQLQuery.executeInsertServicioQuery(pgsqlClient, createServicioDTO);
-            smtpClientResponse.sendDataToServer("SQL Create Servicio", strCreateServicio + "\r\n");
-
+            int[] comparadorSigno = resultadoListaSimple.getValor();
+            ListarServicioPrecioSQLQuery listarServicioPrecioSQLQuery = new ListarServicioPrecioSQLQuery();
+            String strListarProducto = listarServicioPrecioSQLQuery.executeListarServiciosBetween(pgsqlClient,comparadorSigno);
+            smtpClientResponse.sendDataToServer("SQL Listar Servicios ",strListarProducto + "\r\n");
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Create Servicio","Fallo al crear Servicio\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Listar Servicios","Fallo al Listar Servicios\r\n");
         }
     }
 }
