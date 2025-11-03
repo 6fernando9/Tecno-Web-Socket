@@ -21,7 +21,7 @@ public class Create {
         String receptor = "grupo14sc@tecnoweb.org.bo";
 
         String subject = """
-                crearHorario["21","martes","08:00","16:00"]
+                crearHorario["21","lunes","08:00","16:00"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

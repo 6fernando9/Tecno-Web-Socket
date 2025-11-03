@@ -96,7 +96,7 @@ public class ComparadorSigno {
     }
 
 
-    public static Resultado<Long[]> obtenerVentaPagoIdFromSubject(String subject){
+    public static Resultado<Long[]> obtenerDobleIdFromSubject(String subject){
         String[] data = TecnoUtils.procesarString(subject);
         if (data.length < 2) {
             return Resultado.error("Error se esperaba al menos 2 campos(venta_id,pago_id)");

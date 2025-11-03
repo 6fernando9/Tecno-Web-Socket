@@ -1,4 +1,4 @@
-package Backend.Pagos.DeletePago;
+package Backend.Horarios.DeleteHorario;
 
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
@@ -14,12 +14,11 @@ import Utils.TecnoUtils;
 import java.util.List;
 
 public class Delete {
-
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                eliminarPago["1","1"]
+                eliminarHorarioDeBarbero["21","9"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -49,17 +48,18 @@ public class Delete {
 
             Resultado<Long[]> resultadoVentaPago = ComparadorSigno.obtenerDobleIdFromSubject(subject);
             if(!resultadoVentaPago.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Listar Productos: Fallo Campos", resultadoVentaPago.getError() + "\r\n");
+                smtpClientResponse.sendDataToServer("SQL FAIL DELETE HORARIO: Fallo Campos", resultadoVentaPago.getError() + "\r\n");
                 return;
             }
-            Long[] ventaPago = resultadoVentaPago.getValor();
-            Long ventaId = ventaPago[0];
-            Long pagoId = ventaPago[1];
-            DeletePagoSQLQuery deletePagoSQLQuery = new DeletePagoSQLQuery();
-            String strEliminarPago = deletePagoSQLQuery.executeEliminarPago(pgsqlClient,ventaId,pagoId);
-            smtpClientResponse.sendDataToServer("SQL Listar Productos ", strEliminarPago + "\r\n");
+            Long[] barberoHorario = resultadoVentaPago.getValor();
+            Long barberoId = barberoHorario[0];
+            Long horarioId = barberoHorario[1];
+            DeleteHorarioSQLQuery deleteHorarioSQLQuery = new DeleteHorarioSQLQuery();
+            String strEliminarPago = deleteHorarioSQLQuery.executeEliminarHorario(pgsqlClient,barberoId,horarioId);
+            smtpClientResponse.sendDataToServer("SQL Eliminar Horario con exito ", strEliminarPago + "\r\n");
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Listar Producto","Fallo al Listar Producto\r\n");
+            smtpClientResponse.sendDataToServer("SQL FAIL DELETE HORARIO","Fallo al Eliminar el horario\r\n");
         }
     }
+
 }

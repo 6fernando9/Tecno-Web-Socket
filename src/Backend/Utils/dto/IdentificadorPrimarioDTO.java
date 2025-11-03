@@ -19,7 +19,12 @@ public class IdentificadorPrimarioDTO {
             //podriamos asignar el valor de null en el caso de que si lo fuese
             return Resultado.error("Error data id no puede ser null");
         }
-        Long idDto = Long.parseLong(id);
+        Long idDto;
+        try{
+            idDto = Long.parseLong(id);
+        }catch (NumberFormatException e){
+            return Resultado.error("Error.. el tipo de dato no es valido");
+        }
         return Resultado.ok(new IdentificadorPrimarioDTO(idDto));
     }
     public String toStringCorreo(){
