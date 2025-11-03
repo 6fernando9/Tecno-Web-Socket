@@ -11,7 +11,7 @@ import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
-
+//aun no definido
 public class Delete {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";

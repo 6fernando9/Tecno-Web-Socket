@@ -12,14 +12,16 @@ import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
-
+//si funciona EL ACTUALIZAR
+//MISMAS VALIDACIONES DEL CREATE
+//TIENE VALIDACION EN CASO DE QUE NO ENCUENTRE EL PRODUCTO
 public class Update {
 
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                updateproducto["2","ESTRELLAS","ESTRELLAS BUENAS","1000","102","10"]
+                updateproducto["5-0","ESTRELLAS","ESTRELLAS BUENAS","1000","102","10"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

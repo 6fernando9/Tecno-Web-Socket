@@ -10,12 +10,18 @@ import Utils.*;
 
 import java.util.List;
 
+//TODO -> MEJORAR FORMATO DE SALIDA O RESPUESTA
+//CREA BIEN
+//TIENE VALIDACION DE PASSWORD
+//TIENE VALIDACION DE NULOS
+//TIENE VALIDACION DE GRUPOS
+//TIENE VALIDACION DE EMAIL UNICO
 public class Create {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createuser["fercho","fernando ","fernando@gmail.com","111111","12345678","barbero"]
+                createuser["test","test","testbarbero@gmail.com","111111","12345678","barbero"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

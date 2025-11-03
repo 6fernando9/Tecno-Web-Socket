@@ -1,5 +1,6 @@
 package Backend.Usuarios.ListarUser;
 
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Backend.Utils.dto.IdentificadorStrDTO;
 import Database.PGSQLClient;
@@ -11,16 +12,18 @@ import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
-
+//TODO -> MEJORAR FORMATO DE SALIDA O RESPUESTA
+//Soporta List["*"] -> retorna todo
+//Soporta List["rol"] -> retorna solo usuarios con ese rol
 public class Listar {
     public static void main(String[] args) {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                listarusuario["*"]
+                listarusuario["barbero"]
                 """;
         //pa evitar la cagada de /r/n
-        subject = subject.replace("\r", "").replace("\n", " ");
+        subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

@@ -1,8 +1,9 @@
-package Backend.Usuarios.UpdateUser;
+package Backend.Servicio.CreateServicio;
 
+import Backend.Productos.dto.CreateProductoDTO;
+import Backend.Servicio.dto.CreateServicioDTO;
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
-import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -12,19 +13,13 @@ import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
-//TODO -> MEJORAR FORMATO DE SALIDA O RESPUESTA
-//ACTUALIZA BIEN
-//TIENE VALIDACION DE PASSWORD
-//TIENE VALIDACION DE NULOS
-//TIENE VALIDACION DE GRUPOS
-//TIENE VALIDACION DE EMAIL UNICO
-//TIENE VALIDACION DE USUARIO QUE NO EXISTE
-public class Update {
+
+public class Create {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                updateuser["22","flores2","flore flores","flores@gmail.com","3333333","12345678","barbero"]
+                createservicio["corte alizado","buenas servicio","10","30"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -44,23 +39,27 @@ public class Update {
         List<String> dataList = pop3Client.executeTaskPop3();
 
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        //List<String> mockList = MockMessage.obtenerListaMockMessage();
+        //System.out.println(mockList);
         Filtrador filtrador = new Filtrador(emisor,subject,context,dataList);
         boolean existeMensajeEnPop3 = filtrador.existeMensajeDelUsuario();
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            Resultado<UpdateUsuarioDTO> resultadoUpdate = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
-            if(!resultadoUpdate.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Update User: Fallo de campos",resultadoUpdate.getError() + "\r\n");
+            Resultado<CreateServicioDTO> resultCreateService = CreateServicioDTO.createServicioFromSubject(subject);
+            if(!resultCreateService.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Create Producto: Fallo Campos", resultCreateService.getError() + "\r\n");
                 return;
             }
-            UpdateUsuarioDTO updateUsuarioDTO = resultadoUpdate.getValor();
-            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
-            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, updateUsuarioDTO);
-            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser + "\r\n");
-        }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
-        }
 
+            CreateServicioDTO createServicioDTO = resultCreateService.getValor();
+            CreateServicioSQLQuery createServicioSQLQuery = new CreateServicioSQLQuery();
+
+            String strCreateServicio = createServicioSQLQuery.executeInsertServicioQuery(pgsqlClient, createServicioDTO);
+            smtpClientResponse.sendDataToServer("SQL CreateServicio", strCreateServicio + "\r\n");
+
+        }else{
+            smtpClientResponse.sendDataToServer("SQL Fail Create Producto","Fallo al crear Producto\r\n");
+        }
     }
 }

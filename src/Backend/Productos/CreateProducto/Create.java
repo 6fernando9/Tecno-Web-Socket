@@ -12,13 +12,15 @@ import Utils.SocketUtils;
 import Utils.TecnoUtils;
 
 import java.util.List;
-
+//TODO -> FALTA MEJORAR LA RESPUESTA EN LA CREACION
+//TIENE VALIDACIONES CON 0 Y NEGATIVOS
+//TIENE VALIDACION PARA VALORES NULOS
 public class Create {
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createproducto["estrellas","buenas estrellas","10","10","1"]
+                createproducto["NULL","buenas estrellas","10","10","1"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
