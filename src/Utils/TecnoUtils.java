@@ -42,6 +42,17 @@ public class TecnoUtils {
         return limpio.split(",");
     }
 
+    public static boolean tieneCorchetesYComillas(String cadena) {
+        if (cadena == null) return false;
+
+        int inicio = cadena.indexOf('[');
+        int fin = cadena.lastIndexOf(']');
+        if (inicio == -1 || fin == -1 || fin <= inicio) {
+            return false;
+        }
+        String contenido = cadena.substring(inicio + 1, fin).trim();
+        return contenido.matches("\\s*\"[^\"]*\"(\\s*,\\s*\"[^\"]*\")*\\s*");
+    }
 
 
 }

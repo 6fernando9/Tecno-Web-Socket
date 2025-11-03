@@ -19,7 +19,43 @@ import java.util.List;
 //TIENE VALIDACION DE GRUPOS
 //TIENE VALIDACION DE EMAIL UNICO
 //TIENE VALIDACION DE USUARIO QUE NO EXISTE
-public class Update {
+public class UpdateUsuario {
+    public static void executeUpdateUsuario(String emisor,String receptor,String server,String subject){
+        //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
+        String context = null;
+        //TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
+        SMTPClient smtpClient = new SMTPClient(server,emisor,receptor);
+        smtpClient.sendDataToServer(subject,context);
+        System.out.println(smtpClient.getReceptorUser());
+        String user = TecnoUtils.getUserForPop3(smtpClient.getReceptorUser());
+        System.out.println("Usuario");
+        System.out.println(user);
+        System.out.println("Password");
+        String password = TecnoUtils.generatePasswordForPop3(user);
+        System.out.println(password);
+        Pop3Client pop3Client = new Pop3Client(server,user,password);
+
+        List<String> dataList = pop3Client.executeTaskPop3();
+
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        Filtrador filtrador = new Filtrador(emisor,subject,context,dataList);
+        boolean existeMensajeEnPop3 = filtrador.existeMensajeDelUsuario();
+        System.out.println("existe el mensaje: " + existeMensajeEnPop3);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        if( existeMensajeEnPop3 ){
+            Resultado<UpdateUsuarioDTO> resultadoUpdate = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
+            if(!resultadoUpdate.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Update User: Fallo de campos",resultadoUpdate.getError() + "\r\n");
+                return;
+            }
+            UpdateUsuarioDTO updateUsuarioDTO = resultadoUpdate.getValor();
+            UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
+            String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, updateUsuarioDTO);
+            smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser + "\r\n");
+        }else{
+            smtpClientResponse.sendDataToServer("SQL Fail Update User","Fallo al actualizar Usuario\r\n");
+        }
+    }
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
