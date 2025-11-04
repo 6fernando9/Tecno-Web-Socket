@@ -7,14 +7,17 @@ import Backend.Horarios.UpdateHorario.UpdateHorario;
 import Backend.Pagos.CreatePago.CreatePago;
 import Backend.Pagos.DeletePago.DeletePago;
 import Backend.Pagos.ListPagos.ListarPagoDeVenta;
+import Backend.Productos.CambiarEstado.CambiarEstadoProducto;
 import Backend.Productos.CreateProducto.CreateProducto;
 import Backend.Productos.ListarProducto.ListarStockActualIntervalo;
 import Backend.Productos.ListarProducto.ListarStockActualSimple;
 import Backend.Productos.UpdateProducto.UpdateProducto;
+import Backend.Servicio.CambiarEstado.CambiarEstadoServicio;
 import Backend.Servicio.CreateServicio.CreateServicio;
 import Backend.Servicio.ListarServicio.ListarServicioPrecioIntervalo;
 import Backend.Servicio.ListarServicio.ListarServicioPrecioSimple;
 import Backend.Servicio.UpdateServicio.UpdateServicio;
+import Backend.Usuarios.CambiarEstado.CambiarEstadoUsuario;
 import Backend.Usuarios.CreateUser.CreateUsuario;
 import Backend.Usuarios.ListarUser.ListarUsuario;
 import Backend.Usuarios.UpdateUser.UpdateUsuario;
@@ -140,6 +143,11 @@ public class DemonEmailService {
             ListarUsuario.executeListarUsuarioDemon(emisor,receptor,server,subject);
             return;
         }
+        if(comando.equalsIgnoreCase("cambiarEstadoUsuario")){
+            System.out.println("Ejecutando Cambio de estado de Usuario");
+            CambiarEstadoUsuario.executeCambiarEstadoUsuarioDemon(emisor,receptor,server,subject);
+            return;
+        }
 
         // Para Citas
         if(comando.equalsIgnoreCase("cita_create")){
@@ -210,6 +218,11 @@ public class DemonEmailService {
             ListarStockActualIntervalo.executeListarStockActualIntervaloDemon(emisor,receptor,server,subject);
             return;
         }
+        if(comando.equalsIgnoreCase("cambiarEstadoProducto")){
+            System.out.println("Ejecutando Cambio de estado de Producto");
+            CambiarEstadoProducto.executeCambiarEstadoProductoDemon(emisor,receptor,server,subject);
+            return;
+        }
         // Para Movimientos de inventario
         if(comando.equalsIgnoreCase("movimiento_inventario_create")){
             System.out.println("Ejecutando Crear Movimiento inventario");
@@ -245,6 +258,11 @@ public class DemonEmailService {
         if(comando.equalsIgnoreCase("listarServicioIntervalo")){
             System.out.println("Ejecutando Listar Servicio Intervalo");
             ListarServicioPrecioIntervalo.executeListarServiciosPrecioIntervaloDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("cambiarEstadoServicio")){
+            System.out.println("Ejecutando Cambio de estado de Servicio");
+            CambiarEstadoServicio.executeCambiarEstadoServicioDemon(emisor,receptor,server,subject);
             return;
         }
         //Para Pagos

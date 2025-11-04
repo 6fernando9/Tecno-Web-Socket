@@ -1,5 +1,6 @@
 package Backend.Servicio.dto;
 
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
@@ -8,14 +9,18 @@ public class CreateServicioDTO {
     public String descripcion;
     public float precio;
     public int duracion;
+    public String estado;
+    public String deletedAt;
 
     public CreateServicioDTO() {}
 
-    public CreateServicioDTO(String nombre, String descripcion, float precio, int duracion) {
+    public CreateServicioDTO(String nombre, String descripcion, float precio, int duracion,String estado,String deletedAt) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
         this.duracion = duracion;
+        this.estado = estado;
+        this.deletedAt = deletedAt;
     }
 
     public static Resultado<CreateServicioDTO> createServicioFromSubject(String subject) {
@@ -30,13 +35,13 @@ public class CreateServicioDTO {
         String precioStr = data[2];
         String duracionStr = data[3];
 
-        if (nombre == null || nombre.equalsIgnoreCase("null")) {
+        if (GeneralMethods.esCampoNuloVacio(nombre)) {
             return Resultado.error("Error... campo nombre no puede ser nulo");
         }
-        if (precioStr == null || precioStr.equalsIgnoreCase("null")) {
+        if (GeneralMethods.esCampoNuloVacio(precioStr)) {
             return Resultado.error("Error... campo precio no puede ser nulo");
         }
-        if (duracionStr == null || duracionStr.equalsIgnoreCase("null")) {
+        if (GeneralMethods.esCampoNuloVacio(duracionStr)) {
             return Resultado.error("Error... campo duracion no puede ser nulo");
         }
 
@@ -58,7 +63,7 @@ public class CreateServicioDTO {
 
         String descripcionValida = descripcion.equalsIgnoreCase("null") ? null : descripcion;
 
-        return Resultado.ok(new CreateServicioDTO(nombre, descripcionValida, precio, duracion));
+        return Resultado.ok(new CreateServicioDTO(nombre, descripcionValida, precio, duracion,null,null));
     }
 
     @Override

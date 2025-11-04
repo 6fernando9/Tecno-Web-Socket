@@ -9,7 +9,7 @@ import java.sql.*;
 public class ListarServicioPrecioSQLQuery {
 
     private static final String LIST_BASE_SELECT =
-            "SELECT id, nombre, descripcion, duracion_estimada, precio FROM servicios";
+            "SELECT id, nombre, descripcion, duracion_estimada, precio, estado FROM servicios";
 
     public String executeListarServicios(PGSQLClient pgsqlClient, ComparadorSigno comparador) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
@@ -33,7 +33,7 @@ public class ListarServicioPrecioSQLQuery {
                     return "Error: operador inválido: " + comparador.signo;
                 }
 
-                sql = LIST_BASE_SELECT + " WHERE precio " + operador + " ? ORDER BY id ASC";
+                sql = LIST_BASE_SELECT + " WHERE deleted_at is null AND precio " + operador + " ? ORDER BY id ASC";
                 ps = connection.prepareStatement(sql);
                 ps.setBigDecimal(1, new BigDecimal(comparador.valor.toString()));
             }
@@ -46,7 +46,7 @@ public class ListarServicioPrecioSQLQuery {
                 }
 
                 if (result.length() == 0) {
-                    return "[]";
+                    return "NO existe una lista de Servicios!";
                 }
 
                 return result.toString();
@@ -68,7 +68,7 @@ public class ListarServicioPrecioSQLQuery {
 
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 
-        String sql = LIST_BASE_SELECT + " WHERE precio BETWEEN ? AND ? ORDER BY id ASC";
+        String sql = LIST_BASE_SELECT + " WHERE deleted_at is null AND precio BETWEEN ? AND ? ORDER BY id ASC";
 
         try (Connection connection = DriverManager.getConnection(
                 databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword());
@@ -115,21 +115,22 @@ public class ListarServicioPrecioSQLQuery {
 
     // ====== FORMATEO DE RESULTADOS ======
     private String formatearServicio(ResultSet rs) throws SQLException {
-        long id = rs.getLong("id");
-        String nombre = rs.getString("nombre");
-        String descripcion = rs.getString("descripcion");
-        int duracion = rs.getInt("duracion_estimada");
-        BigDecimal precio = rs.getBigDecimal("precio");
-
         return String.format(
-                "======================== SERVICIO ========================\r\n" +
-                        "id: %d\r\n" +
-                        "nombre: %s\r\n" +
-                        "descripcion: %s\r\n" +
-                        "duracion_estimada: %d minutos\r\n" +
-                        "precio: %s Bs\r\n" +
-                        "==========================================================\r\n",
-                id, nombre, descripcion, duracion, precio
+                "✅ SERVICIO\r\n" +
+                        "--------------------------\r\n" +
+                        "ID: %d\r\n" +
+                        "Nombre: %s\r\n" +
+                        "Descripción: %s\r\n" +
+                        "Duración estimada: %d min\r\n" +
+                        "Precio: %s Bs\r\n" +
+                        "Estado: %s\r\n" +
+                        "--------------------------\r\n",
+                rs.getLong("id"),
+                rs.getString("nombre"),
+                rs.getString("descripcion"),
+                rs.getInt("duracion_estimada"),
+                rs.getBigDecimal("precio"),
+                rs.getString("estado")
         );
     }
 }

@@ -1,6 +1,7 @@
 package Backend.Servicio.dto;
 
 import Backend.Usuarios.dto.UpdateUsuarioDTO;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Exceptions.InvalidDataException;
 import Utils.TecnoUtils;
@@ -10,8 +11,8 @@ public class UpdateServicioDTO extends CreateServicioDTO{
     public UpdateServicioDTO(){
         super();
     }
-    public UpdateServicioDTO(Long id,String nombre, String descripcion, float precio, int duracion) {
-        super(nombre,descripcion,precio,duracion);
+    public UpdateServicioDTO(Long id,String nombre, String descripcion, float precio, int duracion,String estado,String deletedAt) {
+        super(nombre,descripcion,precio,duracion,estado,deletedAt);
         this.id = id;
     }
 
@@ -29,7 +30,7 @@ public class UpdateServicioDTO extends CreateServicioDTO{
         if(!resultadoCreateDTO.esExitoso()){
             return Resultado.error(resultadoCreateDTO.getError());
         }
-        if(id == null || id.equalsIgnoreCase("null")){
+        if(GeneralMethods.esCampoNuloVacio(id)){
             return Resultado.error("Error..el campo id no puede ser nulo");
         }
         CreateServicioDTO createServicioDTO = resultadoCreateDTO.getValor();
@@ -45,7 +46,7 @@ public class UpdateServicioDTO extends CreateServicioDTO{
                 createServicioDTO.nombre,
                 createServicioDTO.descripcion,
                 createServicioDTO.precio,
-                createServicioDTO.duracion
+                createServicioDTO.duracion,null,null
         ));
     }
 }

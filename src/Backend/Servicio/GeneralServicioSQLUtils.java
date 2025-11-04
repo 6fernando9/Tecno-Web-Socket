@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class GeneralServicioSQLUtils {
     public static UpdateServicioDTO findServicioById(Connection con, long id) throws SQLException {
-        String SQL_FIND = "SELECT id, nombre, descripcion, precio, duracion_estimada FROM servicios WHERE id = ?";
+        String SQL_FIND = "SELECT id, nombre, descripcion, precio, duracion_estimada,estado ,deleted_at FROM servicios WHERE id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(SQL_FIND)) {
             ps.setLong(1, id);
@@ -23,6 +23,8 @@ public class GeneralServicioSQLUtils {
                     updateServicioDTO.descripcion = rs.getString("descripcion");
                     updateServicioDTO.precio = rs.getFloat("precio");
                     updateServicioDTO.duracion = rs.getInt("duracion_estimada");
+                    updateServicioDTO.estado = rs.getString("nombre");
+                    updateServicioDTO.deletedAt = rs.getString("deleted_at");
                     return updateServicioDTO;
                 }
                 return null;
