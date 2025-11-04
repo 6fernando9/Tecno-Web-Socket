@@ -46,9 +46,6 @@ public class DetalleVentaPorCita {
         }
 
     }
-}
-
-    // Called by demon: parse subject, execute SQL and reply
     public static void executeDetalleVentaPorCitaDemon(String emisor, String receptor, String server, String subject){
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
@@ -62,3 +59,7 @@ public class DetalleVentaPorCita {
             smtpClientResponse.sendDataToServer("REPORTE Detalle Venta por Cita","ERROR: " + e.getMessage() + "\r\n");
         }
     }
+}
+
+    // Called by demon: parse subject, execute SQL and reply
+

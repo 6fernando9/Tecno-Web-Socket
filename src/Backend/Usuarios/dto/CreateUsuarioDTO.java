@@ -14,9 +14,10 @@ public class CreateUsuarioDTO {
     public String password;
     public String rol;
     public String estado;
+    public String deletedAt;
 
     public CreateUsuarioDTO(){}
-    public CreateUsuarioDTO(String nombre, String apellido, String email, String telefono, String password, String rol,String estado){
+    public CreateUsuarioDTO(String nombre, String apellido, String email, String telefono, String password, String rol,String estado,String deletedAt){
           this.nombre = nombre;
           this.apellido = apellido;
           this.email = email;
@@ -24,6 +25,7 @@ public class CreateUsuarioDTO {
           this.password = password;
           this.rol = rol;
           this.estado = estado;
+          this.deletedAt = deletedAt;
     }
     public static Resultado<CreateUsuarioDTO> crearUsuarioMedianteSubject(String subject) throws InvalidDataException {
         String[] data = TecnoUtils.procesarString(subject);
@@ -66,7 +68,7 @@ public class CreateUsuarioDTO {
             return Resultado.error("Error: la contraseña debe tener al menos 6 caracteres");
         }
 
-        CreateUsuarioDTO usuario = new CreateUsuarioDTO(nombre, apellido, email, telefono, password, rol,null);
+        CreateUsuarioDTO usuario = new CreateUsuarioDTO(nombre, apellido, email, telefono, password, rol,null,null);
         return Resultado.ok(usuario);
     }
 

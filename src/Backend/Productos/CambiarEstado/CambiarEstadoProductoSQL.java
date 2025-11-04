@@ -1,8 +1,8 @@
-package Backend.Usuarios.CambiarEstado;
+package Backend.Productos.CambiarEstado;
 
-import Backend.Usuarios.GeneralUsuarioSQLUtils;
-import Backend.Usuarios.dto.UpdateUsuarioDTO;
-import Backend.Usuarios.dto.UsuarioEstadoDTO;
+import Backend.Productos.GeneralProductoSQLUtils;
+import Backend.Productos.dto.ProductoEstadoDTO;
+import Backend.Productos.dto.UpdateProductoDTO;
 import Database.PGSQLClient;
 
 import java.sql.Connection;
@@ -11,29 +11,29 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-public class CambiarEstadoUsuarioSQL {
+public class CambiarEstadoProductoSQL {
     private static final String SQL_UPDATE =
-            "UPDATE usuarios SET estado = ?, deleted_at = ? WHERE id = ?";
+            "UPDATE productos SET estado = ?, deleted_at = ? WHERE id = ?";
 
-    public String executeUpdateEstadoUsuario(PGSQLClient pgsqlClient, UsuarioEstadoDTO dto){
+    public String executeUpdateEstadoProducto(PGSQLClient pgsqlClient, ProductoEstadoDTO dto){
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
         try{
             Connection connection = DriverManager.getConnection(databaseUrl,pgsqlClient.getUser(),pgsqlClient.getPassword());
             System.out.println("Connecting successfully to database");
-            UpdateUsuarioDTO usuarioDTODB = GeneralUsuarioSQLUtils.findUserById(connection,dto.id);
+            UpdateProductoDTO productoDB = GeneralProductoSQLUtils.findProductoById(connection,dto.id);
             //usuario no esta en la base de datos
-            if (usuarioDTODB == null) {
-                return "No existe un usuario con id=" + dto.id + ". No se realizó ninguna actualización.";
+            if (productoDB == null) {
+                return "No existe un producto con id=" + dto.id + ". No se realizó ninguna actualización.";
             }
 
             Timestamp deleteAt = null;
 
             if (dto.estado.equalsIgnoreCase("eliminado")) {
-                if (usuarioDTODB.estado.equalsIgnoreCase("activo")) {
+                if (productoDB.estado.equalsIgnoreCase("activo")) {
                     deleteAt = Timestamp.valueOf(LocalDateTime.now());
-                } else if (usuarioDTODB.estado.equalsIgnoreCase("eliminado")) {
-                    deleteAt = usuarioDTODB.deletedAt != null
-                            ? Timestamp.valueOf(usuarioDTODB.deletedAt)
+                } else if (productoDB.estado.equalsIgnoreCase("eliminado")) {
+                    deleteAt = productoDB.deleteAt != null
+                            ? Timestamp.valueOf(productoDB.deleteAt)
                             : Timestamp.valueOf(LocalDateTime.now());
                 }
             }
@@ -50,29 +50,30 @@ public class CambiarEstadoUsuarioSQL {
                 ps.setLong(3, dto.id);
                 int filas = ps.executeUpdate();
                 if (filas == 0) {
-                    return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.";
+                    return "El producto fue modificado/eliminado durante la operación. No se actualizó nada.";
                 }
 
                 // ✅ Salida formateada con todos los campos principales
                 return String.format(
-                        "Estado del usuario actualizado correctamente:\r\n" +
-                                "--------------------------\r\n" +
+                        "✅ Estado del producto actualizado correctamente:\r\n" +
+                                "-------------------------------\r\n" +
                                 "ID: %d\r\n" +
                                 "Nombre: %s\r\n" +
-                                "Apellido: %s\r\n" +
-                                "Email: %s\r\n" +
-                                "Teléfono: %s\r\n" +
-                                "Rol: %s\r\n" +
+                                "Descripción: %s\r\n" +
+                                "Precio venta: %s\r\n" +
+                                "Stock actual: %d\r\n" +
+                                "Stock mínimo: %d\r\n" +
                                 "Estado: %s\r\n" +
-                                "--------------------------\r\n",
-                        usuarioDTODB.id,
-                        usuarioDTODB.nombre,
-                        usuarioDTODB.apellido,
-                        usuarioDTODB.email,
-                        usuarioDTODB.telefono,
-                        usuarioDTODB.rol,
+                                "-------------------------------\r\n",
+                        productoDB.id,
+                        productoDB.nombre,
+                        productoDB.descripcion,
+                        productoDB.precioVenta,
+                        productoDB.stockActual,
+                        productoDB.stockMinimo,
                         dto.estado
                 );
+
             }
         }catch(Exception e){
             System.out.println("Throw: " + e.getMessage());

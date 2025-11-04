@@ -5,10 +5,10 @@ import java.sql.*;
 public class ListarSQLUser {
 
     private static final String SQL_LISTAR_TODOS =
-            "SELECT id, nombre, apellido, email, telefono, password, rol FROM usuarios ORDER BY id ASC";
+            "SELECT id, nombre, apellido, email, telefono, rol FROM usuarios ORDER BY id ASC";
 
     private static final String SQL_LISTAR_POR_ROL =
-            "SELECT id, nombre, apellido, email, telefono, password, rol FROM usuarios WHERE rol = ? ORDER BY id ASC";
+            "SELECT id, nombre, apellido, email, telefono, rol FROM usuarios WHERE rol = ? AND deleted_at is null ORDER BY id ASC";
 
 
     public String executeListarUsuarios(PGSQLClient pgsqlClient, String filtroRol) {
@@ -28,16 +28,18 @@ public class ListarSQLUser {
             }
 
             try (ResultSet rs = ps.executeQuery()) {
+                //StringBuilder result = new StringBuilder();
                 StringBuilder result = new StringBuilder();
 
+                int contador = 1;
+
                 while (rs.next()) {
-                    result.append(formatearUsuario(rs));
+                    result.append(formatearUsuario(rs, contador++));
                 }
 
                 if (result.length() == 0) {
-                    return "[]";
+                    return "\n⚠️ No se encontraron usuarios registrados.\n";
                 }
-
                 ///result.append(".");
                 return result.toString();
             }
@@ -48,26 +50,27 @@ public class ListarSQLUser {
         }
     }
 
-    private String formatearUsuario(ResultSet rs) throws SQLException {
+
+
+    private String formatearUsuario(ResultSet rs, int numero) throws SQLException {
         long id = rs.getLong("id");
         String nombre = rs.getString("nombre");
         String apellido = rs.getString("apellido");
         String email = rs.getString("email");
         String telefono = rs.getString("telefono");
-        String password = rs.getString("password");
         String rol = rs.getString("rol");
 
         return String.format(
-                "======================== USUARIO ========================\r\n" +
-                        "id: %d\r\n" +
-                        "nombre: %s\r\n" +
-                        "apellido: %s\r\n" +
-                        "email: %s\r\n" +
-                        "telefono: %s\r\n" +
-                        "password: %s\r\n" +
-                        "rol: %s\r\n" +
-                        "==========================================================\r\n",
-                id, nombre, apellido, email, telefono, password, rol
+                "----------------------------------------------------\r\n" +
+                "Usuario %d:\r\n" +
+                        "ID: %d\r\n" +
+                        "Nombre: %s\r\n" +
+                        "Apellido: %s\r\n" +
+                        "Email: %s\r\n" +
+                        "Teléfono: %s\r\n" +
+                        "Rol: %s\r\n" +
+                        "----------------------------------------------------\r\n",
+                numero, id, nombre, apellido, email, telefono, rol
         );
     }
 }

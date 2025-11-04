@@ -47,8 +47,6 @@ public class CitasPorBarbero {
         }
 
     }
-}
-
     // Called by demon: parse subject, execute SQL and reply
     public static void executeCitasPorBarberoDemon(String emisor, String receptor, String server, String subject){
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
@@ -64,3 +62,6 @@ public class CitasPorBarbero {
             smtpClientResponse.sendDataToServer("REPORTE Citas por Barbero","ERROR: " + e.getMessage() + "\r\n");
         }
     }
+}
+
+

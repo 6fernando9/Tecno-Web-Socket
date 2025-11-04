@@ -37,7 +37,7 @@ public class GeneralHorarioSQL {
                 usuarioDTO.email,
                 usuarioDTO.telefono,
                 usuarioDTO.password,
-                usuarioDTO.rol,null);
+                usuarioDTO.rol,null,null);
 
         try (PreparedStatement psHorarios = connection.prepareStatement(SQL_HORARIOS)) {
             psHorarios.setLong(1, id);

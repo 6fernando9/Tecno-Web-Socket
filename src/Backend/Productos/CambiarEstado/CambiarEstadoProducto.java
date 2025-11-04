@@ -1,7 +1,6 @@
-package Backend.Usuarios.CambiarEstado;
+package Backend.Productos.CambiarEstado;
 
-import Backend.Usuarios.UpdateUser.UpdateSQLQuery;
-import Backend.Usuarios.dto.UpdateUsuarioDTO;
+import Backend.Productos.dto.ProductoEstadoDTO;
 import Backend.Usuarios.dto.UsuarioEstadoDTO;
 import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
@@ -15,21 +14,24 @@ import Utils.TecnoUtils;
 
 import java.util.List;
 
-public class CambiarEstadoUsuario {
-    public static void executeCambiarEstadoUsuarioDemon(String emisor,String receptor,String server,String subject){
+public class CambiarEstadoProducto {
+    public static void executeCambiarEstadoProductoDemon(String emisor,String receptor,String server,String subject){
+
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
-        Resultado<UsuarioEstadoDTO> resultadoEstado = UsuarioEstadoDTO.crearUsuarioEstadoFromSubject(subject);
+        Resultado<ProductoEstadoDTO> resultadoEstado = ProductoEstadoDTO.crearProductoEstadoDto(subject);
         if(!resultadoEstado.esExitoso()){
             smtpClientResponse.sendDataToServer("SQL Cambiar Estado: Fallo de campos", resultadoEstado.getError() + "\r\n");
             return;
         }
-        UsuarioEstadoDTO usuarioEstadoDTO = resultadoEstado.getValor();
-        CambiarEstadoUsuarioSQL cambiarEstadoUsuarioSQL = new CambiarEstadoUsuarioSQL();
-        String strResult = cambiarEstadoUsuarioSQL.executeUpdateEstadoUsuario(pgsqlClient,usuarioEstadoDTO);
+        ProductoEstadoDTO productoEstadoDTO = resultadoEstado.getValor();
+        CambiarEstadoProductoSQL cambiarEstadoProducto = new CambiarEstadoProductoSQL();
+        String strResult = cambiarEstadoProducto.executeUpdateEstadoProducto(pgsqlClient, productoEstadoDTO);
         smtpClientResponse.sendDataToServer("SQL Cambiar Estado",strResult + "\r\n");
+
     }
-    public static void executeCambiarEstadoUsuario(String emisor,String receptor,String server,String subject){
+    public static void executeCambiarEstadoProducto(String emisor,String receptor,String server,String subject){
+
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
         //TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -52,24 +54,25 @@ public class CambiarEstadoUsuario {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            Resultado<UsuarioEstadoDTO> resultadoEstado = UsuarioEstadoDTO.crearUsuarioEstadoFromSubject(subject);
+            Resultado<ProductoEstadoDTO> resultadoEstado = ProductoEstadoDTO.crearProductoEstadoDto(subject);
             if(!resultadoEstado.esExitoso()){
                 smtpClientResponse.sendDataToServer("SQL Cambiar Estado: Fallo de campos", resultadoEstado.getError() + "\r\n");
                 return;
             }
-            UsuarioEstadoDTO usuarioEstadoDTO = resultadoEstado.getValor();
-            CambiarEstadoUsuarioSQL cambiarEstadoUsuarioSQL = new CambiarEstadoUsuarioSQL();
-            String strResult = cambiarEstadoUsuarioSQL.executeUpdateEstadoUsuario(pgsqlClient,usuarioEstadoDTO);
+            ProductoEstadoDTO productoEstadoDTO = resultadoEstado.getValor();
+            CambiarEstadoProductoSQL cambiarEstadoProducto = new CambiarEstadoProductoSQL();
+            String strResult = cambiarEstadoProducto.executeUpdateEstadoProducto(pgsqlClient, productoEstadoDTO);
             smtpClientResponse.sendDataToServer("SQL Cambiar Estado",strResult + "\r\n");
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Cambiar Estado","Fallo al cambiar estado del Usuario\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Cambiar Estado","Fallo al cambiar estado del Producto\r\n");
         }
+
     }
     public static void main(String[] args){
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                cambiarEstadoUsuario["22","activo"]
+                cambiarEstadoProducto["22","activo"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
@@ -94,17 +97,17 @@ public class CambiarEstadoUsuario {
         System.out.println("existe el mensaje: " + existeMensajeEnPop3);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
-            Resultado<UsuarioEstadoDTO> resultadoEstado = UsuarioEstadoDTO.crearUsuarioEstadoFromSubject(subject);
+            Resultado<ProductoEstadoDTO> resultadoEstado = ProductoEstadoDTO.crearProductoEstadoDto(subject);
             if(!resultadoEstado.esExitoso()){
                 smtpClientResponse.sendDataToServer("SQL Cambiar Estado: Fallo de campos", resultadoEstado.getError() + "\r\n");
                 return;
             }
-            UsuarioEstadoDTO usuarioEstadoDTO = resultadoEstado.getValor();
-            CambiarEstadoUsuarioSQL cambiarEstadoUsuarioSQL = new CambiarEstadoUsuarioSQL();
-            String strResult = cambiarEstadoUsuarioSQL.executeUpdateEstadoUsuario(pgsqlClient,usuarioEstadoDTO);
+            ProductoEstadoDTO productoEstadoDTO = resultadoEstado.getValor();
+            CambiarEstadoProductoSQL cambiarEstadoProducto = new CambiarEstadoProductoSQL();
+            String strResult = cambiarEstadoProducto.executeUpdateEstadoProducto(pgsqlClient, productoEstadoDTO);
             smtpClientResponse.sendDataToServer("SQL Cambiar Estado",strResult + "\r\n");
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Cambiar Estado","Fallo al cambiar estado del Usuario\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Cambiar Estado","Fallo al cambiar estado del Producto\r\n");
         }
 
     }

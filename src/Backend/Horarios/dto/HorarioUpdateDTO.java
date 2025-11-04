@@ -1,5 +1,6 @@
 package Backend.Horarios.dto;
 
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
@@ -18,8 +19,8 @@ public class HorarioUpdateDTO extends HorarioDTO{
             return Resultado.error("Error..se esperaba al menos 4 campos(barbero_id,horario_id,hora_inicio,hora_fin)");
         }
         String horarioId = data[1];
-        if(horarioId == null || horarioId.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. el horario id no puede ser nulo");
+        if(GeneralMethods.esCampoNuloVacio(horarioId)){
+            return Resultado.error("Error.. el horario id no puede ser nulo o vacio");
         }
         Long horarioIdDto;
         try{

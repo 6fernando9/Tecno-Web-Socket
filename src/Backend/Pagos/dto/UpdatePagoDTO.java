@@ -1,5 +1,6 @@
 package Backend.Pagos.dto;
 
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
@@ -18,7 +19,7 @@ public class UpdatePagoDTO extends PagoDTO{
             return Resultado.error("Error.. se esperaba al menos 4 parametros(venta_id,pago_id,monto,tipo_pago)");
         }
         String pagoId = data[1] ;
-        if(pagoId == null || pagoId.equalsIgnoreCase("null")){
+        if(GeneralMethods.esCampoNuloVacio(pagoId)){
             return Resultado.error("Error.. el pagoId no puede ser nulo");
         }
         Long pagoIdDto;

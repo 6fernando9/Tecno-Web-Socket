@@ -10,8 +10,8 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
     public UpdateUsuarioDTO(){
         super();
     }
-    public UpdateUsuarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol,String estado) {
-        super(nombre, apellido, email, telefono, password, rol,estado);
+    public UpdateUsuarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol,String estado,String deletedAt) {
+        super(nombre, apellido, email, telefono, password, rol,estado,deletedAt);
         this.id = id;
     }
 
@@ -39,7 +39,7 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
         } catch (NumberFormatException e) {
             return Resultado.error("Error: el campo 'id' debe ser numérico");
         }
-        UpdateUsuarioDTO updateUsuarioDTO =  new UpdateUsuarioDTO(idDto, createUsuarioDTO.nombre, createUsuarioDTO.apellido, createUsuarioDTO.email, createUsuarioDTO.telefono, createUsuarioDTO.password, createUsuarioDTO.rol,null);
+        UpdateUsuarioDTO updateUsuarioDTO =  new UpdateUsuarioDTO(idDto, createUsuarioDTO.nombre, createUsuarioDTO.apellido, createUsuarioDTO.email, createUsuarioDTO.telefono, createUsuarioDTO.password, createUsuarioDTO.rol,null,null);
         return Resultado.ok(updateUsuarioDTO);
     }
 

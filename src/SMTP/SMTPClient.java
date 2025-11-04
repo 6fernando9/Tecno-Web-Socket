@@ -222,13 +222,22 @@ public class SMTPClient {
 
 
     public static void main(String[] args) {
-        String emisor = "muerte201469@gmail.com";
-        String receptor = "grupo14sc@tecnoweb.org.bo";
-//        String receptor = "muerte201469@gmail.com";
-//        String emisor = "grupo14sc@tecnoweb.org.bo";
+//        String emisor = "muerte201469@gmail.com";
+//        String receptor = "grupo14sc@tecnoweb.org.bo";
+        String receptor = "muerte201469@gmail.com";
+        String emisor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
                 listarproductossimple[">=15"]
                 """;
+        String cuerpo = """
++----+----------+----------+------------------------------+-----------+----------+
+| ID | Nombre   | Apellido | Email                        | Teléfono  | Rol      |
++----+----------+----------+------------------------------+-----------+----------+
+| 1  | Juan     | Pérez    | juan.barbero@barberia.bo     | 72000002  | barbero  |
+| 2  | Carlos   | López    | carlos.barbero@barberia.bo   | 72000003  | barbero  |
++----+----------+----------+------------------------------+-----------+----------+
+""".replace("\n", "\r\n");
+
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         //String subject = "createuser[\"8\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
@@ -236,7 +245,7 @@ public class SMTPClient {
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
         SMTPClient smtpClient = new SMTPClient(server,emisor,receptor);
-        smtpClient.sendDataToServer(subject,context);
+        smtpClient.sendDataToServer(subject,cuerpo);
         //smtpClient.executeSMTPClientHTML();
     }
 

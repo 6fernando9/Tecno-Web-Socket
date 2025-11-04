@@ -42,7 +42,23 @@ public class UpdateSQLQuery {
                 if (filas == 0) {
                     return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.";
                 }
-                return "Actualización exitosa (" + filas + " fila(s)).";
+                return String.format(
+                        "Usuario actualizado correctamente:\r\n" +
+                                "--------------------------\r\n" +
+                                "ID: %d\r\n" +
+                                "Nombre: %s\r\n" +
+                                "Apellido: %s\r\n" +
+                                "Email: %s\r\n" +
+                                "Teléfono: %s\r\n" +
+                                "Rol: %s\r\n" +
+                                "--------------------------\r\n",
+                        updateUsuarioDTO.id,
+                        updateUsuarioDTO.nombre,
+                        updateUsuarioDTO.apellido,
+                        updateUsuarioDTO.email,
+                        updateUsuarioDTO.telefono,
+                        updateUsuarioDTO.rol
+                );
             }
         }catch(Exception e){
             System.out.println("Throw: " + e.getMessage());

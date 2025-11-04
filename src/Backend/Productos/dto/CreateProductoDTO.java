@@ -1,5 +1,6 @@
 package Backend.Productos.dto;
 
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
@@ -10,14 +11,18 @@ public class CreateProductoDTO {
     public float precioVenta;
     public int stockMinimo;
     public int stockActual;
+    public String estado;
+    public String deleteAt;
 
     public CreateProductoDTO(){}
-    public CreateProductoDTO(String nombre,String descripcion, float precioVenta,int stockMinimo,int stockActual){
+    public CreateProductoDTO(String nombre,String descripcion, float precioVenta,int stockMinimo,int stockActual,String estado,String deleteAt){
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precioVenta = precioVenta;
         this.stockMinimo = stockMinimo;
         this.stockActual = stockActual;
+        this.estado = estado;
+        this.deleteAt = deleteAt;
     }
     public static Resultado<CreateProductoDTO> createProductoFromSubject(String subject){
         String[] data = TecnoUtils.procesarString(subject);
@@ -29,14 +34,17 @@ public class CreateProductoDTO {
         String precioVenta = data[2];
         String stockMinimo = data[3];
         String stockActual = data[4];
-        if(precioVenta == null || precioVenta.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. campo precio venta no puede ser nulo");
+        if(GeneralMethods.esCampoNuloVacio(nombre)){
+            return Resultado.error("Error.. campo nombre no puede ser nulo o vacio");
         }
-        if(stockMinimo == null || stockMinimo.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. campo stock Minimo venta no puede ser nulo");
+        if(GeneralMethods.esCampoNuloVacio(precioVenta)){
+            return Resultado.error("Error.. campo precio venta no puede ser nulo o vacio");
         }
-        if(stockActual == null || stockActual.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. campo stock Maximo venta no puede ser nulo");
+        if(GeneralMethods.esCampoNuloVacio(stockMinimo)){
+            return Resultado.error("Error.. campo stock Minimo venta no puede ser nulo o vacio");
+        }
+        if(GeneralMethods.esCampoNuloVacio(stockActual)){
+            return Resultado.error("Error.. campo stock Actual venta no puede ser nulo o vacio");
         }
         float precioVentaDto;
         int stockMinimoDto;
@@ -49,9 +57,7 @@ public class CreateProductoDTO {
             return Resultado.error("Error.. datos numericos no validos");
         }
 
-        if(nombre == null || nombre.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. campo nombre no puede ser nulo");
-        }
+
         //validacion nula a proposito esquivada
 //        if(descripcion == null || nombre.equalsIgnoreCase("null")){
 //            return Resultado.error("Error.. campo descripcion no puede ser nulo");
@@ -66,7 +72,7 @@ public class CreateProductoDTO {
             return Resultado.error("Error.. campo stock Maximo no puede ser menor a 0");
         }
         String descripcionDto = descripcion.equalsIgnoreCase("null") ? null : descripcion;
-        return Resultado.ok(new CreateProductoDTO(nombre,descripcionDto,precioVentaDto,stockMinimoDto,stockMaximoDto));
+        return Resultado.ok(new CreateProductoDTO(nombre,descripcionDto,precioVentaDto,stockMinimoDto,stockMaximoDto,null,null));
 
     }
 }

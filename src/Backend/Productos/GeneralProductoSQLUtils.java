@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class GeneralProductoSQLUtils {
     public static UpdateProductoDTO findProductoById(Connection con, long id) throws SQLException {
         //"INSERT INTO productos (nombre, descripcion, precio_venta, stock_actual, stock_minimo) VALUES (?, ?, ?, ?, ?)";
-        String SQL_FIND = "SELECT id, nombre, descripcion, precio_venta, stock_actual, stock_minimo FROM productos WHERE id = ?";
+        String SQL_FIND = "SELECT id, nombre, descripcion, precio_venta, stock_actual, stock_minimo, estado, deleted_at FROM productos WHERE id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(SQL_FIND)) {
             ps.setLong(1, id);
@@ -24,6 +24,8 @@ public class GeneralProductoSQLUtils {
                     productoDTO.precioVenta = rs.getFloat("precio_venta");
                     productoDTO.stockActual = rs.getInt("stock_actual");
                     productoDTO.stockMinimo = rs.getInt("stock_minimo");
+                    productoDTO.estado = rs.getString("estado");
+                    productoDTO.deleteAt = rs.getString("deleted_at");
                     return productoDTO;
                 }
                 return null;

@@ -48,8 +48,6 @@ public class MovimientosInventario {
         }
 
     }
-}
-
     // Called by demon: parse subject, execute SQL and reply
     public static void executeMovimientosInventarioDemon(String emisor, String receptor, String server, String subject){
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
@@ -66,3 +64,6 @@ public class MovimientosInventario {
             smtpClientResponse.sendDataToServer("REPORTE Movimientos Inventario","ERROR: " + e.getMessage() + "\r\n");
         }
     }
+}
+
+

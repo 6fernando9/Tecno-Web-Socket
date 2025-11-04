@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class ListarStockActualSQLQuery {
     private static final String LIST_BASE_SELECT =
-            "SELECT id, nombre, descripcion, precio_venta, stock_actual, stock_minimo FROM productos";
+            "SELECT id, nombre, descripcion, precio_venta, stock_actual, stock_minimo, estado FROM productos";
 
 
     public String executeListarProductos(PGSQLClient pgsqlClient, ComparadorSigno comparador) {
@@ -32,7 +32,7 @@ public class ListarStockActualSQLQuery {
                 if (operador == null) {
                     return "Error: operador inválido: " + comparador.signo;
                 }
-                sql = LIST_BASE_SELECT + " WHERE stock_actual " + operador + " ? ORDER BY id ASC";
+                sql = LIST_BASE_SELECT + " WHERE stock_actual " + operador + " ? AND deleted_at is null ORDER BY id ASC";
                 ps = connection.prepareStatement(sql);
                 ps.setBigDecimal(1, new java.math.BigDecimal(comparador.valor.toString()));
             }
@@ -66,7 +66,7 @@ public class ListarStockActualSQLQuery {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 
         String sql = LIST_BASE_SELECT +
-                " WHERE stock_actual BETWEEN ? AND ? ORDER BY id ASC";
+                " WHERE deleted_at is null AND stock_actual BETWEEN ? AND ? ORDER BY id ASC";
 
         try (Connection connection = DriverManager.getConnection(
                 databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword());
@@ -83,7 +83,7 @@ public class ListarStockActualSQLQuery {
                 }
 
                 if (result.length() == 0) {
-                    return "[]";
+                    return "Lista de Productos Vacia!";
                 }
 
                 return result.toString();
@@ -111,23 +111,25 @@ public class ListarStockActualSQLQuery {
     }
 
     private String formatearProducto(ResultSet rs) throws SQLException {
-        long id = rs.getLong("id");
-        String nombre = rs.getString("nombre");
-        String descripcion = rs.getString("descripcion");
-        BigDecimal precioVenta = rs.getBigDecimal("precio_venta");
-        int stockActual = rs.getInt("stock_actual");
-        int stockMinimo = rs.getInt("stock_minimo");
-
         return String.format(
-                "======================== PRODUCTO ========================\r\n" +
-                        "id: %d\r\n" +
-                        "nombre: %s\r\n" +
-                        "descripcion: %s\r\n" +
-                        "precio_venta: %s\r\n" +
-                        "stock_actual: %d\r\n" +
-                        "stock_minimo: %d\r\n" +
-                        "==========================================================\r\n",
-                id, nombre, descripcion, precioVenta, stockActual, stockMinimo
+                "✅ PRODUCTO\r\n" +
+                        "--------------------------\r\n" +
+                        "ID: %d\r\n" +
+                        "Nombre: %s\r\n" +
+                        "Descripción: %s\r\n" +
+                        "Precio venta: %s\r\n" +
+                        "Stock actual: %d\r\n" +
+                        "Stock mínimo: %d\r\n" +
+                        "Estado: %s\r\n" +
+                        "--------------------------\r\n",
+                rs.getLong("id"),
+                rs.getString("nombre"),
+                rs.getString("descripcion"),
+                rs.getBigDecimal("precio_venta"),
+                rs.getInt("stock_actual"),
+                rs.getInt("stock_minimo"),
+                rs.getString("estado")
         );
     }
+
 }

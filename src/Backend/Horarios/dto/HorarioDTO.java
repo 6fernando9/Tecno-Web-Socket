@@ -1,6 +1,7 @@
 package Backend.Horarios.dto;
 
 import Backend.Horarios.GeneralHorarioSQL;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
@@ -31,17 +32,17 @@ public class HorarioDTO {
         String horaFin = data[3];
         Long idDto;
 
-        if(id == null || id.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. el campo id no puede ser nulo");
+        if(GeneralMethods.esCampoNuloVacio(id)){
+            return Resultado.error("Error.. el campo id no puede ser nulo o vacio");
         }
-        if(dia == null || dia.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. el campo dia no puede ser null");
+        if(GeneralMethods.esCampoNuloVacio(dia)){
+            return Resultado.error("Error.. el campo dia no puede ser nulo vacio");
         }
-        if(horaInicio == null || horaInicio.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. el campo hora inicio no puede ser null");
+        if(GeneralMethods.esCampoNuloVacio(horaInicio)){
+            return Resultado.error("Error.. el campo hora inicio no puede ser nulo o vacio");
         }
-        if(horaFin == null || horaFin.equalsIgnoreCase("null")){
-            return Resultado.error("Error.. el campo hora fin no puede ser null");
+        if(GeneralMethods.esCampoNuloVacio(horaFin)){
+            return Resultado.error("Error.. el campo hora fin no puede ser nulo o vacio");
         }
         try{
             idDto = Long.parseLong(id);

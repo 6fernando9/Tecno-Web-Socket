@@ -32,7 +32,21 @@ public class CreateSQLQuery {
                     return "Error: no se pudo insertar el usuario.";
                 }
             }
-            return "Usuario insertado con exito!";
+            return String.format(
+                    "Usuario creado exitosamente:\r\n" +
+                            "--------------------------\r\n" +
+                            "Nombre: %s\r\n" +
+                            "Apellido: %s\r\n" +
+                            "Email: %s\r\n" +
+                            "Teléfono: %s\r\n" +
+                            "Rol: %s\r\n" +
+                            "--------------------------\r\n",
+                    createUsuarioDTO.nombre,
+                    createUsuarioDTO.apellido,
+                    createUsuarioDTO.email,
+                    createUsuarioDTO.telefono,
+                    createUsuarioDTO.rol
+            );
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
             return "ERROR DE BASE DE DATOS: " + e.getMessage();

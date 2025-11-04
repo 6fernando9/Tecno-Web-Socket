@@ -1,6 +1,7 @@
 package Backend.Pagos.dto;
 
 import Backend.Pagos.GeneralPagoSQLUtils;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Utils.TecnoUtils;
 
@@ -31,14 +32,14 @@ public class PagoDTO {
         String tipoPago = data[1];
         String monto = data[2];
 
-        if (ventaId == null || ventaId.equalsIgnoreCase("null")) {
-            return Resultado.error("Error.. el campo de venta no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(ventaId)) {
+            return Resultado.error("Error.. el campo de venta no puede ser nulo o vacio");
         }
-        if (tipoPago == null || tipoPago.equalsIgnoreCase("null")) {
-            return Resultado.error("Error.. el campo de tipo de pago no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(tipoPago)) {
+            return Resultado.error("Error.. el campo de tipo de pago no puede ser nulo o vacio");
         }
-        if (monto == null || monto.equalsIgnoreCase("null")) {
-            return Resultado.error("Error.. el campo de monto no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(monto)) {
+            return Resultado.error("Error.. el campo de monto no puede ser nulo o vacio");
         }
         Long ventaIdDto;
         float montoDto;
