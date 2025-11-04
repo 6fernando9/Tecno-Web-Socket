@@ -49,3 +49,20 @@ public class MovimientosInventario {
 
     }
 }
+
+    // Called by demon: parse subject, execute SQL and reply
+    public static void executeMovimientosInventarioDemon(String emisor, String receptor, String server, String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        try{
+            String[] params = TecnoUtils.procesarString(subject);
+            Integer productoId = (params.length > 0 && !params[0].isBlank()) ? Integer.parseInt(params[0]) : null;
+            String desde = (params.length > 1 && !params[1].isBlank()) ? params[1] : null;
+            String hasta = (params.length > 2 && !params[2].isBlank()) ? params[2] : null;
+            MovimientosInventarioSQL sql = new MovimientosInventarioSQL();
+            String result = sql.run(pgsqlClient, productoId, desde, hasta);
+            smtpClientResponse.sendDataToServer("REPORTE Movimientos Inventario",result + "\r\n");
+        }catch(Exception e){
+            smtpClientResponse.sendDataToServer("REPORTE Movimientos Inventario","ERROR: " + e.getMessage() + "\r\n");
+        }
+    }

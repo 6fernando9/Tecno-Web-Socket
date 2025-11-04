@@ -1,6 +1,6 @@
-package Backend.Movimientos.CreateMovimiento;
+package Backend.Citas.CancelCita;
 
-import Backend.Movimientos.dto.CreateMovimientoDTO;
+import Backend.Citas.dto.CancelCitaDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -8,11 +8,12 @@ import Utils.*;
 
 import java.util.List;
 
-public class Create {
+public class Cancel {
     public static void main(String[] args){
-    String emisor = "2003miguelito.mgs@gmail.com";
+        String emisor = "2003miguelito.mgs@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
-        String subject = "movimiento_inventario_create[\"1\",\"2\",\"ingreso\",\"10\",\"Compra proveedor X\"]";
+        // subject example: cita_cancel["12","123","Motivo de cancelacion"]
+        String subject = "cita_cancel[\"12\",\"123\",\"Cambio de planes\"]";
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
@@ -32,40 +33,40 @@ public class Create {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
             try{
-                var resultado = CreateMovimientoDTO.crearMedianteSubject(subject);
+                var resultado = CancelCitaDTO.crearMedianteSubject(subject);
                 if(!resultado.esExitoso()){
-                    smtpClientResponse.sendDataToServer("SQL Create Movimiento: Fallo Campos",resultado.getError() + "\r\n");
+                    smtpClientResponse.sendDataToServer("SQL Cancel Cita: Fallo Campos",resultado.getError() + "\r\n");
                     return;
                 }
-                CreateMovimientoDTO dto = resultado.getValor();
-                CreateSQLQuery sql = new CreateSQLQuery();
-                String str = sql.executeInsertMovimientoAndApplyStock(pgsqlClient, dto);
-                smtpClientResponse.sendDataToServer("SQL CreateMovimiento",str + "\r\n");
+                CancelCitaDTO dto = resultado.getValor();
+                CancelSQLQuery sql = new CancelSQLQuery();
+                String str = sql.cancelarCita(pgsqlClient, dto.citaId, dto.usuarioId, dto.motivo);
+                smtpClientResponse.sendDataToServer("SQL CancelCita",str + "\r\n");
             }catch(Exception e){
-                smtpClientResponse.sendDataToServer("SQL CreateMovimiento","ERROR: " + e.getMessage() + "\r\n");
+                smtpClientResponse.sendDataToServer("SQL CancelCita","ERROR: " + e.getMessage() + "\r\n");
             }
         }else{
-            smtpClientResponse.sendDataToServer("SQL Fail Create Movimiento","Fallo al crear movimiento\r\n");
+            smtpClientResponse.sendDataToServer("SQL Fail Cancel Cita","Fallo al cancelar cita\r\n");
         }
 
     }
 
-    // Called by demon: parse subject, execute SQL and reply
-    public static void executeCreateMovimientoDemon(String emisor, String receptor, String server, String subject){
+    // Called by the demon: parse subject, execute SQL and reply
+    public static void executeCancelCitaDemon(String emisor, String receptor, String server, String subject){
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         try{
-            var resultado = CreateMovimientoDTO.crearMedianteSubject(subject);
+            var resultado = CancelCitaDTO.crearMedianteSubject(subject);
             if(!resultado.esExitoso()){
-                smtpClientResponse.sendDataToServer("SQL Create Movimiento: Fallo Campos",resultado.getError() + "\r\n");
+                smtpClientResponse.sendDataToServer("SQL Cancel Cita: Fallo Campos",resultado.getError() + "\r\n");
                 return;
             }
-            var dto = resultado.getValor();
-            CreateSQLQuery sql = new CreateSQLQuery();
-            String str = sql.executeInsertMovimientoAndApplyStock(pgsqlClient, dto);
-            smtpClientResponse.sendDataToServer("SQL CreateMovimiento",str + "\r\n");
+            CancelCitaDTO dto = resultado.getValor();
+            CancelSQLQuery sql = new CancelSQLQuery();
+            String str = sql.cancelarCita(pgsqlClient, dto.citaId, dto.usuarioId, dto.motivo);
+            smtpClientResponse.sendDataToServer("SQL CancelCita",str + "\r\n");
         }catch(Exception e){
-            smtpClientResponse.sendDataToServer("SQL CreateMovimiento","ERROR: " + e.getMessage() + "\r\n");
+            smtpClientResponse.sendDataToServer("SQL CancelCita","ERROR: " + e.getMessage() + "\r\n");
         }
     }
 }

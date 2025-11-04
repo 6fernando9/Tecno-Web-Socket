@@ -18,6 +18,16 @@ import Backend.Servicio.UpdateServicio.UpdateServicio;
 import Backend.Usuarios.CreateUser.CreateUsuario;
 import Backend.Usuarios.ListarUser.ListarUsuario;
 import Backend.Usuarios.UpdateUser.UpdateUsuario;
+import Backend.Citas.CreateCita.Create;
+import Backend.Citas.ListCitas.Lista;
+import Backend.Citas.UpdateCita.Update;
+import Backend.Citas.CancelCita.Cancel;
+import Backend.Reports.VentasTotales.VentasTotales;
+import Backend.Reports.VentasPorProducto.VentasPorProducto;
+import Backend.Reports.CitasPorBarbero.CitasPorBarbero;
+import Backend.Reports.DetalleVentaPorCita.DetalleVentaPorCita;
+import Backend.Reports.MovimientosInventario.MovimientosInventario;
+// Movimientos handlers will be referenced with fully-qualified names to avoid import name clashes
 import POP3.Pop3Service;
 import SMTP.SMTPClient;
 import Utils.SocketUtils;
@@ -130,6 +140,54 @@ public class DemonEmailService {
             ListarUsuario.executeListarUsuarioDemon(emisor,receptor,server,subject);
             return;
         }
+
+        // Para Citas
+        if(comando.equalsIgnoreCase("cita_create")){
+            System.out.println("Ejecutando Crear Cita");
+            Create.executeCreateCitaDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("cita_update")){
+            System.out.println("Ejecutando Update Cita");
+            Update.executeUpdateCitaDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("cita_list")){
+            System.out.println("Ejecutando Listar Citas");
+            Lista.executeListCitasDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("cita_cancel")){
+            System.out.println("Ejecutando Cancel Cita");
+            Cancel.executeCancelCitaDemon(emisor,receptor,server,subject);
+            return;
+        }
+        // Reportes
+        if(comando.equalsIgnoreCase("reporte_ventas_totales")){
+            System.out.println("Ejecutando Reporte Ventas Totales");
+            VentasTotales.executeVentasTotalesDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("reporte_ventas_producto")){
+            System.out.println("Ejecutando Reporte Ventas Por Producto");
+            VentasPorProducto.executeVentasPorProductoDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("reporte_citas_barbero")){
+            System.out.println("Ejecutando Reporte Citas Por Barbero");
+            CitasPorBarbero.executeCitasPorBarberoDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("reporte_detalle_venta_cita")){
+            System.out.println("Ejecutando Reporte Detalle Venta por Cita");
+            DetalleVentaPorCita.executeDetalleVentaPorCitaDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("reporte_movimientos_inventario")){
+            System.out.println("Ejecutando Reporte Movimientos Inventario");
+            MovimientosInventario.executeMovimientosInventarioDemon(emisor,receptor,server,subject);
+            return;
+        }
         //Para Productos
         if(comando.equalsIgnoreCase("createProducto")){
             System.out.println("Ejecutando Crear Producto");
@@ -150,6 +208,22 @@ public class DemonEmailService {
         if(comando.equalsIgnoreCase("listarProductoIntervalo")){
             System.out.println("Ejecutando Listar Producto Intervalo");
             ListarStockActualIntervalo.executeListarStockActualIntervaloDemon(emisor,receptor,server,subject);
+            return;
+        }
+        // Para Movimientos de inventario
+        if(comando.equalsIgnoreCase("movimiento_inventario_create")){
+            System.out.println("Ejecutando Crear Movimiento inventario");
+            Backend.Movimientos.CreateMovimiento.Create.executeCreateMovimientoDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("movimiento_inventario_update")){
+            System.out.println("Ejecutando Update Movimiento inventario");
+            Backend.Movimientos.UpdateMovimiento.Update.executeUpdateMovimientoDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("movimiento_inventario_list")){
+            System.out.println("Ejecutando Listar Movimientos inventario");
+            Backend.Movimientos.ListMovimiento.Lista.executeListMovimientosDemon(emisor,receptor,server,subject);
             return;
         }
         //Para Servicios

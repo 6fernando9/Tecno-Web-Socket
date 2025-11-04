@@ -48,3 +48,19 @@ public class VentasPorProducto {
 
     }
 }
+
+    // Called by demon: parse subject, execute SQL and reply
+    public static void executeVentasPorProductoDemon(String emisor, String receptor, String server, String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        try{
+            String[] params = TecnoUtils.procesarString(subject);
+            String desde = (params.length > 0 && !params[0].isBlank()) ? params[0] : null;
+            String hasta = (params.length > 1 && !params[1].isBlank()) ? params[1] : null;
+            VentasPorProductoSQL sql = new VentasPorProductoSQL();
+            String result = sql.run(pgsqlClient, desde, hasta);
+            smtpClientResponse.sendDataToServer("REPORTE Ventas Por Producto",result + "\r\n");
+        }catch(Exception e){
+            smtpClientResponse.sendDataToServer("REPORTE Ventas Por Producto","ERROR: " + e.getMessage() + "\r\n");
+        }
+    }

@@ -51,4 +51,23 @@ public class Create {
         }
 
     }
+
+    // Called by the demon: parse subject, execute SQL and reply
+    public static void executeCreateCitaDemon(String emisor, String receptor, String server, String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        try{
+            var resultado = CreateCitaDTO.crearMedianteSubject(subject);
+            if(!resultado.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Create Cita: Fallo Campos",resultado.getError() + "\r\n");
+                return;
+            }
+            CreateCitaDTO dto = resultado.getValor();
+            CreateSQLQuery sql = new CreateSQLQuery();
+            String str = sql.executeCreateCita(pgsqlClient, dto);
+            smtpClientResponse.sendDataToServer("SQL CreateCita",str + "\r\n");
+        }catch(Exception e){
+            smtpClientResponse.sendDataToServer("SQL CreateCita","ERROR: " + e.getMessage() + "\r\n");
+        }
+    }
 }

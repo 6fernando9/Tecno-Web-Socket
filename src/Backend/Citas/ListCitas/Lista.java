@@ -53,4 +53,27 @@ public class Lista {
         }
 
     }
+
+    // Called by the demon: parse subject, execute SQL and reply
+    public static void executeListCitasDemon(String emisor, String receptor, String server, String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        try{
+            String[] params = TecnoUtils.procesarString(subject);
+            Long clienteId = (params.length > 0 && !params[0].isBlank()) ? Long.parseLong(params[0]) : null;
+            Long barberoId = (params.length > 1 && !params[1].isBlank()) ? Long.parseLong(params[1]) : null;
+            String estado = (params.length > 2 && !params[2].isBlank()) ? params[2] : null;
+            String desde = (params.length > 3 && !params[3].isBlank()) ? params[3] : null;
+            String hasta = (params.length > 4 && !params[4].isBlank()) ? params[4] : null;
+            Long servicioId = (params.length > 5 && !params[5].isBlank()) ? Long.parseLong(params[5]) : null;
+            Integer limit = null;
+            if (params.length > 6 && !params[6].isBlank()) limit = Integer.parseInt(params[6]);
+
+            ListSQLQuery sql = new ListSQLQuery();
+            String result = sql.listCitas(pgsqlClient, clienteId, barberoId, estado, desde, hasta, servicioId, limit);
+            smtpClientResponse.sendDataToServer("SQL ListCitas",result + "\r\n");
+        }catch(Exception e){
+            smtpClientResponse.sendDataToServer("SQL ListCitas","ERROR: " + e.getMessage() + "\r\n");
+        }
+    }
 }

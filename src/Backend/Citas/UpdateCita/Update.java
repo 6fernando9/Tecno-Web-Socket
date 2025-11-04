@@ -50,4 +50,24 @@ public class Update {
         }
 
     }
+
+    // Called by the demon: parse subject, execute SQL and reply
+    public static void executeUpdateCitaDemon(String emisor, String receptor, String server, String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        try{
+            var resultado = UpdateCitaDTO.crearMedianteSubject(subject);
+            if(!resultado.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Update Cita: Fallo Campos",resultado.getError() + "\r\n");
+                return;
+            }
+            UpdateCitaDTO dto = resultado.getValor();
+            UpdateSQLQuery sql = new UpdateSQLQuery();
+            String str = sql.updateCita(pgsqlClient, dto.citaId, dto.usuarioId, dto.barberoId, dto.fechaHoraInicio, dto.fechaHoraFin);
+            smtpClientResponse.sendDataToServer("SQL UpdateCita",str + "\r\n");
+        }catch(Exception e){
+            smtpClientResponse.sendDataToServer("SQL UpdateCita","ERROR: " + e.getMessage() + "\r\n");
+        }
+    }
+
 }
