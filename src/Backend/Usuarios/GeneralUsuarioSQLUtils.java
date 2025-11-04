@@ -27,7 +27,7 @@ public class GeneralUsuarioSQLUtils {
     }
 
     public static UpdateUsuarioDTO findUserById(Connection con, long id) throws SQLException {
-        String SQL_FIND = "SELECT id, nombre, apellido, email, telefono, password, rol FROM usuarios WHERE id = ?";
+        String SQL_FIND = "SELECT id, nombre, apellido, email, telefono, password, rol, estado FROM usuarios WHERE id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(SQL_FIND)) {
             ps.setLong(1, id);
@@ -42,6 +42,7 @@ public class GeneralUsuarioSQLUtils {
                     usuario.telefono = rs.getString("telefono");
                     usuario.password = rs.getString("password");
                     usuario.rol = rs.getString("rol");
+                    usuario.estado = rs.getString("estado");
                     return usuario;
                 }
                 return null;
@@ -49,7 +50,7 @@ public class GeneralUsuarioSQLUtils {
         }
     }
     public static UpdateUsuarioDTO findUserByEmail(Connection con, String email) throws SQLException {
-        String SQL_FIND = "SELECT id, nombre, apellido, email, telefono, password, rol FROM usuarios WHERE email = ?";
+        String SQL_FIND = "SELECT id, nombre, apellido, email, telefono, password, rol, estado FROM usuarios WHERE email = ?";
 
         try (PreparedStatement ps = con.prepareStatement(SQL_FIND)) {
             ps.setString(1, email);
@@ -64,6 +65,7 @@ public class GeneralUsuarioSQLUtils {
                     usuario.telefono = rs.getString("telefono");
                     usuario.password = rs.getString("password");
                     usuario.rol = rs.getString("rol");
+                    usuario.estado = rs.getString("estado");
                     return usuario;
                 }
                 return null; // No encontrado

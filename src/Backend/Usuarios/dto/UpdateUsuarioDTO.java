@@ -1,5 +1,6 @@
 package Backend.Usuarios.dto;
 
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Exceptions.InvalidDataException;
 import Utils.TecnoUtils;
@@ -9,8 +10,8 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
     public UpdateUsuarioDTO(){
         super();
     }
-    public UpdateUsuarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol) {
-        super(nombre, apellido, email, telefono, password, rol);
+    public UpdateUsuarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol,String estado) {
+        super(nombre, apellido, email, telefono, password, rol,estado);
         this.id = id;
     }
 
@@ -28,7 +29,7 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
         if(!resultadoCreateDTO.esExitoso()){
             return Resultado.error(resultadoCreateDTO.getError());
         }
-        if(id == null || id.equalsIgnoreCase("null")){
+        if(GeneralMethods.esCampoNuloVacio(id)){
             return Resultado.error("Error..el campo id no puede ser nulo");
         }
         CreateUsuarioDTO createUsuarioDTO = resultadoCreateDTO.getValor();
@@ -38,7 +39,7 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
         } catch (NumberFormatException e) {
             return Resultado.error("Error: el campo 'id' debe ser numérico");
         }
-        UpdateUsuarioDTO updateUsuarioDTO =  new UpdateUsuarioDTO(idDto, createUsuarioDTO.nombre, createUsuarioDTO.apellido, createUsuarioDTO.email, createUsuarioDTO.telefono, createUsuarioDTO.password, createUsuarioDTO.rol);
+        UpdateUsuarioDTO updateUsuarioDTO =  new UpdateUsuarioDTO(idDto, createUsuarioDTO.nombre, createUsuarioDTO.apellido, createUsuarioDTO.email, createUsuarioDTO.telefono, createUsuarioDTO.password, createUsuarioDTO.rol,null);
         return Resultado.ok(updateUsuarioDTO);
     }
 

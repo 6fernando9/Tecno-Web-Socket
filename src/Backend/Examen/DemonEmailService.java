@@ -141,6 +141,7 @@ public class DemonEmailService {
             UpdateProducto.executeUpdateProductoDemon(emisor,receptor,server,subject);
             return;
         }
+        //listarProductoSimple[">5"]
         if(comando.equalsIgnoreCase("listarProductoSimple")){
             System.out.println("Ejecutando Listar Producto Simple");
             ListarStockActualSimple.executeListarStockActualSimpleDemon(emisor,receptor,server,subject);

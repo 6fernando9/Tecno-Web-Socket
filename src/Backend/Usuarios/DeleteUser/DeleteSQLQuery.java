@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 
 public class DeleteSQLQuery {
     private static final String SQL_DELETE = "DELETE FROM usuarios WHERE id = ?";
+   // private static final String SLQ_DELETE_LOGICO = "UPDATE usuarios SET estado = ? WHERE id = ?";
     public String executeDeleteUserQuery(PGSQLClient pgsqlClient, long id) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 

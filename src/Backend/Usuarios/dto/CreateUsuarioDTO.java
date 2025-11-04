@@ -1,6 +1,7 @@
 package Backend.Usuarios.dto;
 
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Exceptions.InvalidDataException;
 import Utils.TecnoUtils;
@@ -12,14 +13,17 @@ public class CreateUsuarioDTO {
     public String telefono;
     public String password;
     public String rol;
+    public String estado;
+
     public CreateUsuarioDTO(){}
-    public CreateUsuarioDTO(String nombre, String apellido, String email, String telefono, String password, String rol){
+    public CreateUsuarioDTO(String nombre, String apellido, String email, String telefono, String password, String rol,String estado){
           this.nombre = nombre;
           this.apellido = apellido;
           this.email = email;
           this.telefono = telefono;
           this.password = password;
           this.rol = rol;
+          this.estado = estado;
     }
     public static Resultado<CreateUsuarioDTO> crearUsuarioMedianteSubject(String subject) throws InvalidDataException {
         String[] data = TecnoUtils.procesarString(subject);
@@ -36,25 +40,25 @@ public class CreateUsuarioDTO {
         String password = data[4];
         String rol = data[5];
 
-        if (nombre == null || nombre.equalsIgnoreCase("null")) {
-            return Resultado.error("Error: el campo 'nombre' no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(nombre)) {
+            return Resultado.error("Error: el campo 'nombre' no puede ser nulo o vacio");
         }
-        if (apellido == null || apellido.equalsIgnoreCase("null")) {
-            return Resultado.error("Error: el campo 'apellido' no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(apellido)) {
+            return Resultado.error("Error: el campo 'apellido' no puede ser nulo o vacio");
         }
-        if (email == null || email.equalsIgnoreCase("null")) {
-            return Resultado.error("Error: el campo 'email' no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(email)) {
+            return Resultado.error("Error: el campo 'email' no puede ser nulo o vacio");
         }
-        if (telefono == null || telefono.equalsIgnoreCase("null")) {
-            return Resultado.error("Error: el campo 'telefono' no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(telefono)) {
+            return Resultado.error("Error: el campo 'telefono' no puede ser nulo o vacio");
         }
-        if (password == null || password.equalsIgnoreCase("null")) {
-            return Resultado.error("Error: el campo 'password' no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(password)) {
+            return Resultado.error("Error: el campo 'password' no puede ser nulo o vacio");
         }
-        if (rol == null || rol.equalsIgnoreCase("null")) {
-            return Resultado.error("Error: el campo 'rol' no puede ser nulo");
+        if (GeneralMethods.esCampoNuloVacio(rol)) {
+            return Resultado.error("Error: el campo 'rol' no puede ser nulo o vacio");
         }
-        System.out.println("rol: "+ rol);
+
         if(!GeneralUsuarioSQLUtils.esRolPermitido(rol)){
             return Resultado.error("Error...el valor de rol es un valor diferente de lo esperado...");
         }
@@ -62,7 +66,7 @@ public class CreateUsuarioDTO {
             return Resultado.error("Error: la contraseña debe tener al menos 6 caracteres");
         }
 
-        CreateUsuarioDTO usuario = new CreateUsuarioDTO(nombre, apellido, email, telefono, password, rol);
+        CreateUsuarioDTO usuario = new CreateUsuarioDTO(nombre, apellido, email, telefono, password, rol,null);
         return Resultado.ok(usuario);
     }
 

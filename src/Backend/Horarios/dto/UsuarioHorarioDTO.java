@@ -8,8 +8,8 @@ import java.util.List;
 public class UsuarioHorarioDTO extends UpdateUsuarioDTO {
     List<HorarioDTO> horarios;
     public UsuarioHorarioDTO(){}
-    public UsuarioHorarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol) {
-          super(id,nombre,apellido,email,telefono,password,rol);
+    public UsuarioHorarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol,String estado) {
+          super(id,nombre,apellido,email,telefono,password,rol,estado);
           this.horarios = new ArrayList<>();
     }
 

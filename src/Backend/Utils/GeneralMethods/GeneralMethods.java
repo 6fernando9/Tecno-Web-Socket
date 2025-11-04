@@ -18,4 +18,7 @@ public class GeneralMethods {
         boolean valido = contenido.matches("\\s*\"[^\"]*\"(\\s*,\\s*\"[^\"]*\")*\\s*");
         return valido;
     }
+    public static boolean esCampoNuloVacio(String cadena){
+        return cadena == null || cadena.trim().isEmpty() || cadena.equalsIgnoreCase("null");
+    }
 }
