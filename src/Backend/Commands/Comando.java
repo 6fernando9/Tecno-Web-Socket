@@ -77,7 +77,7 @@ movimiento_inventario_list["productoId","usuarioId","fechaInicio","fechaFin","ti
 
 Fechas Formato YYYY-MM-DD
 """;
-        comandos = GeneralMethods.parsearSubjectComillaTriple(comandos);
+        comandos = GeneralMethods.parsearSubjectComillaTriplev2(comandos);
         smtpClientResponse.sendDataToServer("Faceritos Commands",comandos+ "\r\n");
 
 

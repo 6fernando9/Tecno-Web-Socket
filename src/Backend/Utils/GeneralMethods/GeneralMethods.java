@@ -8,6 +8,18 @@ public class GeneralMethods {
         subject = subject.trim();
         return subject.replace("\r", "").replace("\n", " ");
     }
+    public static String parsearSubjectComillaTriplev2(String subject) {
+        if (subject == null) return "";
+
+        // trim para evitar espacios basura al inicio y final
+        subject = subject.trim();
+
+        // Reemplazar solo los \n que NO tengan \r antes
+        subject = subject.replaceAll("(?<!\r)\n", "\r\n");
+
+        return subject;
+    }
+
     public static boolean tieneComillaLosCorchetes(String cadena){
         Pattern pattern = Pattern.compile("\\[(.*?)\\]");
         Matcher matcher = pattern.matcher(cadena);
