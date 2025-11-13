@@ -1,5 +1,6 @@
 package Backend.Examen;
 
+import Backend.Commands.Comando;
 import Backend.Horarios.CrearHorario.CreateHorario;
 import Backend.Horarios.DeleteHorario.DeleteHorario;
 import Backend.Horarios.ListarHorario.ListarHorarioDeBarbero;
@@ -114,6 +115,8 @@ public class DemonEmailService {
 
         //si tiene doble corchete y todo con comilla
         SMTPClient smtpClient = new SMTPClient(server,receptor,emisor);
+
+
         //podriamos hacer un comando previo para que busque en los comandos solamente si no lo encuentra retornar que no hay ese comando
         boolean tieneCorcheteYComillas = TecnoUtils.tieneCorchetesYComillas(subject);
         if (!tieneCorcheteYComillas) {
@@ -301,6 +304,11 @@ public class DemonEmailService {
         if(comando.equalsIgnoreCase("listarHorarioDeBarbero")){
             System.out.println("Ejecutando Listar pago de venta");
             ListarHorarioDeBarbero.executeListarHorarioDeBarberoDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("comandos")){
+            System.out.println("Ejecutando ver comandos");
+            Comando.executeComandoDemon(emisor,receptor,server,subject);
             return;
         }
         /// demas metodos
