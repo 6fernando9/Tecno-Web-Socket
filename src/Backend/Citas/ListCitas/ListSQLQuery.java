@@ -33,8 +33,11 @@ public class ListSQLQuery {
                 if (clienteId != null) ps.setLong(idx++, clienteId);
                 if (barberoId != null) ps.setLong(idx++, barberoId);
                 if (estado != null && !estado.isBlank()) ps.setString(idx++, estado);
-                if (desde != null && !desde.isBlank()) ps.setTimestamp(idx++, Timestamp.valueOf(desde.replace('T', ' ') + ":00"));
-                if (hasta != null && !hasta.isBlank()) ps.setTimestamp(idx++, Timestamp.valueOf(hasta.replace('T', ' ') + ":00"));
+                if (desde != null && !desde.isBlank())
+                    ps.setTimestamp(idx++, parseFecha(desde, false));
+
+                if (hasta != null && !hasta.isBlank())
+                    ps.setTimestamp(idx++, parseFecha(hasta, true));
                 if (servicioId != null) ps.setLong(idx++, servicioId);
 
                 try (ResultSet rs = ps.executeQuery()) {
@@ -63,6 +66,27 @@ public class ListSQLQuery {
             System.out.println("Throw: " + e.getMessage());
             return "ERROR DE BASE DE DATOS: " + e.getMessage();
         }
+    }
+    private Timestamp parseFecha(String f, boolean isHasta) throws Exception {
+        if (f == null || f.isBlank()) return null;
+
+        // Caso 1: Solo fecha (YYYY-MM-DD)
+        if (f.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            if (isHasta)
+                return Timestamp.valueOf(f + " 23:59:59");
+            else
+                return Timestamp.valueOf(f + " 00:00:00");
+        }
+
+        // Caso 2: ISO con T
+        if (f.contains("T"))
+            f = f.replace("T", " ");
+
+        // Caso 3: Fecha y hora sin segundos
+        if (f.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"))
+            f = f + ":00";
+
+        return Timestamp.valueOf(f);
     }
 
 }

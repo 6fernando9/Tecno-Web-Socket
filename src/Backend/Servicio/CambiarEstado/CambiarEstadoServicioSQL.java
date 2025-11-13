@@ -27,9 +27,10 @@ public class CambiarEstadoServicioSQL {
             }
 
             Timestamp deleteAt = null;
-
+            System.out.println("estado: "+ dto.estado);
             if (dto.estado.equalsIgnoreCase("eliminado")) {
                 if (servicioDB.estado.equalsIgnoreCase("activo")) {
+                    System.out.println("entre al elimnado con activo");
                     deleteAt = Timestamp.valueOf(LocalDateTime.now());
                 } else if (servicioDB.estado.equalsIgnoreCase("eliminado")) {
                     deleteAt = servicioDB.deletedAt != null
@@ -37,11 +38,12 @@ public class CambiarEstadoServicioSQL {
                             : Timestamp.valueOf(LocalDateTime.now());
                 }
             }
-
+            System.out.println("deletedAt antes del if " + deleteAt);
             // si el usuario pasa a activo, eliminamos la fecha
             if (dto.estado.equalsIgnoreCase("activo")) {
                 deleteAt = null;
             }
+            System.out.println("deletedAt despues del if " + deleteAt);
             //en el caso de que el dto sea estado eliminado y el usuario db sea eliminado
             //si los emails son iguales igual que actualize
             try (PreparedStatement ps = connection.prepareStatement(SQL_UPDATE)) {

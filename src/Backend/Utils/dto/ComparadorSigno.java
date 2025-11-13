@@ -87,7 +87,7 @@ public class ComparadorSigno {
             return Resultado.error("Error al campos no numericos!");
         }
         if (extremoInferiorDTO > extremoSuperiorDTO) {
-            return Resultado.error("Error orden incorrecto el extremo inferior: " + extremoInferiorDTO + "es superior a: " + extremoSuperiorDTO);
+            return Resultado.error("Error orden incorrecto el extremo inferior: " + extremoInferiorDTO + " es superior a: " + extremoSuperiorDTO);
         }
         int[] intervalo = new int[2];
         intervalo[0] = extremoInferiorDTO;

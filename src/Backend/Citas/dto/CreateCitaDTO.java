@@ -27,8 +27,10 @@ public class CreateCitaDTO {
 
     // Subject expected: cita_create["clienteId","barberoId","serviciosCsv","2025-11-03T14:30","2025-11-03T15:00","observaciones","12.50"]
     // Use empty string "" for optional fields you want to skip (e.g., barberoId)
+    //String subject = "cita_create[\"123\",\"45\",\"1,2\",\"2025-11-03T14:30\",\"2025-11-03T15:00\",\"Corte urgente\",\"10.00\"]";
     public static Resultado<CreateCitaDTO> crearMedianteSubject(String subject) throws InvalidDataException {
-        String[] data = TecnoUtils.procesarString(subject);
+        String[] data = TecnoUtils.procesarStringSeguro(subject);
+        System.out.println(data.toString());
         if (data.length < 4) {
             return Resultado.error("Error: se esperaban al menos 4 campos (clienteId, barberoId, serviciosCsv, fechaHoraInicio)");
         }

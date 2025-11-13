@@ -74,7 +74,7 @@ public class UpdateServicio {
         String emisor = "muerte201469@gmail.com";
         String receptor = "grupo14sc@tecnoweb.org.bo";
         String subject = """
-                createServicio["1","corte alizado","buenas servicio","10","30"]
+                updateServicio["1","corte alizado","buenas servicio","10","30"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;

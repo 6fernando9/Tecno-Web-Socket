@@ -23,7 +23,7 @@ public class GeneralServicioSQLUtils {
                     updateServicioDTO.descripcion = rs.getString("descripcion");
                     updateServicioDTO.precio = rs.getFloat("precio");
                     updateServicioDTO.duracion = rs.getInt("duracion_estimada");
-                    updateServicioDTO.estado = rs.getString("nombre");
+                    updateServicioDTO.estado = rs.getString("estado");
                     updateServicioDTO.deletedAt = rs.getString("deleted_at");
                     return updateServicioDTO;
                 }

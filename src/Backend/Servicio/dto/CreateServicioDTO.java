@@ -54,10 +54,10 @@ public class CreateServicioDTO {
             return Resultado.error("Error... datos numéricos no válidos");
         }
 
-        if (precio <= 0) {
+        if (precio < 0) {
             return Resultado.error("Error... el precio debe ser mayor a 0");
         }
-        if (duracion <= 0) {
+        if (duracion < 0) {
             return Resultado.error("Error... la duración debe ser mayor a 0");
         }
 

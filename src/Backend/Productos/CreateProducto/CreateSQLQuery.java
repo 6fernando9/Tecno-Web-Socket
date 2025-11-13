@@ -28,7 +28,21 @@ public class CreateSQLQuery {
                 if (filas == 0) {
                     return "Error: no se pudo insertar el usuario";
                 }
-                return "Producto insertado con exito!";
+                return String.format(
+                        "Producto creado exitosamente:\r\n" +
+                                "-----------------------------\r\n" +
+                                "Nombre: %s\r\n" +
+                                "Descripción: %s\r\n" +
+                                "Precio Venta: %.2f\r\n" +
+                                "Stock Actual: %d\r\n" +
+                                "Stock Mínimo: %d\r\n" +
+                                "-----------------------------\r\n",
+                        createProductoDTO.nombre,
+                        createProductoDTO.descripcion,
+                        createProductoDTO.precioVenta,
+                        createProductoDTO.stockActual,
+                        createProductoDTO.stockMinimo
+                );
             }
 
         } catch (Exception e) {

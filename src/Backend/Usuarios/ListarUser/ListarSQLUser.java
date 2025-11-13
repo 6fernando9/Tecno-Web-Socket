@@ -38,7 +38,7 @@ public class ListarSQLUser {
                 }
 
                 if (result.length() == 0) {
-                    return "\n⚠️ No se encontraron usuarios registrados.\n";
+                    return "No se encontraron usuarios registrados.";
                 }
                 ///result.append(".");
                 return result.toString();

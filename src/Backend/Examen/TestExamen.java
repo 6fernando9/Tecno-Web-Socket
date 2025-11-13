@@ -16,7 +16,6 @@ import Backend.Servicio.ListarServicio.ListarServicioPrecioIntervalo;
 import Backend.Servicio.ListarServicio.ListarServicioPrecioSimple;
 import Backend.Servicio.UpdateServicio.UpdateServicio;
 import Backend.Usuarios.CreateUser.CreateUsuario;
-import Backend.Usuarios.DeleteUser.DeleteUsuario;
 import Backend.Usuarios.ListarUser.ListarUsuario;
 import Backend.Usuarios.UpdateUser.UpdateUsuario;
 import Backend.Utils.GeneralMethods.GeneralMethods;

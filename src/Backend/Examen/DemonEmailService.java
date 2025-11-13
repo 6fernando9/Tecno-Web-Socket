@@ -31,6 +31,7 @@ import Backend.Reports.CitasPorBarbero.CitasPorBarbero;
 import Backend.Reports.DetalleVentaPorCita.DetalleVentaPorCita;
 import Backend.Reports.MovimientosInventario.MovimientosInventario;
 // Movimientos handlers will be referenced with fully-qualified names to avoid import name clashes
+import POP3.Pop3Client;
 import POP3.Pop3Service;
 import SMTP.SMTPClient;
 import Utils.SocketUtils;
@@ -308,6 +309,8 @@ public class DemonEmailService {
 
     }
     public static void main(String[] args){
+        Pop3Client pop3Client = new Pop3Client(SocketUtils.MAIL_SERVER,"grupo14sc","grup014grup014*");
+        pop3Client.vaciarMensajesDeGrupo();
         DemonEmailService demonEmailService = new DemonEmailService();
         demonEmailService.executeDemonEmailService();
     }

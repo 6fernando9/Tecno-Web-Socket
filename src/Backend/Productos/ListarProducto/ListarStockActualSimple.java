@@ -17,7 +17,7 @@ public class ListarStockActualSimple {
 
     public static void executeListarStockActualSimpleDemon(String emisor,String receptor,String server,String subject){
         String listarTodosCommand = """
-                listarproductossimple["*"]
+                listarProductoSimple["*"]
                 """;
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         listarTodosCommand = GeneralMethods.parsearSubjectComillaTriple(listarTodosCommand);
@@ -45,7 +45,7 @@ public class ListarStockActualSimple {
     }
     public static void executeListarStockActualSimple(String emisor,String receptor,String server,String subject){
         String listarTodosCommand = """
-                listarproductossimple["*"]
+                listarProductoSimple["*"]
                 """;
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         listarTodosCommand = GeneralMethods.parsearSubjectComillaTriple(listarTodosCommand);
@@ -101,7 +101,7 @@ public class ListarStockActualSimple {
                 listarproductossimple["<15"]
                 """;
         String listarTodosCommand = """
-                listarproductossimple["*"]
+               listarProductoSimple["*"]
                 """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         listarTodosCommand = GeneralMethods.parsearSubjectComillaTriple(listarTodosCommand);

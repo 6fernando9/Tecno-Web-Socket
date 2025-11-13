@@ -17,14 +17,9 @@ public class CreateSQLQuery {
             System.out.println("Connecting successfully to database");
             connection.setAutoCommit(false);
 
-            // convert ISO datetime YYYY-MM-DDTHH:MM to Timestamp
-            String inicioSql = dto.fechaHoraInicio.replace('T', ' ') + ":00";
-            Timestamp tsInicio = Timestamp.valueOf(inicioSql);
-            Timestamp tsFin = null;
-            if (dto.fechaHoraFin != null && !dto.fechaHoraFin.isBlank()) {
-                String finSql = dto.fechaHoraFin.replace('T', ' ') + ":00";
-                tsFin = Timestamp.valueOf(finSql);
-            }
+            // convert ISO datetime YYYY-MM-DDTHH:MM to Timestam
+            Timestamp tsInicio = parseFecha(dto.fechaHoraInicio, false);
+            Timestamp tsFin = parseFecha(dto.fechaHoraFin, true);
 
             // If barbero specified, check overlapping citas (compare with fecha_hora_fin column)
             if (dto.barberoId != null) {
@@ -45,6 +40,7 @@ public class CreateSQLQuery {
             }
 
             // Insert cita
+            //            String subject = "cita_create["123","45","1,2","2025-11-03T14:30","2025-11-03T15:00","Corte urgente","10.00"]";
             String insertCita = "INSERT INTO citas (cliente_id, barbero_id, fecha_hora_inicio, fecha_hora_fin, estado, pago_inicial) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
             long citaId;
             try (PreparedStatement ps = connection.prepareStatement(insertCita)) {
@@ -63,7 +59,7 @@ public class CreateSQLQuery {
                     }
                 }
             }
-
+//            String subject = "cita_create["123","45","1,2","2025-11-03T14:30","2025-11-03T15:00","Corte urgente","10.00"]";
             // Insert cita_servicios (if any)
             if (dto.serviciosCsv != null && !dto.serviciosCsv.isBlank()) {
                 String[] servicios = dto.serviciosCsv.split(",");
@@ -88,4 +84,27 @@ public class CreateSQLQuery {
             return "ERROR DE BASE DE DATOS: " + e.getMessage();
         }
     }
+    private Timestamp parseFecha(String f, boolean isHasta) throws Exception {
+        if (f == null || f.isBlank()) return null;
+        f = f.trim();
+        f = f.replace("/", "-");
+        // Caso 1: Solo fecha (YYYY-MM-DD)
+        if (f.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            if (isHasta)
+                return Timestamp.valueOf(f + " 23:59:59");
+            else
+                return Timestamp.valueOf(f + " 00:00:00");
+        }
+
+        // Caso 2: ISO con T
+        if (f.contains("T"))
+            f = f.replace("T", " ");
+
+        // Caso 3: Fecha y hora sin segundos
+        if (f.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"))
+            f = f + ":00";
+
+        return Timestamp.valueOf(f);
+    }
+
 }

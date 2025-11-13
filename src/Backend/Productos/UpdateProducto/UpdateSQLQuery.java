@@ -33,7 +33,23 @@ public class UpdateSQLQuery {
                 if (filas == 0) {
                     return "El Producto fue modificado/eliminado durante la operación. No se actualizó nada.";
                 }
-                return "Actualización exitosa (" + filas + " fila(s)).";
+                return String.format(
+                        "Producto actualizado exitosamente:\r\n" +
+                                "----------------------------------\r\n" +
+                                "ID: %d\r\n" +
+                                "Nombre: %s\r\n" +
+                                "Descripción: %s\r\n" +
+                                "Precio Venta: %.2f\r\n" +
+                                "Stock Actual: %d\r\n" +
+                                "Stock Mínimo: %d\r\n" +
+                                "----------------------------------\r\n",
+                        updateProductoDTO.id,
+                        updateProductoDTO.nombre,
+                        updateProductoDTO.descripcion,
+                        updateProductoDTO.precioVenta,
+                        updateProductoDTO.stockActual,
+                        updateProductoDTO.stockMinimo
+                );
             }
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());

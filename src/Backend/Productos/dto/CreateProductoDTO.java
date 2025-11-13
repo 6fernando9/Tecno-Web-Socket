@@ -62,13 +62,13 @@ public class CreateProductoDTO {
 //        if(descripcion == null || nombre.equalsIgnoreCase("null")){
 //            return Resultado.error("Error.. campo descripcion no puede ser nulo");
 //        }
-        if(precioVentaDto <= 0){
+        if(precioVentaDto < 0){
             return Resultado.error("Error.. campo precio venta no puede ser menor a 0");
         }
-        if(stockMinimoDto <= 0){
+        if(stockMinimoDto < 0){
             return Resultado.error("Error.. campo stock Minimo no puede ser menor a 0");
         }
-        if(stockMaximoDto <= 0){
+        if(stockMaximoDto < 0){
             return Resultado.error("Error.. campo stock Maximo no puede ser menor a 0");
         }
         String descripcionDto = descripcion.equalsIgnoreCase("null") ? null : descripcion;

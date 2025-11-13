@@ -43,7 +43,21 @@ public class UpdateServicioSQLQuery {
                 if (filas == 0) {
                     return "El servicio fue modificado/eliminado durante la operación. No se actualizó nada.";
                 }
-                return "Actualización exitosa (" + filas + " fila(s)).";
+                return String.format(
+                        "Servicio actualizado exitosamente:\r\n" +
+                                "----------------------------------\r\n" +
+                                "ID: %d\r\n" +
+                                "Nombre: %s\r\n" +
+                                "Descripción: %s\r\n" +
+                                "Precio: %.2f\r\n" +
+                                "Duración Estimada: %d minutos\r\n" +
+                                "----------------------------------\r\n",
+                        dto.id,
+                        dto.nombre,
+                        dto.descripcion,
+                        dto.precio,
+                        dto.duracion
+                );
             }
         }catch(Exception e){
             System.out.println("Throw: " + e.getMessage());

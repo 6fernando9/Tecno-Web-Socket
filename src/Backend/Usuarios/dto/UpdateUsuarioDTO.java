@@ -17,6 +17,8 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
 
     public static Resultado<UpdateUsuarioDTO> crearUpdateUsuarioMedianteSubject(String subject) throws InvalidDataException {
         String[] data = TecnoUtils.procesarString(subject);
+        System.out.println(data.toString());
+        System.out.println(data.length);
         if (data.length < 7) {
             return Resultado.error("Error: se esperaban al menos 7 campos (id, nombre, apellido, email, telefono, password, rol)");
         }

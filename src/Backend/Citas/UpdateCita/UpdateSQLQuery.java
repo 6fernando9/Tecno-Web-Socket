@@ -39,8 +39,12 @@ public class UpdateSQLQuery {
             // Prepare new timestamps
             Timestamp tsInicio = null;
             Timestamp tsFin = null;
-            if (fechaInicioISO != null && !fechaInicioISO.isBlank()) tsInicio = Timestamp.valueOf(fechaInicioISO.replace('T',' ') + ":00");
-            if (fechaFinISO != null && !fechaFinISO.isBlank()) tsFin = Timestamp.valueOf(fechaFinISO.replace('T',' ') + ":00");
+            if (fechaInicioISO != null && !fechaInicioISO.isBlank())
+                tsInicio = parseFecha(fechaInicioISO, false);
+
+            if (fechaFinISO != null && !fechaFinISO.isBlank())
+                tsFin = parseFecha(fechaFinISO, true);
+
 
             Long effectiveBarbero = (barberoId != null) ? barberoId : existingBarbero;
 
@@ -91,4 +95,26 @@ public class UpdateSQLQuery {
             return "ERROR DE BASE DE DATOS: " + e.getMessage();
         }
     }
+    private Timestamp parseFecha(String f, boolean isHasta) throws Exception {
+        if (f == null || f.isBlank()) return null;
+
+        // Caso 1: Solo fecha (YYYY-MM-DD)
+        if (f.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            if (isHasta)
+                return Timestamp.valueOf(f + " 23:59:59");
+            else
+                return Timestamp.valueOf(f + " 00:00:00");
+        }
+
+        // Caso 2: ISO con T
+        if (f.contains("T"))
+            f = f.replace("T", " ");
+
+        // Caso 3: Fecha y hora sin segundos
+        if (f.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"))
+            f = f + ":00";
+
+        return Timestamp.valueOf(f);
+    }
+
 }
