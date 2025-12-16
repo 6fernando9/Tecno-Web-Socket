@@ -6,16 +6,16 @@ import Utils.TecnoUtils;
 
 public class CreateMovimientoDTO {
     public long productoId;
-    public long usuarioId;
+
     public String tipoMovimiento; // ingreso | salida_venta | ajuste
     public int cantidad;
     public String motivo;
 
     public CreateMovimientoDTO(){}
 
-    public CreateMovimientoDTO(long productoId, long usuarioId, String tipoMovimiento, int cantidad, String motivo){
+    public CreateMovimientoDTO(long productoId, String tipoMovimiento, int cantidad, String motivo){
         this.productoId = productoId;
-        this.usuarioId = usuarioId;
+
         this.tipoMovimiento = tipoMovimiento;
         this.cantidad = cantidad;
         this.motivo = motivo;
@@ -39,11 +39,7 @@ public class CreateMovimientoDTO {
         } catch (Exception e) {
             return Resultado.error("Error: producto_id inválido");
         }
-        try {
-            usuarioId = Long.parseLong(data[1]);
-        } catch (Exception e) {
-            return Resultado.error("Error: usuario_id inválido");
-        }
+
         if (tipo == null || tipo.isEmpty()) {
             return Resultado.error("Error: tipo_movimiento no puede estar vacío");
         }
@@ -65,19 +61,18 @@ public class CreateMovimientoDTO {
             motivo = data[4];
         }
 
-        CreateMovimientoDTO dto = new CreateMovimientoDTO(productoId, usuarioId, tipo, cantidad, motivo);
+        CreateMovimientoDTO dto = new CreateMovimientoDTO(productoId, tipo, cantidad, motivo);
         return Resultado.ok(dto);
     }
 
     @Override
     public String toString() {
-        return "Movimiento { productoId=" + productoId + ", usuarioId=" + usuarioId + ", tipo=" + tipoMovimiento + ", cantidad=" + cantidad + ", motivo=" + motivo + " }";
+        return "Movimiento { productoId=" + productoId + ", tipo=" + tipoMovimiento + ", cantidad=" + cantidad + ", motivo=" + motivo + " }";
     }
 
     public String toStringCorreo() {
         return "Movimiento creado {\r\n" +
                 "  productoId = '" + productoId + "'\r\n" +
-                "  usuarioId = '" + usuarioId + "'\r\n" +
                 "  tipo = '" + tipoMovimiento + "'\r\n" +
                 "  cantidad = '" + cantidad + "'\r\n" +
                 "  motivo = '" + (motivo == null ? "" : motivo) + "'\r\n" +

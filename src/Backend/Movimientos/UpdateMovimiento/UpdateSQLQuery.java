@@ -20,7 +20,7 @@ public class UpdateSQLQuery {
             connection.setAutoCommit(false);
 
             // Obtener movimiento actual
-            String SQL_FIND = "SELECT id, producto_id, usuario_id, tipo_movimiento, cantidad, fecha, motivo FROM movimiento_inventarios WHERE id = ? FOR UPDATE";
+            String SQL_FIND = "SELECT id, producto_id, tipo_movimiento, cantidad, fecha, motivo FROM movimiento_inventarios WHERE id = ? FOR UPDATE";
             long productoId;
             String tipo;
             int cantidadActual;

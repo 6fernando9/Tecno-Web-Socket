@@ -5,10 +5,10 @@ import java.sql.*;
 public class ListarSQLUser {
 
     private static final String SQL_LISTAR_TODOS =
-            "SELECT id, nombre, apellido, email, telefono, rol FROM usuarios ORDER BY id ASC";
+            "SELECT id, nombre, apellido, email, telefono, rol FROM users ORDER BY id ASC";
 
     private static final String SQL_LISTAR_POR_ROL =
-            "SELECT id, nombre, apellido, email, telefono, rol FROM usuarios WHERE rol = ? AND deleted_at is null ORDER BY id ASC";
+            "SELECT id, nombre, apellido, email, telefono, rol FROM users WHERE rol = ? AND deleted_at is null ORDER BY id ASC";
 
 
     public String executeListarUsuarios(PGSQLClient pgsqlClient, String filtroRol) {

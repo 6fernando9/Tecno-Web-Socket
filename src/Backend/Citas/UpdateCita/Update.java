@@ -40,7 +40,7 @@ public class Update {
                 }
                 UpdateCitaDTO dto = resultado.getValor();
                 UpdateSQLQuery sql = new UpdateSQLQuery();
-                String str = sql.updateCita(pgsqlClient, dto.citaId, dto.usuarioId, dto.barberoId, dto.fechaHoraInicio, dto.fechaHoraFin);
+                String str = sql.updateCita(pgsqlClient, dto);
                 smtpClientResponse.sendDataToServer("SQL UpdateCita",str + "\r\n");
             }catch(Exception e){
                 smtpClientResponse.sendDataToServer("SQL UpdateCita","ERROR: " + e.getMessage() + "\r\n");
@@ -63,7 +63,7 @@ public class Update {
             }
             UpdateCitaDTO dto = resultado.getValor();
             UpdateSQLQuery sql = new UpdateSQLQuery();
-            String str = sql.updateCita(pgsqlClient, dto.citaId, dto.usuarioId, dto.barberoId, dto.fechaHoraInicio, dto.fechaHoraFin);
+            String str = sql.updateCita(pgsqlClient,dto);
             smtpClientResponse.sendDataToServer("SQL UpdateCita",str + "\r\n");
         }catch(Exception e){
             smtpClientResponse.sendDataToServer("SQL UpdateCita","ERROR: " + e.getMessage() + "\r\n");

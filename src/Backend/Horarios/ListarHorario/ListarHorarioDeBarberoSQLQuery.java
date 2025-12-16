@@ -3,6 +3,8 @@ package Backend.Horarios.ListarHorario;
 import Backend.Horarios.GeneralHorarioSQL;
 import Backend.Horarios.dto.HorarioDTO;
 import Backend.Horarios.dto.UsuarioHorarioDTO;
+import Backend.Roles;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Database.PGSQLClient;
 
 import java.sql.Connection;
@@ -24,10 +26,13 @@ public class ListarHorarioDeBarberoSQLQuery {
                 return "Error... usuario no encontrado.";
             }
 
-            if (!usuarioHorarioDTO.rol.equalsIgnoreCase("barbero")) {
+            if (!usuarioHorarioDTO.rol.equalsIgnoreCase(Roles.BARBERO.getDescripcion())) {
                 return "Error... el usuario asignado no es un barbero.";
             }
-
+            boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, id, Roles.BARBERO.getDescripcion());
+            if(!existeBarbero){
+                return "Error... el usuario no fue encontrado en la tabla barbero..";
+            }
             if (usuarioHorarioDTO.getHorarios().isEmpty()) {
                 return "El barbero " + usuarioHorarioDTO.nombre + " " + usuarioHorarioDTO.apellido +
                         " aún no tiene horarios asignados.";

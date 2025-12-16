@@ -1,6 +1,8 @@
 package Backend.Citas.CreateCita;
 
 import Backend.Citas.dto.CreateCitaDTO;
+import Backend.Citas.dto.CreateCitaV2DTO;
+import Backend.Utils.GeneralMethods.Resultado;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -65,6 +67,26 @@ public class Create {
             CreateCitaDTO dto = resultado.getValor();
             CreateSQLQuery sql = new CreateSQLQuery();
             String str = sql.executeCreateCita(pgsqlClient, dto);
+            smtpClientResponse.sendDataToServer("SQL CreateCita",str + "\r\n");
+        }catch(Exception e){
+            smtpClientResponse.sendDataToServer("SQL CreateCita","ERROR: " + e.getMessage() + "\r\n");
+        }
+    }
+
+
+
+    public static void executeCreateCitaDemon2(String emisor, String receptor, String server, String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        try{
+            Resultado<CreateCitaV2DTO> resultado = CreateCitaV2DTO.createCitaV2DTOResultado(subject);
+            if(!resultado.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Create Cita: Fallo Campos",resultado.getError() + "\r\n");
+                return;
+            }
+            CreateCitaV2DTO dto = resultado.getValor();
+            CreateSQLQuery sql = new CreateSQLQuery();
+            String str = sql.executeCreateCitav2(pgsqlClient, dto);
             smtpClientResponse.sendDataToServer("SQL CreateCita",str + "\r\n");
         }catch(Exception e){
             smtpClientResponse.sendDataToServer("SQL CreateCita","ERROR: " + e.getMessage() + "\r\n");

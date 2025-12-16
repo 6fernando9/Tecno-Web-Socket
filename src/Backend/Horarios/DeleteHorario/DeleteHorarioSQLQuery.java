@@ -1,5 +1,7 @@
 package Backend.Horarios.DeleteHorario;
 
+import Backend.Roles;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Database.PGSQLClient;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,12 +13,12 @@ public class DeleteHorarioSQLQuery {
     private static final String SQL_EXISTE_HORARIO = """
         SELECT COUNT(*) AS cantidad
         FROM public.horario_barberos
-        WHERE id = ? AND usuario_id = ?
+        WHERE id = ? AND barbero_id = ?
         """;
 
     private static final String SQL_DELETE_HORARIO = """
         DELETE FROM public.horario_barberos
-        WHERE id = ? AND usuario_id = ?
+        WHERE id = ? AND barbero_id = ?
         """;
 
     public String executeEliminarHorario(PGSQLClient pgsqlClient, long barberoId, long horarioId) {
@@ -26,6 +28,10 @@ public class DeleteHorarioSQLQuery {
                 databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
 
             System.out.println("Conectado correctamente a la base de datos");
+            boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, barberoId, Roles.BARBERO.getDescripcion());
+            if(!existeBarbero){
+                return "Error... el usuario no fue encontrado en la tabla barbero..";
+            }
             boolean existe = false;
             try (PreparedStatement ps = connection.prepareStatement(SQL_EXISTE_HORARIO)) {
                 ps.setLong(1, horarioId);

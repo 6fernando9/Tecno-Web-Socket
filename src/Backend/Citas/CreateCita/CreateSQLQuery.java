@@ -1,15 +1,121 @@
 package Backend.Citas.CreateCita;
 
 import Backend.Citas.dto.CreateCitaDTO;
+import Backend.Citas.dto.CreateCitaV2DTO;
+import Backend.Pagos.GeneralPagoSQLUtils;
+import Backend.Pagos.dto.TipoPagoDTO;
+import Backend.Roles;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Usuarios.dto.BarberoServicioDTO;
 import Database.PGSQLClient;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 
 public class CreateSQLQuery {
+
+    private static String INSERTAR_CITA = """
+            INSERT INTO citas 
+            (cliente_id, barbero_id,tipo_pago_id,pago_inicial,monto_total,porcentaje_cita,fecha) VALUES (?,?,?,?,?,?,?)
+            RETURNING id
+            """;
+    private static String INSERTAR_CITA_SERVICIO = """
+            INSERT INTO cita_servicios(servicio_id,cita_id) VALUES (?,?)
+            """;
+
+
+
+    public String executeCreateCitav2(PGSQLClient pgsqlClient, CreateCitaV2DTO dto) {
+        String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
+
+        try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
+            connection.setAutoCommit(false);
+            System.out.println("Iniciando transacción de reserva de cita...");
+
+            try {
+                boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, dto.barberoId, Roles.BARBERO.getDescripcion());
+                if(!existeBarbero){
+                    return "Error... el usuario no fue encontrado en la tabla barbero..";
+                }
+                boolean existeCliente = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, dto.clienteId, Roles.CLIENTE.getDescripcion());
+                if(!existeCliente){
+                    return "Error... el usuario no fue encontrado en la tabla cliente..";
+                }
+                BarberoServicioDTO barberoData = GeneralUsuarioSQLUtils.findBarberoConServiciosById(connection, dto.barberoId);
+                if (barberoData == null) return "Barbero no encontrado.";
+
+                double montoTotal = barberoData.servicios.stream()
+                        .filter(s -> dto.serviciosIds.contains(s.id))
+                        .mapToDouble(s -> s.precio)
+                        .sum();
+                TipoPagoDTO tipoPagoDTO = GeneralPagoSQLUtils.findTipoPagoByName(connection,dto.tipoPago);
+                double porcentajeCita = GeneralPagoSQLUtils.findPorcentajeOfConfiguration(connection);
+                if(tipoPagoDTO == null){
+                    return "Error.. Tipo de pago no encontrado";
+                }
+                if(porcentajeCita == 0){
+                    return "Error.. deberia haber un porcentaje de cita mayor a 0";
+                }
+                porcentajeCita = porcentajeCita / 100;
+                boolean esHorarioDisponible = esHorarioDisponible(connection,dto.barberoId,dto.fecha);
+                if (!esHorarioDisponible) {
+                    return "El Horario no esta disponible, consulte otro barbero..";
+                }
+                long citaId = -1;
+                try (PreparedStatement psCita = connection.prepareStatement(INSERTAR_CITA)) {
+                    psCita.setLong(1, dto.clienteId);
+                    psCita.setLong(2, dto.barberoId);
+                    psCita.setLong(3, tipoPagoDTO.id);
+                    psCita.setDouble(4, dto.pagoInicial);
+                    psCita.setDouble(5, montoTotal);
+                    psCita.setDouble(6, porcentajeCita);
+                    psCita.setTimestamp(7, java.sql.Timestamp.valueOf(dto.fecha));
+
+                    try (ResultSet rs = psCita.executeQuery()) {
+                        if (rs.next()) {
+                            citaId = rs.getLong(1);
+                        }
+                    }
+                }
+
+
+                try (PreparedStatement psServicios = connection.prepareStatement(INSERTAR_CITA_SERVICIO)) {
+                    for (Long servicioId : dto.serviciosIds) {
+                        psServicios.setLong(1, servicioId);
+                        psServicios.setLong(2, citaId);
+                        psServicios.addBatch();
+                    }
+                    psServicios.executeBatch();
+                }
+
+                connection.commit();
+                return String.format("Cita agendada con éxito.\nID Cita: %d\nMonto Total: Bs. %.2f\nFecha: %s",
+                        citaId, montoTotal, dto.fecha.toString());
+
+            } catch (SQLException e) {
+                connection.rollback();
+                return "ERROR EN TRANSACCIÓN: " + e.getMessage();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Throw: " + e.getMessage());
+            return "ERROR DE CONEXIÓN: " + e.getMessage();
+        }
+    }
+
+    public static boolean esHorarioDisponible(Connection conn, Long barberoId, java.time.LocalDateTime fecha) throws SQLException {
+        //si hay alguna pendiente
+        String sql = "SELECT COUNT(*) FROM citas WHERE barbero_id = ? AND fecha = ? AND estado IN ('pendiente'.'confirmada')";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, barberoId);
+            ps.setTimestamp(2, java.sql.Timestamp.valueOf(fecha));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) == 0;
+                }
+            }
+        }
+        return false;
+    }
 
     public String executeCreateCita(PGSQLClient pgsqlClient, CreateCitaDTO dto) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();

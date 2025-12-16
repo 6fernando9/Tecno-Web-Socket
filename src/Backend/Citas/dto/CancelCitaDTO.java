@@ -6,14 +6,14 @@ import Utils.TecnoUtils;
 
 public class CancelCitaDTO {
     public long citaId;
-    public Long usuarioId;
+    public Long clienteId;
     public String motivo; // optional
 
     public CancelCitaDTO() {}
 
     public CancelCitaDTO(long citaId, Long usuarioId, String motivo) {
         this.citaId = citaId;
-        this.usuarioId = usuarioId;
+        this.clienteId = usuarioId;
         this.motivo = motivo;
     }
 

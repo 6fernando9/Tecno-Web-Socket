@@ -43,6 +43,8 @@ public class GeneralPagoSQLUtils {
             "contado","transferencia","tarjeta","qr","efectivo","stripe","pago facil"
     };
 
+    private static final String SQL_FIND_CONFIG =
+            "SELECT valor FROM configuraciones WHERE nombre = ?";
     public static VentaSimpleDTO findVentaConPagos(Connection connection, long ventaId) throws SQLException {
         VentaSimpleDTO venta = findVentaById(connection, ventaId);
         if (venta == null) {
@@ -94,6 +96,28 @@ public class GeneralPagoSQLUtils {
                     );
                 }
                 return null;
+            }
+        }
+    }
+    public static double findPorcentajeOfConfiguration(Connection connection) throws SQLException {
+        String nombreConfig = "porcentaje_cita";
+
+        try (PreparedStatement ps = connection.prepareStatement(SQL_FIND_CONFIG)) {
+            ps.setString(1, nombreConfig);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String valor = rs.getString("valor");
+                    if (valor != null && !valor.isEmpty()) {
+                        try {
+                            return Double.parseDouble(valor);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error al convertir porcentaje: " + e.getMessage());
+                            return 0.0;
+                        }
+                    }
+                }
+                return 0.0;
             }
         }
     }

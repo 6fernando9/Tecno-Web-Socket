@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 
 public class CreateSQLQuery {
     private static final String SQL_INSERT =
-            "INSERT INTO movimiento_inventarios (producto_id, usuario_id, tipo_movimiento, cantidad, fecha, motivo) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)";
+            "INSERT INTO movimiento_inventarios (producto_id, tipo_movimiento, cantidad, fecha, motivo) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)";
 
     public String executeInsertMovimientoAndApplyStock(PGSQLClient pgsqlClient, CreateMovimientoDTO dto) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
@@ -43,9 +43,8 @@ public class CreateSQLQuery {
             // insertar movimiento
             try (PreparedStatement psInsert = connection.prepareStatement(SQL_INSERT)) {
                 psInsert.setLong(1, dto.productoId);
-                psInsert.setLong(2, dto.usuarioId);
-                psInsert.setString(3, dto.tipoMovimiento);
-                psInsert.setInt(4, dto.cantidad);
+                psInsert.setString(2, dto.tipoMovimiento);
+                psInsert.setInt(3, dto.cantidad);
                 psInsert.setString(5, dto.motivo);
                 int filas = psInsert.executeUpdate();
                 if (filas == 0) {

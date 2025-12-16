@@ -33,4 +33,6 @@ public class GeneralMethods {
     public static boolean esCampoNuloVacio(String cadena){
         return cadena == null || cadena.trim().isEmpty() || cadena.equalsIgnoreCase("null");
     }
+
+
 }

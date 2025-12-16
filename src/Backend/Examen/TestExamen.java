@@ -11,6 +11,7 @@ import Backend.Productos.CreateProducto.CreateProducto;
 import Backend.Productos.ListarProducto.ListarStockActualIntervalo;
 import Backend.Productos.ListarProducto.ListarStockActualSimple;
 import Backend.Productos.UpdateProducto.UpdateProducto;
+import Backend.Servicio.BarberoServicio.BarberoServicioMain;
 import Backend.Servicio.CreateServicio.CreateServicio;
 import Backend.Servicio.ListarServicio.ListarServicioPrecioIntervalo;
 import Backend.Servicio.ListarServicio.ListarServicioPrecioSimple;
@@ -118,6 +119,10 @@ public class TestExamen {
                 System.out.println("Ejecutando Listar Servicio Intervalo");
                 ListarServicioPrecioIntervalo.executeListarServiciosPrecioIntervalo(emisor,receptor,server,entrada);
                 continue;
+            }
+            if(comando.equalsIgnoreCase("servicioBarbero")){
+                System.out.println("Ejecutando Barbero con sus servicios");
+                BarberoServicioMain.executeBarberoServicioDemon(emisor,receptor,server,entrada);
             }
             //Para Pagos
             if(comando.equalsIgnoreCase("createPago")){

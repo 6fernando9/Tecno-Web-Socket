@@ -1,5 +1,6 @@
 package Backend.Examen;
 
+import Backend.Citas.ConsultarCitas.ConsultarSQL;
 import Backend.Commands.Comando;
 import Backend.Horarios.CrearHorario.CreateHorario;
 import Backend.Horarios.DeleteHorario.DeleteHorario;
@@ -13,6 +14,7 @@ import Backend.Productos.CreateProducto.CreateProducto;
 import Backend.Productos.ListarProducto.ListarStockActualIntervalo;
 import Backend.Productos.ListarProducto.ListarStockActualSimple;
 import Backend.Productos.UpdateProducto.UpdateProducto;
+import Backend.Servicio.BarberoServicio.BarberoServicioMain;
 import Backend.Servicio.CambiarEstado.CambiarEstadoServicio;
 import Backend.Servicio.CreateServicio.CreateServicio;
 import Backend.Servicio.ListarServicio.ListarServicioPrecioIntervalo;
@@ -154,12 +156,18 @@ public class DemonEmailService {
         }
 
         // Para Citas
-        if(comando.equalsIgnoreCase("cita_create")){
+//        if(comando.equalsIgnoreCase("cita_create")){
+//            System.out.println("Ejecutando Crear Cita");
+//            Create.executeCreateCitaDemon(emisor,receptor,server,subject);
+//            return;
+//        }
+
+       if(comando.equalsIgnoreCase("citaCreate")){
             System.out.println("Ejecutando Crear Cita");
-            Create.executeCreateCitaDemon(emisor,receptor,server,subject);
+            Create.executeCreateCitaDemon2(emisor,receptor,server,subject);
             return;
         }
-        if(comando.equalsIgnoreCase("cita_update")){
+        if(comando.equalsIgnoreCase("citaUpdate")){
             System.out.println("Ejecutando Update Cita");
             Update.executeUpdateCitaDemon(emisor,receptor,server,subject);
             return;
@@ -169,9 +177,20 @@ public class DemonEmailService {
             Lista.executeListCitasDemon(emisor,receptor,server,subject);
             return;
         }
-        if(comando.equalsIgnoreCase("cita_cancel")){
+        if(comando.equalsIgnoreCase("citaCancel")){
             System.out.println("Ejecutando Cancel Cita");
             Cancel.executeCancelCitaDemon(emisor,receptor,server,subject);
+            return;
+        }
+        //consultas para citas
+        if(comando.equalsIgnoreCase("ConsultarCitaEnFecha")){
+            System.out.println("Ejecutando Consultar barberos en fecha");
+            ConsultarSQL.executeConsultarBarberosEnFecha(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("ConsultarMontoServicios")){
+            System.out.println("Ejecutando Consultar monto de servicios de barbero");
+            ConsultarSQL.executeConsultarServiciosDeBarberoMonto(emisor,receptor,server,subject);
             return;
         }
         // Reportes
@@ -268,6 +287,10 @@ public class DemonEmailService {
             System.out.println("Ejecutando Cambio de estado de Servicio");
             CambiarEstadoServicio.executeCambiarEstadoServicioDemon(emisor,receptor,server,subject);
             return;
+        }
+        if(comando.equalsIgnoreCase("servicioBarbero")){
+            System.out.println("Ejecutando Barbero con sus servicios");
+            BarberoServicioMain.executeBarberoServicioDemon(emisor,receptor,server,subject);
         }
         //Para Pagos
         if(comando.equalsIgnoreCase("createPago")){

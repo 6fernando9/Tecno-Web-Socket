@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 public class CambiarEstadoUsuarioSQL {
     private static final String SQL_UPDATE =
-            "UPDATE usuarios SET estado = ?, deleted_at = ? WHERE id = ?";
+            "UPDATE users SET estado = ?, deleted_at = ? WHERE id = ?";
 
     public String executeUpdateEstadoUsuario(PGSQLClient pgsqlClient, UsuarioEstadoDTO dto){
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();

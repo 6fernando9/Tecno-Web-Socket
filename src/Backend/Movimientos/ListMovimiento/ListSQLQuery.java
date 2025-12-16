@@ -18,9 +18,8 @@ public class ListSQLQuery {
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Connecting successfully to database");
 
-            StringBuilder sql = new StringBuilder("SELECT id, producto_id, usuario_id, tipo_movimiento, cantidad, fecha, motivo FROM movimiento_inventarios WHERE 1=1");
+            StringBuilder sql = new StringBuilder("SELECT id, producto_id, tipo_movimiento, cantidad, fecha, motivo FROM movimiento_inventarios WHERE 1=1");
             if (productoId != null) sql.append(" AND producto_id = ?");
-            if (usuarioId != null) sql.append(" AND usuario_id = ?");
             if (tipo != null && !tipo.isBlank()) sql.append(" AND tipo_movimiento = ?");
             if (desde != null && !desde.isBlank()) sql.append(" AND fecha >= ?");
             if (hasta != null && !hasta.isBlank()) sql.append(" AND fecha <= ?");
@@ -31,7 +30,6 @@ public class ListSQLQuery {
             try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
                 int idx = 1;
                 if (productoId != null) ps.setLong(idx++, productoId);
-                if (usuarioId != null) ps.setLong(idx++, usuarioId);
                 if (tipo != null && !tipo.isBlank()) ps.setString(idx++, tipo);
                 if (desde != null && !desde.isBlank()) ps.setTimestamp(idx++, Timestamp.valueOf(desde + " 00:00:00"));
                 if (hasta != null && !hasta.isBlank()) ps.setTimestamp(idx++, Timestamp.valueOf(hasta + " 23:59:59"));
@@ -41,12 +39,11 @@ public class ListSQLQuery {
                     while (rs.next()) {
                         long id = rs.getLong("id");
                         long pid = rs.getLong("producto_id");
-                        long uid = rs.getLong("usuario_id");
                         String mov = rs.getString("tipo_movimiento");
                         int cantidad = rs.getInt("cantidad");
                         Timestamp fecha = rs.getTimestamp("fecha");
                         String motivo1 = rs.getString("motivo");
-                        rows.add(String.format("%d | producto=%d | usuario=%d | %s | cantidad=%d | fecha=%s | motivo=%s", id, pid, uid, mov, cantidad, fecha, motivo1));
+                        rows.add(String.format("%d | producto=%d | %s | cantidad=%d | fecha=%s | motivo=%s", id, pid, mov, cantidad, fecha, motivo1));
                     }
                 }
             }

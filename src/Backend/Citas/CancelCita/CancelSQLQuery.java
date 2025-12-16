@@ -1,5 +1,7 @@
 package Backend.Citas.CancelCita;
 
+import Backend.Roles;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Database.PGSQLClient;
 
 import java.sql.Connection;
@@ -14,7 +16,10 @@ public class CancelSQLQuery {
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             connection.setAutoCommit(false);
 
-            // Lock row
+            boolean existeCliente = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, usuarioId, Roles.CLIENTE.getDescripcion());
+            if(!existeCliente){
+                return "Error... el usuario no fue encontrado en la tabla cliente..";
+            }
             String sel = "SELECT id, cliente_id, estado FROM citas WHERE id = ? FOR UPDATE";
             Long clienteId = null;
             String estado = null;
@@ -30,9 +35,10 @@ public class CancelSQLQuery {
                 }
             }
 
+
             // Authorization: usuarioId must match clienteId
             if (usuarioId == null || !usuarioId.equals(clienteId)) {
-                return "Error: usuarioId no autorizado para cancelar esta cita";
+                return "Error: clienteId no autorizado para cancelar esta cita";
             }
 
             if (estado != null && estado.equalsIgnoreCase("cancelada")) {

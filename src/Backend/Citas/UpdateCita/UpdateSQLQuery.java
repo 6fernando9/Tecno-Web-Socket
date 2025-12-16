@@ -1,120 +1,100 @@
 package Backend.Citas.UpdateCita;
 
+import Backend.Citas.ConsultarCitas.ConsultarSQL;
+import Backend.Citas.ConsultarCitas.ConsultarSQLQuery;
+import Backend.Citas.CreateCita.CreateSQLQuery;
+import Backend.Citas.GeneralCitaSQLQuery;
+import Backend.Citas.dto.CitaDTO;
+import Backend.Citas.dto.UpdateCitaDTO;
+import Backend.Roles;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Usuarios.dto.BarberoServicioDTO;
 import Database.PGSQLClient;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UpdateSQLQuery {
 
-    public String updateCita(PGSQLClient pgsqlClient, long citaId, Long usuarioId, Long barberoId, String fechaInicioISO, String fechaFinISO) {
+    public String updateCita(PGSQLClient pgsqlClient, UpdateCitaDTO dto) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
+
+        // SQL para actualizar solo el barbero y la fecha
+        String SQL_UPDATE = "UPDATE citas SET barbero_id = ?, fecha = ? WHERE id = ?";
+        // SQL para verificar propiedad de la cita
+        String SQL_VERIFICAR_DUENO = "SELECT cliente_id, barbero_id FROM citas WHERE id = ?";
+
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             connection.setAutoCommit(false);
 
-            // Lock the row to avoid races
-            String sel = "SELECT id, cliente_id, barbero_id, fecha_hora_inicio, fecha_hora_fin FROM citas WHERE id = ? FOR UPDATE";
-            Long clienteId = null;
-            Long existingBarbero = null;
-            try (PreparedStatement ps = connection.prepareStatement(sel)) {
-                ps.setLong(1, citaId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        clienteId = rs.getLong("cliente_id");
-                        existingBarbero = rs.getLong("barbero_id");
-                    } else {
-                        return "Error: cita no encontrada (id=" + citaId + ")";
+            try {
+                // 1. Verificar existencia y roles de los involucrados
+                boolean existeCliente = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, dto.clienteId, Roles.CLIENTE.getDescripcion());
+                boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, dto.barberoId, Roles.BARBERO.getDescripcion());
+
+                if (!existeCliente || !existeBarbero) {
+                    return "Error: Uno de los usuarios no tiene el rol correspondiente o no existe.";
+                }
+
+                // 2. Verificar que el clienteId del DTO sea el dueño de la cita (Seguridad)
+//                try (PreparedStatement psVerif = connection.prepareStatement(SQL_VERIFICAR_DUENO)) {
+//                    psVerif.setLong(1, dto.citaId);
+//                    try (ResultSet rs = psVerif.executeQuery()) {
+//                        if (rs.next()) {
+//                            long ownerId = rs.getLong("cliente_id");
+//                            if (ownerId != dto.clienteId) {
+//                                return "Error: Usted no tiene permiso para modificar esta cita.";
+//                            }
+//                        } else {
+//                            return "Error: La cita con ID " + dto.citaId + " no existe.";
+//                        }
+//                    }
+//                }
+                CitaDTO cita = GeneralCitaSQLQuery.findCitaById(connection, dto.citaId);
+                if(cita == null){
+                    return "Error..Cita no encontrada..";
+                }
+                BarberoServicioDTO barberoData = GeneralUsuarioSQLUtils.findBarberoConServiciosById(connection, dto.barberoId);
+
+                if (barberoData == null) {
+                    return "Error: No se encontró al barbero con ID " + dto.barberoId + " o no tiene servicios registrados.";
+                }
+                if(dto.barberoId != cita.barberoId){
+                    Set<Long> serviciosIds = cita.servicios.stream().map(servicio -> servicio.id).collect(Collectors.toSet());
+                    if (!ConsultarSQLQuery.barberoPoseeTodosLosServicios(barberoData, serviciosIds)) {
+                        return "Error: El barbero " + barberoData.nombre + " " + barberoData.apellido +
+                                " no ofrece todos los servicios seleccionados para esta cotización.";
                     }
                 }
-            }
+                boolean esHorarioDisponible = CreateSQLQuery.esHorarioDisponible(connection, dto.barberoId, dto.fecha);
+                if (!esHorarioDisponible) {
+                    return "Error: El barbero ya tiene una cita programada en esa fecha y hora.";
+                }
+                try (PreparedStatement psUpdate = connection.prepareStatement(SQL_UPDATE)) {
+                    psUpdate.setLong(1, dto.barberoId);
+                    psUpdate.setTimestamp(2, java.sql.Timestamp.valueOf(dto.fecha));
+                    psUpdate.setLong(3, dto.citaId);
 
-            // Authorization: usuarioId must match clienteId (simple rule)
-            if (usuarioId == null || !usuarioId.equals(clienteId)) {
-                return "Error: usuarioId no autorizado para modificar esta cita";
-            }
-
-            // Prepare new timestamps
-            Timestamp tsInicio = null;
-            Timestamp tsFin = null;
-            if (fechaInicioISO != null && !fechaInicioISO.isBlank())
-                tsInicio = parseFecha(fechaInicioISO, false);
-
-            if (fechaFinISO != null && !fechaFinISO.isBlank())
-                tsFin = parseFecha(fechaFinISO, true);
-
-
-            Long effectiveBarbero = (barberoId != null) ? barberoId : existingBarbero;
-
-            // Check conflicts for barbero (exclude current cita)
-            if (effectiveBarbero != null) {
-                String conflictSql = "SELECT COUNT(1) as cnt FROM citas WHERE barbero_id = ? AND id <> ? AND estado <> 'cancelada' AND (fecha_hora_inicio < ? AND fecha_hora_fin > ?)";
-                try (PreparedStatement pc = connection.prepareStatement(conflictSql)) {
-                    pc.setLong(1, effectiveBarbero);
-                    pc.setLong(2, citaId);
-                    // Use provided end/start or fallback to +30min
-                    Timestamp checkFin = tsFin != null ? tsFin : (tsInicio != null ? new Timestamp(tsInicio.getTime() + 30*60*1000) : new Timestamp(System.currentTimeMillis() + 30*60*1000));
-                    Timestamp checkStart = tsInicio != null ? tsInicio : new Timestamp(System.currentTimeMillis());
-                    pc.setTimestamp(3, checkFin);
-                    pc.setTimestamp(4, checkStart);
-                    try (ResultSet rs2 = pc.executeQuery()) {
-                        if (rs2.next()) {
-                            int cnt = rs2.getInt("cnt");
-                            if (cnt > 0) {
-                                return "Error: el barbero tiene una cita que se solapa en el rango solicitado.";
-                            }
-                        }
+                    int filasAfectadas = psUpdate.executeUpdate();
+                    if (filasAfectadas == 0) {
+                        throw new SQLException("No se pudo actualizar la cita.");
                     }
                 }
+
+                connection.commit();
+                return String.format("Cita %d actualizada con éxito.\nNuevo Barbero ID: %d\nNueva Fecha: %s",
+                        dto.citaId, dto.barberoId, dto.fecha.toString());
+
+            } catch (SQLException e) {
+                connection.rollback();
+                return "ERROR EN TRANSACCIÓN DE ACTUALIZACIÓN: " + e.getMessage();
             }
 
-            // Build update SQL dynamically
-            StringBuilder sb = new StringBuilder("UPDATE citas SET ");
-            boolean added = false;
-            if (barberoId != null) { sb.append("barbero_id = ?"); added = true; }
-            if (tsInicio != null) { if (added) sb.append(", "); sb.append("fecha_hora_inicio = ?"); added = true; }
-            if (tsFin != null) { if (added) sb.append(", "); sb.append("fecha_hora_fin = ?"); added = true; }
-            if (!added) return "Info: no hay campos para actualizar";
-            sb.append(" WHERE id = ?");
-
-            try (PreparedStatement pu = connection.prepareStatement(sb.toString())) {
-                int idx = 1;
-                if (barberoId != null) pu.setLong(idx++, barberoId);
-                if (tsInicio != null) pu.setTimestamp(idx++, tsInicio);
-                if (tsFin != null) pu.setTimestamp(idx++, tsFin);
-                pu.setLong(idx++, citaId);
-                int aff = pu.executeUpdate();
-                if (aff == 0) { connection.rollback(); return "Error: no se pudo actualizar la cita"; }
-            }
-
-            connection.commit();
-            return "OK: cita reprogramada (id=" + citaId + ")";
         } catch (Exception e) {
-            return "ERROR DE BASE DE DATOS: " + e.getMessage();
+            return "ERROR DE CONEXIÓN / BASE DE DATOS: " + e.getMessage();
         }
     }
-    private Timestamp parseFecha(String f, boolean isHasta) throws Exception {
-        if (f == null || f.isBlank()) return null;
 
-        // Caso 1: Solo fecha (YYYY-MM-DD)
-        if (f.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            if (isHasta)
-                return Timestamp.valueOf(f + " 23:59:59");
-            else
-                return Timestamp.valueOf(f + " 00:00:00");
-        }
-
-        // Caso 2: ISO con T
-        if (f.contains("T"))
-            f = f.replace("T", " ");
-
-        // Caso 3: Fecha y hora sin segundos
-        if (f.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"))
-            f = f + ":00";
-
-        return Timestamp.valueOf(f);
-    }
 
 }

@@ -16,7 +16,7 @@ public class MovimientosInventarioSQL {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
         List<String> rows = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
-            String sql = "SELECT id, producto_id, usuario_id, tipo_movimiento, cantidad, fecha, motivo " +
+            String sql = "SELECT id, producto_id, tipo_movimiento, cantidad, fecha, motivo " +
                     "FROM movimiento_inventarios WHERE (? IS NULL OR producto_id = ?) AND (fecha::date BETWEEN COALESCE(?::date, '1900-01-01') AND COALESCE(?::date, now()::date)) ORDER BY fecha DESC;";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 if (productoId == null) {
@@ -32,12 +32,11 @@ public class MovimientosInventarioSQL {
                     while (rs.next()) {
                         long id = rs.getLong("id");
                         int pid = rs.getInt("producto_id");
-                        int uid = rs.getInt("usuario_id");
                         String tipo = rs.getString("tipo_movimiento");
                         int cantidad = rs.getInt("cantidad");
                         java.sql.Timestamp fecha = rs.getTimestamp("fecha");
                         String motivo = rs.getString("motivo");
-                        rows.add(String.format("%d | producto=%d | usuario=%d | tipo=%s | cantidad=%d | fecha=%s | motivo=%s", id, pid, uid, tipo, cantidad, fecha.toString(), motivo));
+                        rows.add(String.format("%d | producto=%d | tipo=%s | cantidad=%d | fecha=%s | motivo=%s", id, pid, tipo, cantidad, fecha.toString(), motivo));
                     }
                 }
             }

@@ -1,5 +1,7 @@
 package Backend.Usuarios.UpdateUser;
 
+import Backend.Roles;
+import Backend.Usuarios.CreateUser.CreateSQLQuery;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Database.PGSQLClient;
@@ -8,36 +10,47 @@ import java.sql.*;
 
 public class UpdateSQLQuery {
     private static final String SQL_UPDATE =
-            "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, telefono = ?, password = ?, rol = ? WHERE id = ?";
+            "UPDATE users SET name = ?, apellido = ?, email = ?, telefono = ?, password = ?, rol = ? WHERE id = ?";
 
-    public String executeUpdateUserQuery(PGSQLClient pgsqlClient, UpdateUsuarioDTO updateUsuarioDTO){
+    public String executeUpdateUserQuery(PGSQLClient pgsqlClient, UpdateUsuarioDTO dto){
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
         try{
             Connection connection = DriverManager.getConnection(databaseUrl,pgsqlClient.getUser(),pgsqlClient.getPassword());
             System.out.println("Connecting successfully to database");
-            UpdateUsuarioDTO usuarioDTODB = GeneralUsuarioSQLUtils.findUserById(connection,updateUsuarioDTO.id);
+            UpdateUsuarioDTO usuarioDTODB = GeneralUsuarioSQLUtils.findUserById(connection, dto.id);
             //usuario no esta en la base de datos
             if (usuarioDTODB == null) {
-                return "No existe un usuario con id=" + updateUsuarioDTO.id + ". No se realizó ninguna actualización.";
+                return "No existe un usuario con id=" + dto.id + ". No se realizó ninguna actualización.";
             }
-            //si el usuario si esta presente
-            //emails diferentes
-            if(!usuarioDTODB.email.equals(updateUsuarioDTO.email)){
+
+            if(!usuarioDTODB.email.equals(dto.email)){
                 //entonces busca si existe algun email ya registrado en la bd
-                if(GeneralUsuarioSQLUtils.existeUsuarioPorEmail(connection,updateUsuarioDTO.email)){
+                if(GeneralUsuarioSQLUtils.existeUsuarioPorEmail(connection, dto.email)){
                     return "El usuario ya se encuentra registrado en el Sistema";
                 }
                 //si no existe entonces realiza el update
             }
+            if(dto.rol.equalsIgnoreCase(Roles.CLIENTE.getDescripcion())){
+                boolean existeCliente = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, usuarioDTODB.id, Roles.CLIENTE.getDescripcion());
+                if(!existeCliente){
+                    CreateSQLQuery.insertIntoRolTable(connection, dto.id,Roles.CLIENTE.getDescripcion());
+                }
+            }else if(dto.rol.equalsIgnoreCase(Roles.BARBERO.getDescripcion())){
+                boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, usuarioDTODB.id, Roles.BARBERO.getDescripcion());
+                if(!existeBarbero){
+                    CreateSQLQuery.insertIntoRolTable(connection, dto.id,Roles.BARBERO.getDescripcion());
+                }
+            }
+
             //si los emails son iguales igual que actualize
             try (PreparedStatement ps = connection.prepareStatement(SQL_UPDATE)) {
-                ps.setString(1, updateUsuarioDTO.nombre);
-                ps.setString(2, updateUsuarioDTO.apellido);
-                ps.setString(3, updateUsuarioDTO.email);
-                ps.setString(4, updateUsuarioDTO.telefono);
-                ps.setString(5, updateUsuarioDTO.password);
-                ps.setString(6, updateUsuarioDTO.rol);
-                ps.setLong(7, updateUsuarioDTO.id);
+                ps.setString(1, dto.nombre);
+                ps.setString(2, dto.apellido);
+                ps.setString(3, dto.email);
+                ps.setString(4, dto.telefono);
+                ps.setString(5, dto.password);
+                ps.setString(6, dto.rol);
+                ps.setLong(7, dto.id);
                 int filas = ps.executeUpdate();
                 if (filas == 0) {
                     return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.";
@@ -52,12 +65,12 @@ public class UpdateSQLQuery {
                                 "Teléfono: %s\r\n" +
                                 "Rol: %s\r\n" +
                                 "--------------------------\r\n",
-                        updateUsuarioDTO.id,
-                        updateUsuarioDTO.nombre,
-                        updateUsuarioDTO.apellido,
-                        updateUsuarioDTO.email,
-                        updateUsuarioDTO.telefono,
-                        updateUsuarioDTO.rol
+                        dto.id,
+                        dto.nombre,
+                        dto.apellido,
+                        dto.email,
+                        dto.telefono,
+                        dto.rol
                 );
             }
         }catch(Exception e){

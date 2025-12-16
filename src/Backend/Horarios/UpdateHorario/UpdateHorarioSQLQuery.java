@@ -1,6 +1,8 @@
 package Backend.Horarios.UpdateHorario;
 
 import Backend.Horarios.dto.HorarioUpdateDTO;
+import Backend.Roles;
+import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Database.PGSQLClient;
 
 import java.sql.*;
@@ -11,13 +13,13 @@ public class UpdateHorarioSQLQuery {
     private static final String SQL_EXISTE_HORARIO = """
         SELECT COUNT(*) AS cantidad
         FROM public.horario_barberos
-        WHERE id = ? AND usuario_id = ?
+        WHERE id = ? AND barbero_id = ?
         """;
 
     private static final String SQL_UPDATE_HORARIO = """
         UPDATE public.horario_barberos
         SET hora_inicio = ?, hora_fin = ?
-        WHERE id = ? AND usuario_id = ?
+        WHERE id = ? AND barbero_id = ?
         """;
 
     public String executeUpdateHorarioQuery(PGSQLClient pgsqlClient, HorarioUpdateDTO horarioDTO) {
@@ -27,6 +29,10 @@ public class UpdateHorarioSQLQuery {
                 databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Conectado correctamente a la base de datos.");
             boolean existe = false;
+            boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, horarioDTO.id, Roles.BARBERO.getDescripcion());
+            if(!existeBarbero){
+                return "Error... el usuario no fue encontrado en la tabla barbero..";
+            }
             try (PreparedStatement ps = connection.prepareStatement(SQL_EXISTE_HORARIO)) {
                 ps.setLong(1, horarioDTO.horarioId);
                 ps.setLong(2, horarioDTO.id);

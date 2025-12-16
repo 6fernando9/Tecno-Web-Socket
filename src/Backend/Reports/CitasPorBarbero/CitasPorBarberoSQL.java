@@ -16,9 +16,9 @@ public class CitasPorBarberoSQL {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
         List<String> rows = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
-            String sql = "SELECT u.id AS barbero_id, u.nombre || ' ' || u.apellido AS barbero, COUNT(c.id) AS citas_count " +
-                    "FROM citas c JOIN usuarios u ON c.barbero_id = u.id " +
-                    "WHERE c.fecha_hora_inicio::date BETWEEN ? AND ? GROUP BY u.id, u.nombre, u.apellido ORDER BY citas_count DESC;";
+            String sql = "SELECT u.id AS barbero_id, u.name || ' ' || u.apellido AS barbero, COUNT(c.id) AS citas_count " +
+                    "FROM citas c JOIN users u ON c.barbero_id = u.id " +
+                    "WHERE c.fecha::date BETWEEN ? AND ? GROUP BY u.id, u.name, u.apellido ORDER BY citas_count DESC;";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 Date d1 = (desde == null) ? Date.valueOf("1900-01-01") : Date.valueOf(desde);
                 Date d2 = (hasta == null) ? new Date(System.currentTimeMillis()) : Date.valueOf(hasta);

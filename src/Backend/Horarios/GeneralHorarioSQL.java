@@ -22,7 +22,7 @@ public class GeneralHorarioSQL {
     public static UsuarioHorarioDTO findUsuarioConHorariosById(Connection connection, long id) throws SQLException {
         String SQL_HORARIOS = """
                 SELECT id, dia_semana, hora_inicio, hora_fin
-                FROM horario_barberos WHERE usuario_id = ?
+                FROM horario_barberos WHERE barbero_id = ?
                 ORDER BY id ASC
                 """;
         UpdateUsuarioDTO usuarioDTO = GeneralUsuarioSQLUtils.findUserById(connection,id);
