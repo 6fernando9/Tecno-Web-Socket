@@ -1,5 +1,8 @@
 package Backend.Movimientos.dto;
 
+import Backend.Movimientos.GeneralMovimientoUtils;
+import Backend.TipoMovimiento;
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Exceptions.InvalidDataException;
 import Utils.TecnoUtils;
@@ -15,7 +18,6 @@ public class CreateMovimientoDTO {
 
     public CreateMovimientoDTO(long productoId, String tipoMovimiento, int cantidad, String motivo){
         this.productoId = productoId;
-
         this.tipoMovimiento = tipoMovimiento;
         this.cantidad = cantidad;
         this.motivo = motivo;
@@ -27,41 +29,55 @@ public class CreateMovimientoDTO {
         if (data.length < 4) {
             return Resultado.error("Error: se esperaban al menos 4 campos (producto_id, usuario_id, tipo_movimiento, cantidad)");
         }
+        String productoIdEntrante = data[0];
+        String tipoEntrante = data[1];
+        String cantidadEntrante = data[2];
+        String motivoEntrante = data[3];
+        if(GeneralMethods.esCampoNuloVacio(productoIdEntrante)){
+            return Resultado.error("Error..el producto id no puede ser nulo");
+        }
+        if(GeneralMethods.esCampoNuloVacio(tipoEntrante)){
+            return Resultado.error("Error..el tipo entrante no puede ser nulo");
+        }
+        if(GeneralMethods.esCampoNuloVacio(cantidadEntrante)){
+            return Resultado.error("Error..la cantidad entrante no puede ser nulo");
+        }
 
         long productoId;
-        long usuarioId;
-        String tipo = data[2];
+
+
         int cantidad;
-        String motivo = null;
 
         try {
-            productoId = Long.parseLong(data[0]);
+            productoId = Long.parseLong(productoIdEntrante);
         } catch (Exception e) {
             return Resultado.error("Error: producto_id inválido");
         }
 
-        if (tipo == null || tipo.isEmpty()) {
-            return Resultado.error("Error: tipo_movimiento no puede estar vacío");
-        }
-        tipo = tipo.toLowerCase();
-        if (!(tipo.equals("ingreso") || tipo.equals("salida_venta") || tipo.equals("ajuste"))) {
-            return Resultado.error("Error: tipo_movimiento debe ser 'ingreso', 'salida_venta' o 'ajuste'");
+        if (!GeneralMovimientoUtils.esTipoMovimientoPermitido(tipoEntrante)) {
+            return Resultado.error("Error: tipo_movimiento debe ser 'entrada', 'salida' o 'ajuste'");
         }
 
         try {
-            cantidad = Integer.parseInt(data[3]);
+            cantidad = Integer.parseInt(cantidadEntrante);
         } catch (Exception e) {
             return Resultado.error("Error: cantidad inválida");
         }
-        if (cantidad <= 0) {
-            return Resultado.error("Error: la cantidad debe ser mayor a 0");
+        if(tipoEntrante.equalsIgnoreCase(TipoMovimiento.AJUSTE.getDescripcion())){
+            if (cantidad == 0) {
+                return Resultado.error("Error: la cantidad debe ser diferente de 0");
+            }
+        }else{
+            //en el caso de que sea entrada o saliente
+            System.out.println("cantidad por else " + cantidad);
+            if (cantidad <= 0) {
+                return Resultado.error("Error: la cantidad debe ser mayor a 0");
+            }
         }
 
-        if (data.length >= 5) {
-            motivo = data[4];
-        }
+        String motivoDto = motivoEntrante.trim().equalsIgnoreCase("null") ? null : motivoEntrante;
 
-        CreateMovimientoDTO dto = new CreateMovimientoDTO(productoId, tipo, cantidad, motivo);
+        CreateMovimientoDTO dto = new CreateMovimientoDTO(productoId, tipoEntrante, cantidad, motivoDto);
         return Resultado.ok(dto);
     }
 

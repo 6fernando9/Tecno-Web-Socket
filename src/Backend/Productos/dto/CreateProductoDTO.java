@@ -62,7 +62,7 @@ public class CreateProductoDTO {
 //        if(descripcion == null || nombre.equalsIgnoreCase("null")){
 //            return Resultado.error("Error.. campo descripcion no puede ser nulo");
 //        }
-        if(precioVentaDto < 0){
+        if(precioVentaDto <= 0){
             return Resultado.error("Error.. campo precio venta no puede ser menor a 0");
         }
         if(stockMinimoDto < 0){
@@ -70,6 +70,9 @@ public class CreateProductoDTO {
         }
         if(stockMaximoDto < 0){
             return Resultado.error("Error.. campo stock Maximo no puede ser menor a 0");
+        }
+        if(stockMinimoDto > stockMaximoDto){
+            return Resultado.error("Error.. el stock minimo no puede superar al stock maximo");
         }
         String descripcionDto = descripcion.equalsIgnoreCase("null") ? null : descripcion;
         return Resultado.ok(new CreateProductoDTO(nombre,descripcionDto,precioVentaDto,stockMinimoDto,stockMaximoDto,null,null));

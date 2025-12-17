@@ -3,6 +3,7 @@ package Backend.Movimientos.CreateMovimiento;
 import Backend.Movimientos.dto.CreateMovimientoDTO;
 import Backend.Productos.GeneralProductoSQLUtils;
 import Backend.Productos.dto.UpdateProductoDTO;
+import Backend.TipoMovimiento;
 import Database.PGSQLClient;
 
 import java.sql.Connection;
@@ -27,14 +28,14 @@ public class CreateSQLQuery {
             }
 
             int nuevoStock = producto.stockActual;
-            if (dto.tipoMovimiento.equals("ingreso")) {
+            if (dto.tipoMovimiento.equals(TipoMovimiento.ENTRADA.getDescripcion())) {
                 nuevoStock += dto.cantidad;
-            } else if (dto.tipoMovimiento.equals("salida_venta")) {
+            } else if (dto.tipoMovimiento.equals(TipoMovimiento.SALIDA.getDescripcion())) {
                 if (producto.stockActual < dto.cantidad) {
                     return "Error: Stock insuficiente. Stock actual=" + producto.stockActual + " cantidad solicitada=" + dto.cantidad;
                 }
                 nuevoStock -= dto.cantidad;
-            } else if (dto.tipoMovimiento.equals("ajuste")) {
+            } else if (dto.tipoMovimiento.equals(TipoMovimiento.AJUSTE.getDescripcion())) {
                 // Para ajuste, asumimos que cantidad puede representar un delta positivo (sumar) o se puede
                 // acordar que para restar se envíe la cantidad y un motivo indicando -; aquí tratamos como suma positiva
                 nuevoStock += dto.cantidad;
@@ -45,7 +46,7 @@ public class CreateSQLQuery {
                 psInsert.setLong(1, dto.productoId);
                 psInsert.setString(2, dto.tipoMovimiento);
                 psInsert.setInt(3, dto.cantidad);
-                psInsert.setString(5, dto.motivo);
+                psInsert.setString(4, dto.motivo);
                 int filas = psInsert.executeUpdate();
                 if (filas == 0) {
                     connection.rollback();

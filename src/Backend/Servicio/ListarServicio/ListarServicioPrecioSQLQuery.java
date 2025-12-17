@@ -58,13 +58,13 @@ public class ListarServicioPrecioSQLQuery {
         }
     }
 
-    public String executeListarServiciosBetween(PGSQLClient pgsqlClient, int[] intervalo) {
+    public String executeListarServiciosBetween(PGSQLClient pgsqlClient, double[] intervalo) {
         if (intervalo == null || intervalo.length != 2) {
             return "Error: se esperaban dos valores (mínimo y máximo)";
         }
 
-        int min = intervalo[0];
-        int max = intervalo[1];
+        double min = intervalo[0];
+        double max = intervalo[1];
 
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 

@@ -71,9 +71,10 @@ reporte_movimientos_inventario["productoId","fechaInicio","fechaFin"]
 
 
 MOVIMIENTOS_DE_INVENTARIO
-movimiento_inventario_create["productoId","usuarioId","tipo","cantidad","motivo"]
-movimiento_inventario_update["movimientoId","cantidad","motivo","fecha"]
-movimiento_inventario_list["productoId","usuarioId","fechaInicio","fechaFin","tipo","motivo","limit"]
+movimiento_inventario_create["productoId","tipo","cantidad","motivo"]
+movimiento_inventario_update["movimientoId","motivo","fecha"]
+anular_movimiento_inventario["movimientoId"]
+movimiento_inventario_list["productoId","fechaInicio","fechaFin","tipo","motivo"]
 
 Fechas Formato YYYY-MM-DD
 """;

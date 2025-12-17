@@ -1,8 +1,11 @@
 package Backend.Movimientos.UpdateMovimiento;
 
+import Backend.Movimientos.GeneralMovimientoUtils;
+import Backend.Movimientos.dto.MovimientoDTO;
 import Backend.Movimientos.dto.UpdateMovimientoDTO;
 import Backend.Productos.GeneralProductoSQLUtils;
 import Backend.Productos.dto.UpdateProductoDTO;
+import Backend.TipoMovimiento;
 import Database.PGSQLClient;
 
 import java.sql.Connection;
@@ -17,83 +20,76 @@ public class UpdateSQLQuery {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Connecting successfully to database");
-            connection.setAutoCommit(false);
-
-            // Obtener movimiento actual
-            String SQL_FIND = "SELECT id, producto_id, tipo_movimiento, cantidad, fecha, motivo FROM movimiento_inventarios WHERE id = ? FOR UPDATE";
-            long productoId;
-            String tipo;
-            int cantidadActual;
-            try (PreparedStatement psFind = connection.prepareStatement(SQL_FIND)) {
-                psFind.setLong(1, dto.id);
-                try (ResultSet rs = psFind.executeQuery()) {
-                    if (!rs.next()) {
-                        return "Error: movimiento no encontrado (id=" + dto.id + ")";
-                    }
-                    productoId = rs.getLong("producto_id");
-                    tipo = rs.getString("tipo_movimiento");
-                    cantidadActual = rs.getInt("cantidad");
-                }
+            MovimientoDTO movimientoDTO = GeneralMovimientoUtils.findMovimientoConProductoById(connection,dto.id);
+            if(movimientoDTO == null){
+                return "Error: Movimiento no encontrado (ID: " + dto.id + ")";
             }
-
-            // Si no hay campos para actualizar
-            if (dto.cantidad == null && (dto.motivo == null || dto.motivo.isBlank()) && (dto.fecha == null || dto.fecha.isBlank())) {
-                return "Error: no hay campos para actualizar";
-            }
-
-            // No permitimos cambiar tipo o producto_id a través de este endpoint
-            // Si se requiere, se debe revertir y crear uno nuevo (audit trail)
-
-            // Si se solicita cambiar cantidad pero no es ajuste => error
-            if (dto.cantidad != null && !"ajuste".equalsIgnoreCase(tipo)) {
-                return "Error: solo se permite cambiar la cantidad en movimientos de tipo 'ajuste'";
-            }
-
-            int nuevoStock = -1;
-
-            if (dto.cantidad != null) {
-                // obtener producto
-                UpdateProductoDTO producto = GeneralProductoSQLUtils.findProductoById(connection, productoId);
-                if (producto == null) {
-                    connection.rollback();
-                    return "Error: producto asociado no encontrado (id=" + productoId + ")";
-                }
-                int delta = dto.cantidad - cantidadActual;
-                nuevoStock = producto.stockActual + delta;
-            }
-
-            // Actualizar movimiento
-            String SQL_UPDATE = "UPDATE movimiento_inventarios SET cantidad = COALESCE(?, cantidad), motivo = COALESCE(?, motivo), fecha = COALESCE(?, fecha) WHERE id = ?";
-            try (PreparedStatement psUpdate = connection.prepareStatement(SQL_UPDATE)) {
-                if (dto.cantidad != null) psUpdate.setInt(1, dto.cantidad); else psUpdate.setNull(1, java.sql.Types.INTEGER);
-                if (dto.motivo != null) psUpdate.setString(2, dto.motivo); else psUpdate.setNull(2, java.sql.Types.VARCHAR);
-                if (dto.fecha != null) psUpdate.setTimestamp(3, Timestamp.valueOf(dto.fecha + " 00:00:00")); else psUpdate.setNull(3, java.sql.Types.TIMESTAMP);
-                psUpdate.setLong(4, dto.id);
-                int filas = psUpdate.executeUpdate();
-                if (filas == 0) {
-                    connection.rollback();
-                    return "Error: no se pudo actualizar el movimiento";
-                }
-            }
-
-            if (dto.cantidad != null) {
-                String SQL_UPDATE_STOCK = "UPDATE productos SET stock_actual = ? WHERE id = ?";
-                try (PreparedStatement psStock = connection.prepareStatement(SQL_UPDATE_STOCK)) {
-                    psStock.setInt(1, nuevoStock);
-                    psStock.setLong(2, productoId);
-                    int fu = psStock.executeUpdate();
-                    if (fu == 0) {
-                        connection.rollback();
-                        return "Error: no se pudo actualizar el stock del producto";
+            String sql = "UPDATE movimiento_inventarios SET motivo = ?, fecha = ? WHERE id = ?";
+                try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                    ps.setString(1, dto.motivo);
+                    ps.setTimestamp(2, Timestamp.valueOf(dto.fecha));
+                    ps.setLong(3, dto.id);
+                    int filasAfectadas = ps.executeUpdate();
+                    if (filasAfectadas > 0) {
+                        return "OK: Movimiento actualizado (ID: " + dto.id + ")";
+                    } else {
+                        return "Error: No se encontró el movimiento para actualizar.";
                     }
                 }
-            }
-
-            connection.commit();
-            if (dto.cantidad != null) return "OK: Movimiento actualizado. Nuevo stock=" + nuevoStock;
-            return "OK: Movimiento actualizado.";
         } catch (Exception e) {
             System.out.println("Throw: " + e.getMessage());
+            return "ERROR DE BASE DE DATOS: " + e.getMessage();
+        }
+    }
+    public String executeAnularMovimiento(PGSQLClient pgsqlClient, long movimientoId) {
+        String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
+
+        try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
+            connection.setAutoCommit(false);
+
+            MovimientoDTO mov = GeneralMovimientoUtils.findMovimientoConProductoById(connection, movimientoId);
+
+            if (mov == null) {
+                return "Error: El movimiento con ID " + movimientoId + " no existe.";
+            }
+            if(mov.estado.equalsIgnoreCase("anulado")){
+                return "El movimiento ya esta anulado";
+            }
+            int stockActual = mov.producto.stockActual;
+            int cantidadMovimiento = mov.cantidad;
+            int nuevoStock = stockActual;
+            if(mov.tipoMovimiento.equalsIgnoreCase(TipoMovimiento.ENTRADA.getDescripcion())){
+                nuevoStock -= cantidadMovimiento;
+            }else if(mov.tipoMovimiento.equalsIgnoreCase(TipoMovimiento.SALIDA.getDescripcion())){
+                nuevoStock += cantidadMovimiento;
+            }else if(mov.tipoMovimiento.equalsIgnoreCase(TipoMovimiento.AJUSTE.getDescripcion())){
+                nuevoStock -= cantidadMovimiento;
+            }else{
+                connection.rollback();
+                return "Error: Tipo de movimiento desconocido.";
+            }
+            if (nuevoStock < 0) {
+                connection.rollback();
+                return "Error: No se puede anular. El stock resultante sería negativo (" + nuevoStock + "). " +
+                        "Ajuste el inventario físicamente antes de anular.";
+            }
+
+            String sqlAnular = "UPDATE movimiento_inventarios SET estado = 'anulado' WHERE id = ?";
+            try (PreparedStatement psMov = connection.prepareStatement(sqlAnular)) {
+                psMov.setLong(1, movimientoId);
+                psMov.executeUpdate();
+            }
+
+            String sqlStock = "UPDATE productos SET stock_actual = ? WHERE id = ?";
+            try (PreparedStatement psProd = connection.prepareStatement(sqlStock)) {
+                psProd.setInt(1, nuevoStock);
+                psProd.setLong(2, mov.producto.id);
+                psProd.executeUpdate();
+            }
+            connection.commit();
+            return "OK: Movimiento anulado. Stock revertido de " + stockActual + " a " + nuevoStock;
+
+        } catch (Exception e) {
             return "ERROR DE BASE DE DATOS: " + e.getMessage();
         }
     }

@@ -38,13 +38,17 @@ public class GeneralUsuarioSQLUtils {
         try (PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                if(rs.next()){
+                    return rs.getBoolean(1);
+                }
+                return false;
             }
+
         }
     }
 
     public static UpdateUsuarioDTO findUserById(Connection con, long id) throws SQLException {
-        String SQL_FIND = "SELECT id, nombre, apellido, email, telefono, password, rol, estado,deleted_at FROM users WHERE id = ?";
+        String SQL_FIND = "SELECT id, name, apellido, email, telefono, password, rol, estado,deleted_at FROM users WHERE id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(SQL_FIND)) {
             ps.setLong(1, id);
@@ -53,7 +57,7 @@ public class GeneralUsuarioSQLUtils {
                 if (rs.next()) {
                     UpdateUsuarioDTO usuario = new UpdateUsuarioDTO();
                     usuario.id = rs.getLong("id");
-                    usuario.nombre = rs.getString("nombre");
+                    usuario.nombre = rs.getString("name");
                     usuario.apellido = rs.getString("apellido");
                     usuario.email = rs.getString("email");
                     usuario.telefono = rs.getString("telefono");
@@ -118,7 +122,7 @@ public class GeneralUsuarioSQLUtils {
     }
 
     public static UpdateUsuarioDTO findUserByEmail(Connection con, String email) throws SQLException {
-        String SQL_FIND = "SELECT id, nombre, apellido, email, telefono, password, rol, estado, deleted_at FROM users WHERE email = ?";
+        String SQL_FIND = "SELECT id, name, apellido, email, telefono, password, rol, estado, deleted_at FROM users WHERE email = ?";
 
         try (PreparedStatement ps = con.prepareStatement(SQL_FIND)) {
             ps.setString(1, email);
@@ -127,7 +131,7 @@ public class GeneralUsuarioSQLUtils {
                 if (rs.next()) {
                     UpdateUsuarioDTO usuario = new UpdateUsuarioDTO();
                     usuario.id = rs.getLong("id");
-                    usuario.nombre = rs.getString("nombre");
+                    usuario.nombre = rs.getString("name");
                     usuario.apellido = rs.getString("apellido");
                     usuario.email = rs.getString("email");
                     usuario.telefono = rs.getString("telefono");

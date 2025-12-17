@@ -1,52 +1,59 @@
 package Backend.Movimientos.dto;
 
+import Backend.Utils.GeneralMethods.GeneralMethods;
 import Backend.Utils.GeneralMethods.Resultado;
 import Exceptions.InvalidDataException;
 import Utils.TecnoUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class UpdateMovimientoDTO {
     public long id;
-    public Integer cantidad; // nullable
     public String motivo; // nullable
-    public String fecha; // nullable, expected format YYYY-MM-DD
+    public LocalDateTime fecha; // nullable, expected format YYYY-MM-DD
 
     public UpdateMovimientoDTO() {}
 
-    public UpdateMovimientoDTO(long id, Integer cantidad, String motivo, String fecha) {
+    public UpdateMovimientoDTO(long id, String motivo, LocalDateTime fecha) {
         this.id = id;
-        this.cantidad = cantidad;
         this.motivo = motivo;
         this.fecha = fecha;
     }
 
-    public static Resultado<UpdateMovimientoDTO> crearMedianteSubject(String subject) throws InvalidDataException {
+    public static Resultado<UpdateMovimientoDTO> crearMedianteSubject(String subject) {
         String[] data = TecnoUtils.procesarString(subject);
-        if (data.length < 1) {
-            return Resultado.error("Error: se esperaba al menos el id del movimiento");
+        if (data.length < 3) {
+            return Resultado.error("Error: se esperaban al menos 3 parámetros (idMovimiento, motivo, fecha)");
         }
-        long id;
+        String idEntrante = data[0];
+        String motivoEntrante = data[1];
+        String fechaEntrante = data[2];
+        if (GeneralMethods.esCampoNuloVacio(idEntrante)) {
+            return Resultado.error("Error: el ID del movimiento es obligatorio.");
+        }
+        if (GeneralMethods.esCampoNuloVacio(fechaEntrante)) {
+            return Resultado.error("Error: la fecha no puede estar vacía.");
+        }
+
         try {
-            id = Long.parseLong(data[0]);
+            long id = Long.parseLong(idEntrante);
+            String motivoDto = motivoEntrante.equalsIgnoreCase("null") ? null : motivoEntrante;
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+            LocalDateTime fechaHora = LocalDateTime.parse(fechaEntrante, formatter);
+
+            return Resultado.ok(new UpdateMovimientoDTO(id, motivoDto, fechaHora));
+
+        } catch (NumberFormatException e) {
+            return Resultado.error("Error: El ID del movimiento debe ser un número válido.");
+        } catch (DateTimeParseException e) {
+            return Resultado.error("Error: El formato de fecha debe ser dd-MM-yyyy HH:mm (Ej: 17-12-2025 14:30)");
         } catch (Exception e) {
-            return Resultado.error("Error: id inválido");
+            return Resultado.error("Error inesperado: " + e.getMessage());
         }
-
-        Integer cantidad = null;
-        String motivo = null;
-        String fecha = null;
-
-        if (data.length > 1 && !data[1].isBlank()) {
-            try {
-                cantidad = Integer.parseInt(data[1]);
-            } catch (Exception e) {
-                return Resultado.error("Error: cantidad inválida");
-            }
-            if (cantidad <= 0) return Resultado.error("Error: la cantidad debe ser mayor a 0");
-        }
-        if (data.length > 2) motivo = data[2];
-        if (data.length > 3) fecha = data[3];
-
-        UpdateMovimientoDTO dto = new UpdateMovimientoDTO(id, cantidad, motivo, fecha);
-        return Resultado.ok(dto);
     }
 }

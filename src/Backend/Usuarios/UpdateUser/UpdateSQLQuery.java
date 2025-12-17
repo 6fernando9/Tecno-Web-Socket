@@ -32,11 +32,13 @@ public class UpdateSQLQuery {
             }
             if(dto.rol.equalsIgnoreCase(Roles.CLIENTE.getDescripcion())){
                 boolean existeCliente = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, usuarioDTODB.id, Roles.CLIENTE.getDescripcion());
+                System.out.println("existe cliente " + existeCliente);
                 if(!existeCliente){
                     CreateSQLQuery.insertIntoRolTable(connection, dto.id,Roles.CLIENTE.getDescripcion());
                 }
             }else if(dto.rol.equalsIgnoreCase(Roles.BARBERO.getDescripcion())){
                 boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, usuarioDTODB.id, Roles.BARBERO.getDescripcion());
+                System.out.println("existe barbero " + existeBarbero);
                 if(!existeBarbero){
                     CreateSQLQuery.insertIntoRolTable(connection, dto.id,Roles.BARBERO.getDescripcion());
                 }

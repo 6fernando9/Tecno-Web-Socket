@@ -20,12 +20,12 @@ public class ListarServicioPrecioIntervalo {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         System.out.println("subject" + subject);
 
-        Resultado<int[]> resultadoListaSimple = ComparadorSigno.crearIntervaloFromSubject(subject);
+        Resultado<double[]> resultadoListaSimple = ComparadorSigno.crearIntervaloDoubleFromSubject(subject);
         if(!resultadoListaSimple.esExitoso()){
             smtpClientResponse.sendDataToServer("SQL Listar Servicios: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
             return;
         }
-        int[] comparadorSigno = resultadoListaSimple.getValor();
+        double[] comparadorSigno = resultadoListaSimple.getValor();
         ListarServicioPrecioSQLQuery listarServicioPrecioSQLQuery = new ListarServicioPrecioSQLQuery();
         String strListarProducto = listarServicioPrecioSQLQuery.executeListarServiciosBetween(pgsqlClient,comparadorSigno);
         smtpClientResponse.sendDataToServer("SQL Listar Servicios ",strListarProducto + "\r\n");
@@ -57,12 +57,12 @@ public class ListarServicioPrecioIntervalo {
         if( existeMensajeEnPop3 ){
             System.out.println("subject" + subject);
 
-            Resultado<int[]> resultadoListaSimple = ComparadorSigno.crearIntervaloFromSubject(subject);
+            Resultado<double[]> resultadoListaSimple = ComparadorSigno.crearIntervaloDoubleFromSubject(subject);
             if(!resultadoListaSimple.esExitoso()){
                 smtpClientResponse.sendDataToServer("SQL Listar Servicios: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
                 return;
             }
-            int[] comparadorSigno = resultadoListaSimple.getValor();
+            double[] comparadorSigno = resultadoListaSimple.getValor();
             ListarServicioPrecioSQLQuery listarServicioPrecioSQLQuery = new ListarServicioPrecioSQLQuery();
             String strListarProducto = listarServicioPrecioSQLQuery.executeListarServiciosBetween(pgsqlClient,comparadorSigno);
             smtpClientResponse.sendDataToServer("SQL Listar Servicios ",strListarProducto + "\r\n");
@@ -102,12 +102,12 @@ public class ListarServicioPrecioIntervalo {
         if( existeMensajeEnPop3 ){
             System.out.println("subject" + subject);
 
-            Resultado<int[]> resultadoListaSimple = ComparadorSigno.crearIntervaloFromSubject(subject);
+            Resultado<double[]> resultadoListaSimple = ComparadorSigno.crearIntervaloDoubleFromSubject(subject);
             if(!resultadoListaSimple.esExitoso()){
                 smtpClientResponse.sendDataToServer("SQL Listar Servicios: Fallo Campos", resultadoListaSimple.getError() + "\r\n");
                 return;
             }
-            int[] comparadorSigno = resultadoListaSimple.getValor();
+            double[] comparadorSigno = resultadoListaSimple.getValor();
             ListarServicioPrecioSQLQuery listarServicioPrecioSQLQuery = new ListarServicioPrecioSQLQuery();
             String strListarProducto = listarServicioPrecioSQLQuery.executeListarServiciosBetween(pgsqlClient,comparadorSigno);
             smtpClientResponse.sendDataToServer("SQL Listar Servicios ",strListarProducto + "\r\n");

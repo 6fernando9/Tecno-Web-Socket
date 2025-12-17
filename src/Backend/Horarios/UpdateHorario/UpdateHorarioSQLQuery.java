@@ -3,6 +3,7 @@ package Backend.Horarios.UpdateHorario;
 import Backend.Horarios.dto.HorarioUpdateDTO;
 import Backend.Roles;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Database.PGSQLClient;
 
 import java.sql.*;
@@ -28,6 +29,13 @@ public class UpdateHorarioSQLQuery {
         try (Connection connection = DriverManager.getConnection(
                 databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Conectado correctamente a la base de datos.");
+            UpdateUsuarioDTO updateUsuarioDTO = GeneralUsuarioSQLUtils.findUserById(connection,horarioDTO.id);
+            if(updateUsuarioDTO == null){
+                return "Error..El usuario no fue encontrado...";
+            }
+            if(!updateUsuarioDTO.rol.equalsIgnoreCase(Roles.BARBERO.getDescripcion())){
+                return "Error..El usuario no tiene el rol de barbero...";
+            }
             boolean existe = false;
             boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, horarioDTO.id, Roles.BARBERO.getDescripcion());
             if(!existeBarbero){

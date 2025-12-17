@@ -257,6 +257,11 @@ public class DemonEmailService {
             Backend.Movimientos.UpdateMovimiento.Update.executeUpdateMovimientoDemon(emisor,receptor,server,subject);
             return;
         }
+        if(comando.equalsIgnoreCase("anular_movimiento_inventario")){
+            System.out.println("Ejecutando anulacion de Movimiento inventario");
+            Backend.Movimientos.UpdateMovimiento.Update.executeAnularMovimientoDemon(emisor,receptor,server,subject);
+            return;
+        }
         if(comando.equalsIgnoreCase("movimiento_inventario_list")){
             System.out.println("Ejecutando Listar Movimientos inventario");
             Backend.Movimientos.ListMovimiento.Lista.executeListMovimientosDemon(emisor,receptor,server,subject);

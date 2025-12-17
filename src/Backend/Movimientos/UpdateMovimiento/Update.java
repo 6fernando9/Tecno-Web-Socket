@@ -2,6 +2,7 @@ package Backend.Movimientos.UpdateMovimiento;
 
 import Backend.Movimientos.dto.UpdateMovimientoDTO;
 import Backend.Utils.GeneralMethods.GeneralMethods;
+import Backend.Utils.GeneralMethods.Resultado;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -72,5 +73,34 @@ public class Update {
         }catch(Exception e){
             smtpClientResponse.sendDataToServer("SQL UpdateMovimiento","ERROR: " + e.getMessage() + "\r\n");
         }
+    }
+
+    public static void executeAnularMovimientoDemon(String emisor, String receptor, String server, String subject){
+        PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
+        SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
+        try{
+            var resultado = validarErrores(subject);
+            if(!resultado.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Anular movimiento: Fallo Campos",resultado.getError() + "\r\n");
+                return;
+            }
+            Long id = resultado.getValor();
+            UpdateSQLQuery sql = new UpdateSQLQuery();
+            String str = sql.executeAnularMovimiento(pgsqlClient, id);
+            smtpClientResponse.sendDataToServer("SQL Anular Movimiento",str + "\r\n");
+        }catch(Exception e){
+            smtpClientResponse.sendDataToServer("SQL Anular Movimiento","ERROR: " + e.getMessage() + "\r\n");
+        }
+    }
+    private static Resultado<Long> validarErrores(String subject){
+        String[] data = TecnoUtils.procesarString(subject);
+        String idEntrante = data[0];
+        Long id = null;
+        try{
+            id = Long.parseLong(idEntrante);
+        }catch (NumberFormatException e){
+            Resultado.error("Error...id no numerico");
+        }
+        return Resultado.ok(id);
     }
 }

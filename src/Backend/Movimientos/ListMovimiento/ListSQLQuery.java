@@ -1,63 +1,72 @@
 package Backend.Movimientos.ListMovimiento;
 
+import Backend.Movimientos.dto.ListMovimientoDTO;
 import Database.PGSQLClient;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListSQLQuery {
 
-    public String listMovimientos(PGSQLClient pgsqlClient, Long productoId, Long usuarioId, String desde, String hasta, String tipo, String motivo, Integer limit) {
+    public String listMovimientos(PGSQLClient pgsqlClient, ListMovimientoDTO dto) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
-        List<String> rows = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
-            System.out.println("Connecting successfully to database");
+        StringBuilder sql = new StringBuilder("SELECT id, producto_id, tipo_movimiento, cantidad, fecha, motivo, estado FROM movimiento_inventarios WHERE 1=1");
+        System.out.println("dto: "+ dto.toString());
+        if (dto.productoId != null) sql.append(" AND producto_id = ?");
+        if (dto.tipo != null)       sql.append(" AND tipo_movimiento = ?");
+        if (dto.desde != null)      sql.append(" AND fecha >= ?");
+        if (dto.hasta != null)      sql.append(" AND fecha <= ?");
+        if (dto.motivo != null)     sql.append(" AND motivo ILIKE ?");
 
-            StringBuilder sql = new StringBuilder("SELECT id, producto_id, tipo_movimiento, cantidad, fecha, motivo FROM movimiento_inventarios WHERE 1=1");
-            if (productoId != null) sql.append(" AND producto_id = ?");
-            if (tipo != null && !tipo.isBlank()) sql.append(" AND tipo_movimiento = ?");
-            if (desde != null && !desde.isBlank()) sql.append(" AND fecha >= ?");
-            if (hasta != null && !hasta.isBlank()) sql.append(" AND fecha <= ?");
-            if (motivo != null && !motivo.isBlank()) sql.append(" AND motivo ILIKE ?");
-            sql.append(" ORDER BY fecha DESC");
-            if (limit != null && limit > 0) sql.append(" LIMIT ").append(limit);
+        sql.append(" ORDER BY fecha DESC");
+        System.out.println("SQL HECHO: " + sql);
+        List<String> resultados = new ArrayList<>();
+        DateTimeFormatter formatoSalida = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-            try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-                int idx = 1;
-                if (productoId != null) ps.setLong(idx++, productoId);
-                if (tipo != null && !tipo.isBlank()) ps.setString(idx++, tipo);
-                if (desde != null && !desde.isBlank()) ps.setTimestamp(idx++, Timestamp.valueOf(desde + " 00:00:00"));
-                if (hasta != null && !hasta.isBlank()) ps.setTimestamp(idx++, Timestamp.valueOf(hasta + " 23:59:59"));
-                if (motivo != null && !motivo.isBlank()) ps.setString(idx++, "%" + motivo + "%");
+        try (Connection con = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
+            try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
+                int i = 1;
+                if (dto.productoId != null) ps.setLong(i++, dto.productoId);
+                if (dto.tipo != null)       ps.setString(i++, dto.tipo);
+                if (dto.desde != null)      ps.setTimestamp(i++, Timestamp.valueOf(dto.desde));
+                if (dto.hasta != null)      ps.setTimestamp(i++, Timestamp.valueOf(dto.hasta));
+                if (dto.motivo != null)     ps.setString(i++, "%" + dto.motivo + "%");
 
+                // 3. Ejecución y procesamiento
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        long id = rs.getLong("id");
-                        long pid = rs.getLong("producto_id");
-                        String mov = rs.getString("tipo_movimiento");
-                        int cantidad = rs.getInt("cantidad");
-                        Timestamp fecha = rs.getTimestamp("fecha");
-                        String motivo1 = rs.getString("motivo");
-                        rows.add(String.format("%d | producto=%d | %s | cantidad=%d | fecha=%s | motivo=%s", id, pid, mov, cantidad, fecha, motivo1));
+                        String linea = String.format(
+                                "ID: %d | Prod: %d | %s | Cant: %d | Fecha: %s | Estado: %s | Motivo: %s",
+                                rs.getLong("id"),
+                                rs.getLong("producto_id"),
+                                rs.getString("tipo_movimiento").toUpperCase(),
+                                rs.getInt("cantidad"),
+                                rs.getTimestamp("fecha").toLocalDateTime().format(formatoSalida),
+                                rs.getString("estado").toUpperCase(),
+                                rs.getString("motivo") != null ? rs.getString("motivo") : "Sin motivo"
+                        );
+                        resultados.add(linea);
                     }
                 }
             }
 
-            if (rows.isEmpty()) return "No se encontraron movimientos con los filtros indicados.";
-            StringBuilder out = new StringBuilder();
-            out.append("Movimientos encontrados:\r\n");
-            for (String r : rows) {
-                out.append(r).append("\r\n");
+            // 4. Formateo de la respuesta final
+            if (resultados.isEmpty()) {
+                return "No se encontraron movimientos con los filtros proporcionados.";
             }
-            return out.toString();
-        } catch (Exception e) {
-            System.out.println("Throw: " + e.getMessage());
+
+            StringBuilder response = new StringBuilder("--- Listado de Movimientos ---\r\n");
+            for (String r : resultados) {
+                response.append(r).append("\r\n");
+            }
+            return response.toString();
+
+        } catch (SQLException e) {
             return "ERROR DE BASE DE DATOS: " + e.getMessage();
+        } catch (Exception e) {
+            return "ERROR INESPERADO: " + e.getMessage();
         }
     }
 

@@ -2,6 +2,7 @@ package Backend.Horarios.DeleteHorario;
 
 import Backend.Roles;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
+import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Database.PGSQLClient;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,6 +29,13 @@ public class DeleteHorarioSQLQuery {
                 databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
 
             System.out.println("Conectado correctamente a la base de datos");
+            UpdateUsuarioDTO updateUsuarioDTO = GeneralUsuarioSQLUtils.findUserById(connection,barberoId);
+            if(updateUsuarioDTO == null){
+                return "Error..El usuario no fue encontrado...";
+            }
+            if(!updateUsuarioDTO.rol.equalsIgnoreCase(Roles.BARBERO.getDescripcion())){
+                return "Error..El usuario no tiene el rol de barberp...";
+            }
             boolean existeBarbero = GeneralUsuarioSQLUtils.existeUsuarioConRol(connection, barberoId, Roles.BARBERO.getDescripcion());
             if(!existeBarbero){
                 return "Error... el usuario no fue encontrado en la tabla barbero..";

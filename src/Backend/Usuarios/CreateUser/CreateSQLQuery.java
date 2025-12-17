@@ -25,6 +25,7 @@ public class CreateSQLQuery {
                 return "Error: ya existe un usuario con el correo '" + dto.email + "'.";
             }
             long nuevoUserId = insertIntoUsers(connection, dto);
+
             insertIntoRolTable(connection, nuevoUserId, dto.rol);
 
             return String.format(
@@ -80,14 +81,14 @@ public class CreateSQLQuery {
     public static void insertIntoRolTable(Connection connection, long userId, String rol) throws SQLException {
         PreparedStatement ps = null;
         String sql = null;
-        try {
+
             if(rol.equalsIgnoreCase(Roles.CLIENTE.getDescripcion())){
                sql = SQL_INSERT_CLIENTE;
             } else if (rol.equalsIgnoreCase(Roles.BARBERO.getDescripcion())) {
                sql = SQL_INSERT_BARBERO;
             }
 
-            if (ps != null) {
+            if (sql != null) {
                 ps = connection.prepareStatement(sql);
                 ps.setLong(1, userId);
                 int filas = ps.executeUpdate();
@@ -95,11 +96,7 @@ public class CreateSQLQuery {
                     throw new SQLException("Fallo al insertar el rol '" + rol + "' en su tabla específica.");
                 }
             }
-        } finally {
-            if (ps != null) {
-                ps.close();
-            }
-        }
+
     }
 
 }

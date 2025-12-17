@@ -1,5 +1,6 @@
 package Backend.Movimientos.ListMovimiento;
 
+import Backend.Movimientos.dto.ListMovimientoDTO;
 import Database.PGSQLClient;
 import POP3.Pop3Client;
 import SMTP.SMTPClient;
@@ -33,18 +34,14 @@ public class Lista {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         if( existeMensajeEnPop3 ){
             try{
-                String[] params = TecnoUtils.procesarString(subject);
-                Long productoId = (params.length > 0 && !params[0].isBlank()) ? Long.parseLong(params[0]) : null;
-                Long usuarioId = (params.length > 1 && !params[1].isBlank()) ? Long.parseLong(params[1]) : null;
-                String desde = (params.length > 2 && !params[2].isBlank()) ? params[2] : null;
-                String hasta = (params.length > 3 && !params[3].isBlank()) ? params[3] : null;
-                String tipo = (params.length > 4 && !params[4].isBlank()) ? params[4] : null;
-                String motivo = (params.length > 5 && !params[5].isBlank()) ? params[5] : null;
-                Integer limit = null;
-                if (params.length > 6 && !params[6].isBlank()) limit = Integer.parseInt(params[6]);
-
                 ListSQLQuery sql = new ListSQLQuery();
-                String result = sql.listMovimientos(pgsqlClient, productoId, usuarioId, desde, hasta, tipo, motivo, limit);
+                var resultado = ListMovimientoDTO.crearMedianteSubject(subject);
+                if(!resultado.esExitoso()){
+                    smtpClientResponse.sendDataToServer("SQL ListMovimientos", resultado.getError() + "\r\n");
+                    return;
+                }
+                ListMovimientoDTO dto = resultado.getValor();
+                String result = sql.listMovimientos(pgsqlClient,dto);
                 smtpClientResponse.sendDataToServer("SQL ListMovimientos",result + "\r\n");
             }catch(Exception e){
                 smtpClientResponse.sendDataToServer("SQL ListMovimientos","ERROR: " + e.getMessage() + "\r\n");
@@ -60,18 +57,15 @@ public class Lista {
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         try{
-            String[] params = TecnoUtils.procesarString(subject);
-            Long productoId = (params.length > 0 && !params[0].isBlank()) ? Long.parseLong(params[0]) : null;
-            Long usuarioId = (params.length > 1 && !params[1].isBlank()) ? Long.parseLong(params[1]) : null;
-            String desde = (params.length > 2 && !params[2].isBlank()) ? params[2] : null;
-            String hasta = (params.length > 3 && !params[3].isBlank()) ? params[3] : null;
-            String tipo = (params.length > 4 && !params[4].isBlank()) ? params[4] : null;
-            String motivo = (params.length > 5 && !params[5].isBlank()) ? params[5] : null;
-            Integer limit = null;
-            if (params.length > 6 && !params[6].isBlank()) limit = Integer.parseInt(params[6]);
 
             ListSQLQuery sql = new ListSQLQuery();
-            String result = sql.listMovimientos(pgsqlClient, productoId, usuarioId, desde, hasta, tipo, motivo, limit);
+            var resultado = ListMovimientoDTO.crearMedianteSubject(subject);
+            if(!resultado.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL ListMovimientos", resultado.getError() + "\r\n");
+                return;
+            }
+            ListMovimientoDTO dto = resultado.getValor();
+            String result = sql.listMovimientos(pgsqlClient,dto);
             smtpClientResponse.sendDataToServer("SQL ListMovimientos",result + "\r\n");
         }catch(Exception e){
             smtpClientResponse.sendDataToServer("SQL ListMovimientos","ERROR: " + e.getMessage() + "\r\n");

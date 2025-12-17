@@ -65,6 +65,36 @@ public class ComparadorSigno {
         }
         return Resultado.error("error..comparadores no validos");
     }
+
+    public static Resultado<double[]> crearIntervaloDoubleFromSubject(String subject){
+        String[] data = TecnoUtils.procesarString(subject);
+        if (data.length < 2) {
+            return Resultado.error("Error se esperaba al menos 2 campos(extremoInferior,extremoSuperior)");
+        }
+        String extremoInferior = data[0];
+        String extremoSuperior = data[1];
+        if(extremoSuperior == null || extremoSuperior.equalsIgnoreCase("null")){
+            return Resultado.error("error... el extremo superior no puede ser nulo");
+        }
+        if(extremoInferior == null || extremoInferior.equalsIgnoreCase("null")){
+            return Resultado.error("error... el extremo inferior no puede ser nulo");
+        }
+        double extremoInferiorDTO;
+        double extremoSuperiorDTO;
+        try{
+            extremoInferiorDTO = Double.parseDouble(extremoInferior);
+            extremoSuperiorDTO = Double.parseDouble(extremoSuperior);
+        }catch (NumberFormatException e){
+            return Resultado.error("Error al campos no numericos!");
+        }
+        if (extremoInferiorDTO > extremoSuperiorDTO) {
+            return Resultado.error("Error orden incorrecto el extremo inferior: " + extremoInferiorDTO + " es superior a: " + extremoSuperiorDTO);
+        }
+        double[] intervalo = new double[2];
+        intervalo[0] = extremoInferiorDTO;
+        intervalo[1] = extremoSuperiorDTO;
+        return Resultado.ok(intervalo);
+    }
     public static Resultado<int[]> crearIntervaloFromSubject(String subject){
         String[] data = TecnoUtils.procesarString(subject);
         if (data.length < 2) {
