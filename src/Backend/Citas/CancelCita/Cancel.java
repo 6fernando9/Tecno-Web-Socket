@@ -40,7 +40,7 @@ public class Cancel {
                 }
                 CancelCitaDTO dto = resultado.getValor();
                 CancelSQLQuery sql = new CancelSQLQuery();
-                String str = sql.cancelarCita(pgsqlClient, dto.citaId, dto.clienteId, dto.motivo);
+                String str = sql.cancelarCita(pgsqlClient, dto.citaId, dto.clienteId);
                 smtpClientResponse.sendDataToServer("SQL CancelCita",str + "\r\n");
             }catch(Exception e){
                 smtpClientResponse.sendDataToServer("SQL CancelCita","ERROR: " + e.getMessage() + "\r\n");
@@ -63,7 +63,7 @@ public class Cancel {
             }
             CancelCitaDTO dto = resultado.getValor();
             CancelSQLQuery sql = new CancelSQLQuery();
-            String str = sql.cancelarCita(pgsqlClient, dto.citaId, dto.clienteId, dto.motivo);
+            String str = sql.cancelarCita(pgsqlClient, dto.citaId, dto.clienteId);
             smtpClientResponse.sendDataToServer("SQL CancelCita",str + "\r\n");
         }catch(Exception e){
             smtpClientResponse.sendDataToServer("SQL CancelCita","ERROR: " + e.getMessage() + "\r\n");

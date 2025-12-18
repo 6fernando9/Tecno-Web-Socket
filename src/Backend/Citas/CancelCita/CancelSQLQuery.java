@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 
 public class CancelSQLQuery {
 
-    public String cancelarCita(PGSQLClient pgsqlClient, long citaId, Long usuarioId, String motivo) {
+    public String cancelarCita(PGSQLClient pgsqlClient, long citaId, Long usuarioId) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             connection.setAutoCommit(false);

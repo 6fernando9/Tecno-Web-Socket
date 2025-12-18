@@ -13,17 +13,22 @@ public class BarberoServicioMain {
     public static void executeBarberoServicioDemon(String emisor,String receptor,String server,String subject){
         PGSQLClient pgsqlClient = new PGSQLClient(server, SQLUtils.DB_GRUPO_USER,SQLUtils.DB_GRUPO_PASSWORD,SQLUtils.DB_GRUPO_DB_NAME);
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
-        Resultado<String> barberoIdResultado = verificarErrores(subject);
 
-        if(!barberoIdResultado.esExitoso()){
-            smtpClientResponse.sendDataToServer("SQL Obtener Barbero con Servicios: Fallo Campos", barberoIdResultado.getError() + "\r\n");
-            return;
+        try{
+            Resultado<String> barberoIdResultado = verificarErrores(subject);
+
+            if(!barberoIdResultado.esExitoso()){
+                smtpClientResponse.sendDataToServer("SQL Obtener Barbero con Servicios: Fallo Campos", barberoIdResultado.getError() + "\r\n");
+                return;
+            }
+            String barberoId = barberoIdResultado.getValor();
+            BarberoServicioSQL barberoServicioSQL = new BarberoServicioSQL();
+            String barberos = barberoServicioSQL.executeGetBarberoConServicios(pgsqlClient,Long.parseLong(barberoId));
+            smtpClientResponse.sendDataToServer("SQL Obtener Barbero con Servicios", barberos + "\r\n");
+        }catch (Exception e){
+            smtpClientResponse.sendDataToServer("SQL ERROR: Obtener Barbero con Servicios", e.getMessage() + "\r\n");
         }
 
-        String barberoId = barberoIdResultado.getValor();
-        BarberoServicioSQL barberoServicioSQL = new BarberoServicioSQL();
-        String barberos = barberoServicioSQL.executeGetBarberoConServicios(pgsqlClient,Long.parseLong(barberoId));
-        smtpClientResponse.sendDataToServer("SQL Obtener Barbero con Servicios", barberos + "\r\n");
     }
     private static Resultado<String> verificarErrores(String subject){
         String[] data = TecnoUtils.procesarString(subject);

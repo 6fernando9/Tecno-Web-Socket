@@ -46,7 +46,7 @@ public class GeneralCitaSQLQuery {
         if (cita != null) {
             // SQL ampliado para traer toda la info del servicio
             String sqlServicios = """
-            SELECT s.id, s.nombre, s.descripcion, s.precio, s.duracion, s.estado, s.deleted_at 
+            SELECT s.id, s.nombre, s.descripcion, s.precio, s.duracion_estimada as duracion, s.estado, s.deleted_at 
             FROM servicios s 
             JOIN cita_servicios cs ON s.id = cs.servicio_id 
             WHERE cs.cita_id = ?

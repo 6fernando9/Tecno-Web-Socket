@@ -7,14 +7,12 @@ import Utils.TecnoUtils;
 public class CancelCitaDTO {
     public long citaId;
     public Long clienteId;
-    public String motivo; // optional
 
     public CancelCitaDTO() {}
 
-    public CancelCitaDTO(long citaId, Long usuarioId, String motivo) {
+    public CancelCitaDTO(long citaId, Long usuarioId) {
         this.citaId = citaId;
         this.clienteId = usuarioId;
-        this.motivo = motivo;
     }
 
     // Subject expected: cita_cancel["citaId","usuarioId","motivo"]
@@ -28,10 +26,8 @@ public class CancelCitaDTO {
         Long usuarioId = null;
         try { usuarioId = Long.parseLong(data[1]); } catch (Exception e) { return Resultado.error("Error: usuarioId inválido"); }
 
-        String motivo = null;
-        if (data.length > 2 && data[2] != null && !data[2].isBlank()) motivo = data[2];
 
-        CancelCitaDTO dto = new CancelCitaDTO(citaId, usuarioId, motivo);
+        CancelCitaDTO dto = new CancelCitaDTO(citaId, usuarioId);
         return Resultado.ok(dto);
     }
 }

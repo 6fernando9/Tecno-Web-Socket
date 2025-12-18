@@ -49,10 +49,10 @@ public class ListarPagoDeVentaSQLQuery {
                         "id: %d\r\n" +
                         "monto_total: %.2f\r\n" +
                         "estado: %s\r\n" +
-                        "tipo_pago: %s\r\n" +
+                        //"tipo_pago: %s\r\n" +
                         "fecha: %s\r\n" +
                         "========================================================\r\n",
-                venta.id, venta.montoTotal, venta.estado, venta.tipoPago, venta.fecha
+                venta.id, venta.montoTotal, venta.estado, venta.fecha
         );
     }
 

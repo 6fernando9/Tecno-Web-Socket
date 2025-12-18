@@ -62,11 +62,10 @@ public class ConsultarSQLQuery {
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Connecting successfully to database - Consulta de Monto");
             BarberoServicioDTO barberoData = GeneralUsuarioSQLUtils.findBarberoConServiciosById(connection, dto.barberoId);
-
+            System.out.println("data barbero " + barberoData.toString());
             if (barberoData == null) {
                 return "Error: No se encontró al barbero con ID " + dto.barberoId + " o no tiene servicios registrados.";
             }
-
             if (!barberoPoseeTodosLosServicios(barberoData, dto.serviciosIds)) {
                 return "Error: El barbero " + barberoData.nombre + " " + barberoData.apellido +
                         " no ofrece todos los servicios seleccionados para esta cotización.";
@@ -77,7 +76,7 @@ public class ConsultarSQLQuery {
             int item = 1;
 
             for (UpdateServicioDTO servicio : barberoData.servicios) {
-                if (dto.serviciosIds.contains(String.valueOf(servicio.id))) {
+                if (dto.serviciosIds.contains(servicio.id)) {
                     montoTotal += servicio.precio;
                     detalleServicios.append(String.format("   %d. %s (Bs. %.2f)\r\n", item++, servicio.nombre, servicio.precio));
                 }

@@ -1,5 +1,6 @@
 package Backend.Pagos.DeletePago;
 
+import Backend.EstadoVenta;
 import Backend.Pagos.GeneralPagoSQLUtils;
 import Backend.Pagos.dto.VentaSimpleDTO;
 import Database.PGSQLClient;
@@ -67,11 +68,11 @@ public class DeletePagoSQLQuery {
             float totalPagado = GeneralPagoSQLUtils.calcularMontoTotalDePago(ventaSimpleDTO);
             String nuevoEstado;
             if (totalPagado == 0) {
-                nuevoEstado = "pendiente_saldo";
+                nuevoEstado = EstadoVenta.PENDIENTE.getDescripcion();
             } else if (totalPagado < ventaSimpleDTO.montoTotal) {
-                nuevoEstado = "pendiente_saldo";
+                nuevoEstado = EstadoVenta.PENDIENTE.getDescripcion();
             } else {
-                nuevoEstado = "pagado";
+                nuevoEstado = EstadoVenta.CONFIRMADO.getDescripcion();
             }
 
             try (PreparedStatement psUpdate = connection.prepareStatement(SQL_UPDATE_VENTA_ESTADO)) {

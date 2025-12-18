@@ -56,10 +56,18 @@ public class CreateSQLQuery {
                     return "Error.. deberia haber un porcentaje de cita mayor a 0";
                 }
                 porcentajeCita = porcentajeCita / 100;
+                boolean clienteYaTieneCitaConOtroBarbero = clienteYaTieneCitaEnEsaFecha(connection,dto.clienteId,dto.barberoId,dto.fecha);
+                if(clienteYaTieneCitaConOtroBarbero){
+                    return "Error.. el cliente ya tiene una cita con un barbero en este horario";
+                }
                 boolean esHorarioDisponible = esHorarioDisponible(connection,dto.barberoId,dto.fecha);
                 if (!esHorarioDisponible) {
                     return "El Horario no esta disponible, consulte otro barbero..";
                 }
+                if(porcentajeCita * montoTotal != dto.pagoInicial){
+                    return "El pago inicial siempre debe ser del porcentaje acordado y no mas ni menos!";
+                }
+
                 long citaId = -1;
                 try (PreparedStatement psCita = connection.prepareStatement(INSERTAR_CITA)) {
                     psCita.setLong(1, dto.clienteId);
@@ -88,8 +96,7 @@ public class CreateSQLQuery {
                 }
 
                 connection.commit();
-                return String.format("Cita agendada con éxito.\nID Cita: %d\nMonto Total: Bs. %.2f\nFecha: %s",
-                        citaId, montoTotal, dto.fecha.toString());
+                return formatearRespuestaExito(citaId, montoTotal, dto, barberoData);
 
             } catch (SQLException e) {
                 connection.rollback();
@@ -102,15 +109,55 @@ public class CreateSQLQuery {
         }
     }
 
+    private String formatearRespuestaExito(long citaId, double montoTotal, CreateCitaV2DTO dto, BarberoServicioDTO barberoData) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("✅ CITA AGENDADA CON ÉXITO\r\n");
+        sb.append("------------------------------------------\r\n");
+        sb.append(String.format("ID Cita      : %d\r\n", citaId));
+        sb.append(String.format("Fecha y Hora : %s\r\n", dto.fecha.toString()));
+        sb.append(String.format("Nuevo Barbero   : %s %s (ID: %d)\r\n",
+                barberoData.nombre, barberoData.apellido, barberoData.id));
+        sb.append("------------------------------------------\r\n");
+        sb.append("Servicios Seleccionados:\r\n");
+
+        // Filtramos los servicios que el barbero ofrece y que el usuario eligió
+        barberoData.servicios.stream()
+                .filter(s -> dto.serviciosIds.contains(s.id))
+                .forEach(s -> sb.append(String.format(" - %-20s | Bs. %.2f\r\n", s.nombre, s.precio)));
+
+        sb.append("------------------------------------------\r\n");
+        sb.append(String.format("MONTO TOTAL  : Bs. %.2f\r\n", montoTotal));
+        sb.append(String.format("PAGO INICIAL : Bs. %.2f (%s)\r\n", dto.pagoInicial, dto.tipoPago));
+        sb.append(String.format("SALDO PENDI. : Bs. %.2f\r\n", (montoTotal - dto.pagoInicial)));
+        sb.append("==========================================");
+
+        return sb.toString();
+    }
     public static boolean esHorarioDisponible(Connection conn, Long barberoId, java.time.LocalDateTime fecha) throws SQLException {
         //si hay alguna pendiente
-        String sql = "SELECT COUNT(*) FROM citas WHERE barbero_id = ? AND fecha = ? AND estado IN ('pendiente'.'confirmada')";
+        String sql = "SELECT COUNT(*) FROM citas WHERE barbero_id = ? AND fecha = ? AND estado IN ('pendiente','confirmada')";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, barberoId);
             ps.setTimestamp(2, java.sql.Timestamp.valueOf(fecha));
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1) == 0;
+                }
+            }
+        }
+        return false;
+    }
+    public static boolean clienteYaTieneCitaEnEsaFecha(Connection conn, Long clienteId,Long barberoId, java.time.LocalDateTime fecha) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM citas WHERE cliente_id = ? AND barbero_id != ? AND fecha = ? AND estado IN ('pendiente')";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, clienteId);
+            ps.setLong(2,barberoId);
+            ps.setTimestamp(3, java.sql.Timestamp.valueOf(fecha));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
                 }
             }
         }

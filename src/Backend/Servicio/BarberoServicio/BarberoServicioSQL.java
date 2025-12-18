@@ -1,8 +1,10 @@
 package Backend.Servicio.BarberoServicio;
 
+import Backend.Roles;
 import Backend.Servicio.dto.UpdateServicioDTO;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.dto.BarberoServicioDTO;
+import Backend.Usuarios.dto.UpdateUsuarioDTO;
 import Database.PGSQLClient;
 
 import java.sql.*;
@@ -15,8 +17,15 @@ public class BarberoServicioSQL {
 
         try (Connection conn = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             System.out.println("Conexión exitosa para obtener barbero con servicios.");
+            UpdateUsuarioDTO dto = GeneralUsuarioSQLUtils.findUserById(conn,barberoId);
+            if(!dto.rol.equalsIgnoreCase(Roles.BARBERO.getDescripcion())){
+                return "Error.. el usuario no tiene el rol de barbero";
+            }
+            //aqui ya sse hace la consulta a la tabla barbero, no hay necesidad de aplicar otra consulta
             barberoDTO = GeneralUsuarioSQLUtils.findBarberoConServiciosById(conn, barberoId);
-
+            if (barberoDTO == null) {
+                return "Barbero no encontrado";
+            }
         } catch (SQLException e) {
             System.out.println("Error en BarberoServicioSQL: " + e.getMessage());
             return "ERROR DE BASE DE DATOS: " + e.getMessage();

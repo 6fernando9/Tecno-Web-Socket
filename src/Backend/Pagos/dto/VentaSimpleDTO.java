@@ -7,16 +7,16 @@ public class VentaSimpleDTO {
     public Long id;
     public float montoTotal;
     public String estado;
-    public String tipoPago;
+    //public String tipoPago;
     public String fecha;
     List<PagoDTO> listaPagos;
     public VentaSimpleDTO() {}
 
-    public VentaSimpleDTO(Long id, float montoTotal, String estado, String tipoPago, String fecha) {
+    public VentaSimpleDTO(Long id, float montoTotal, String estado, String fecha) {
         this.id = id;
         this.montoTotal = montoTotal;
         this.estado = estado;
-        this.tipoPago = tipoPago;
+      //  this.tipoPago = tipoPago;
         this.fecha = fecha;
         this.listaPagos = new ArrayList<>();
     }
@@ -35,7 +35,7 @@ public class VentaSimpleDTO {
                 "id=" + id +
                 ", montoTotal=" + montoTotal +
                 ", estado='" + estado + '\'' +
-                ", tipoPago='" + tipoPago + '\'' +
+                //", tipoPago='" + tipoPago + '\'' +
                 ", fecha='" + fecha + '\'' +
                 '}';
     }

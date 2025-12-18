@@ -18,7 +18,7 @@ public class VentasPorProductoSQL {
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
             String sql = "SELECT p.id AS producto_id, p.nombre AS producto, COALESCE(SUM(d.cantidad),0) AS unidades_vendidas, COALESCE(SUM(d.cantidad * d.precio_unitario),0) AS total_ingresos " +
                     "FROM detalles d JOIN ventas v ON d.venta_id = v.id JOIN productos p ON d.producto_id = p.id " +
-                    "WHERE v.fecha_hora::date BETWEEN ? AND ? GROUP BY p.id, p.nombre ORDER BY unidades_vendidas DESC;";
+                    "WHERE v.created_at::date BETWEEN ? AND ? GROUP BY p.id, p.nombre ORDER BY unidades_vendidas DESC;";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 Date d1 = (desde == null) ? Date.valueOf("1900-01-01") : Date.valueOf(desde);
                 Date d2 = (hasta == null) ? new Date(System.currentTimeMillis()) : Date.valueOf(hasta);

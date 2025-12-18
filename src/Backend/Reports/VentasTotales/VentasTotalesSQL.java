@@ -16,8 +16,8 @@ public class VentasTotalesSQL {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
         List<String> rows = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword())) {
-            String sql = "SELECT date(v.fecha_hora) AS dia, SUM(v.monto_total) AS ingresos_totales, COUNT(v.id) AS ventas_count " +
-                    "FROM ventas v WHERE v.fecha_hora::date BETWEEN ? AND ? GROUP BY date(v.fecha_hora) ORDER BY date(v.fecha_hora);";
+            String sql = "SELECT date(v.created_at) AS dia, SUM(v.monto_total) AS ingresos_totales, COUNT(v.id) AS ventas_count " +
+                    "FROM ventas v WHERE v.created_at::date BETWEEN ? AND ? GROUP BY date(v.created_at) ORDER BY date(v.created_at);";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 Date d1 = (desde == null) ? Date.valueOf("1900-01-01") : Date.valueOf(desde);
                 Date d2 = (hasta == null) ? new Date(System.currentTimeMillis()) : Date.valueOf(hasta);

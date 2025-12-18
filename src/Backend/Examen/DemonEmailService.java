@@ -172,7 +172,7 @@ public class DemonEmailService {
             Update.executeUpdateCitaDemon(emisor,receptor,server,subject);
             return;
         }
-        if(comando.equalsIgnoreCase("cita_list")){
+        if(comando.equalsIgnoreCase("citaList")){
             System.out.println("Ejecutando Listar Citas");
             Lista.executeListCitasDemon(emisor,receptor,server,subject);
             return;
@@ -293,9 +293,10 @@ public class DemonEmailService {
             CambiarEstadoServicio.executeCambiarEstadoServicioDemon(emisor,receptor,server,subject);
             return;
         }
-        if(comando.equalsIgnoreCase("servicioBarbero")){
+        if(comando.equalsIgnoreCase("serviciosDeBarbero")){
             System.out.println("Ejecutando Barbero con sus servicios");
             BarberoServicioMain.executeBarberoServicioDemon(emisor,receptor,server,subject);
+            return;
         }
         //Para Pagos
         if(comando.equalsIgnoreCase("createPago")){

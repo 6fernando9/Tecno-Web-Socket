@@ -11,6 +11,7 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,17 +39,21 @@ public class ConsultarServicioBarberoDTO {
         if (GeneralMethods.esCampoNuloVacio(serviciosEntrantes)) {
             return Resultado.error("Error: el campo 'servicios' no puede ser nulo o vacio");
         }
+        Set<Long> serviciosSet = new HashSet<>();
         try {
             barberoIdDto = Long.parseLong(barberoIdEntrante);
-        } catch (Exception e) {
-            return Resultado.error("Error: barberoId inválido");
+            String[] serviciosSplit = serviciosEntrantes.split(",");
+            serviciosSet = Arrays.stream(serviciosSplit)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Long::parseLong)
+                    .collect(Collectors.toSet());
+        } catch (NumberFormatException e) {
+            return Resultado.error("Error: barberoId o servicios no son valores numericos");
         }
-        String[] serviciosSplit = serviciosEntrantes.split(",");
-        Set<Long> serviciosSet = Arrays.stream(serviciosSplit)
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(Long::parseLong)
-                .collect(Collectors.toSet());
+
+
+
 
         if (serviciosSet.isEmpty()) {
             return Resultado.error("Error: La lista de Servicios está vacía o es inválida.");
@@ -57,4 +62,11 @@ public class ConsultarServicioBarberoDTO {
         return Resultado.ok(new ConsultarServicioBarberoDTO(barberoIdDto,serviciosSet));
     }
 
+    @Override
+    public String toString() {
+        return "ConsultarServicioBarberoDTO{" +
+                "barberoId=" + barberoId +
+                ", serviciosIds=" + serviciosIds +
+                '}';
+    }
 }

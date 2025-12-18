@@ -16,8 +16,7 @@ public class GeneralPagoSQLUtils {
             id, 
             monto_total, 
             estado_pago AS estado, 
-            tipo_pago, 
-            TO_CHAR(fecha_hora, 'YYYY-MM-DD HH24:MI:SS') AS fecha
+            TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS') AS fecha
         FROM public.ventas
         WHERE id = ?
         """;
@@ -68,7 +67,7 @@ public class GeneralPagoSQLUtils {
                             rs.getLong("id"),
                             rs.getFloat("monto_total"),
                             rs.getString("estado"),
-                            rs.getString("tipo_pago"),
+                            //rs.getString("tipo_pago"),
                             rs.getString("fecha")
                     );
                 }

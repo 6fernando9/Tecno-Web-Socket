@@ -74,9 +74,9 @@ public class GeneralUsuarioSQLUtils {
 
     public static BarberoServicioDTO findBarberoConServiciosById(Connection con, long barberoId) throws SQLException {
         String sql = """
-        SELECT u.id, u.name, u.apellido, u.email, u.telefono, b.estado_barbero AS estado
+        SELECT u.id, u.name, u.apellido, u.email, u.telefono, b.estado_barbero AS estado,
                s.id AS s_id, s.nombre AS s_nombre, s.descripcion, 
-               s.precio, s.duracion_estimada, s.estado AS s_estado
+               s.precio, s.duracion_estimada, s.estado AS s_estado,s.deleted_at as s_deleted_at
         FROM users u
         JOIN barberos b ON u.id = b.id
         JOIN servicio_barberos sb ON b.id = sb.barbero_id
@@ -111,7 +111,7 @@ public class GeneralUsuarioSQLUtils {
                     servicio.precio = rs.getFloat("precio");
                     servicio.duracion = rs.getInt("duracion_estimada");
                     servicio.estado = rs.getString("s_estado");
-                    servicio.deletedAt = null;
+                    servicio.deletedAt = rs.getString("s_deleted_at");
 
                     barberoDTO.servicios.add(servicio);
                 }

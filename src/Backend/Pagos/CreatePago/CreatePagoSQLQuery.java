@@ -1,5 +1,6 @@
 package Backend.Pagos.CreatePago;
 
+import Backend.EstadoVenta;
 import Backend.Pagos.GeneralPagoSQLUtils;
 import Backend.Pagos.dto.PagoDTO;
 import Backend.Pagos.dto.TipoPagoDTO;
@@ -54,8 +55,8 @@ public class CreatePagoSQLQuery {
             }
             //para actualizar el estado
             String nuevoEstado = (nuevoTotal == ventaSimpleDTO.montoTotal)
-                    ? "pagado"
-                    : "pendiente_saldo";
+                    ? EstadoVenta.CONFIRMADO.getDescripcion()
+                    : EstadoVenta.PENDIENTE.getDescripcion();
 
             try (PreparedStatement psUpdate = connection.prepareStatement(UPDATE_VENTA_ESTADO)) {
                 psUpdate.setString(1, nuevoEstado);

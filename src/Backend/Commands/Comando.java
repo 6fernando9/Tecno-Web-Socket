@@ -38,6 +38,7 @@ updateServicio["servicioId","nombre","descripcion","precio","duracion"]
 listarServicioSimple[">15"] | listarServicioSimple["*"]
 listarServicioIntervalo["5","10"]
 cambiarEstadoServicio["servicioId","activo|eliminado"]
+serviciosDeBarbero["barberoId"]
 
 
 HORARIOS
@@ -54,11 +55,12 @@ listarPagosDeVenta["ventaId"]
 
 
 CITAS
-cita_create["clienteId","barberoId","servicios","fechaInicio","fechaFin","observaciones","pagoInicial"]
-cita_update["citaId","usuarioId","barberoId","fechaInicio","fechaFin"]
-cita_list["clienteId","barberoId","estado","fechaInicio","fechaFin","servicioId","limit"]
-cita_cancel["citaId","usuarioId","estado"]
-
+citaCreate["clienteId","barberoId","tipoPago","pagoInicial","fecha","servicios"]
+citaUpdate["citaId","clienteId","barberoId","fecha"]
+citaList["clienteId","barberoId","estado","fechaInicio","fechaFin","servicioId"]
+citaCancel["citaId","usuarioId"]
+ConsultarCitaEnFecha["fecha"]
+ConsultarMontoServicios["barberoId","serviciosId's"]
 
 REPORTES
 FECHAS FORMATO YYYY-MM-DD
@@ -76,7 +78,7 @@ movimiento_inventario_update["movimientoId","motivo","fecha"]
 anular_movimiento_inventario["movimientoId"]
 movimiento_inventario_list["productoId","fechaInicio","fechaFin","tipo","motivo"]
 
-Fechas Formato YYYY-MM-DD
+Fechas Formato dd--m--yy
 """;
         comandos = GeneralMethods.parsearSubjectComillaTriplev2(comandos);
         smtpClientResponse.sendDataToServer("Faceritos Commands",comandos+ "\r\n");

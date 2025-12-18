@@ -7,13 +7,17 @@ import Backend.Citas.GeneralCitaSQLQuery;
 import Backend.Citas.dto.CitaDTO;
 import Backend.Citas.dto.UpdateCitaDTO;
 import Backend.Roles;
+import Backend.Servicio.dto.UpdateServicioDTO;
 import Backend.Usuarios.GeneralUsuarioSQLUtils;
 import Backend.Usuarios.dto.BarberoServicioDTO;
 import Database.PGSQLClient;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static Backend.Citas.CreateCita.CreateSQLQuery.clienteYaTieneCitaEnEsaFecha;
 
 public class UpdateSQLQuery {
 
@@ -60,12 +64,26 @@ public class UpdateSQLQuery {
                 if (barberoData == null) {
                     return "Error: No se encontró al barbero con ID " + dto.barberoId + " o no tiene servicios registrados.";
                 }
+                //diferentes barberos
                 if(dto.barberoId != cita.barberoId){
                     Set<Long> serviciosIds = cita.servicios.stream().map(servicio -> servicio.id).collect(Collectors.toSet());
                     if (!ConsultarSQLQuery.barberoPoseeTodosLosServicios(barberoData, serviciosIds)) {
                         return "Error: El barbero " + barberoData.nombre + " " + barberoData.apellido +
                                 " no ofrece todos los servicios seleccionados para esta cotización.";
                     }
+//se asume que si 2 barberos imparten el mismo servicio cobran lo mismo,si quisierammos que no fuese asi entonces en servicioBarbero seria colocar un precio como tal
+//                    double montoTotalDeServiciosDeBarberoBd = calcularMontoTotalDeServicios(cita.servicios);
+//                    double montoTotalDeServiciosDeBarberoEntrante = barberoData.servicios.stream()
+//                            .filter(s -> serviciosIds.contains(s.id))
+//                            .mapToDouble(s -> s.precio)
+//                            .sum();
+//                    if (montoTotalDeServiciosDeBarberoEntrante != montoTotalDeServiciosDeBarberoBd) {
+//                        return "No es posible cambiar de barbero dado que no cobran el mismo precio por el total de servicios";
+//                    }
+                }
+                boolean clienteYaTieneCitaConOtroBarbero = clienteYaTieneCitaEnEsaFecha(connection,dto.clienteId,dto.barberoId,dto.fecha);
+                if(clienteYaTieneCitaConOtroBarbero){
+                    return "Error.. el cliente ya tiene una cita con un barbero en este horario";
                 }
                 boolean esHorarioDisponible = CreateSQLQuery.esHorarioDisponible(connection, dto.barberoId, dto.fecha);
                 if (!esHorarioDisponible) {
@@ -83,8 +101,7 @@ public class UpdateSQLQuery {
                 }
 
                 connection.commit();
-                return String.format("Cita %d actualizada con éxito.\nNuevo Barbero ID: %d\nNueva Fecha: %s",
-                        dto.citaId, dto.barberoId, dto.fecha.toString());
+                return formatearRespuestaUpdate(dto, barberoData, cita);
 
             } catch (SQLException e) {
                 connection.rollback();
@@ -95,6 +112,38 @@ public class UpdateSQLQuery {
             return "ERROR DE CONEXIÓN / BASE DE DATOS: " + e.getMessage();
         }
     }
+    public static double calcularMontoTotalDeServicios(Set<UpdateServicioDTO> lista){
+        return lista.stream()
+                .mapToDouble(s -> s.precio)
+                .sum();
 
+    }
+    private String formatearRespuestaUpdate(UpdateCitaDTO dto, BarberoServicioDTO barberoData, CitaDTO citaOriginal) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("🔄 CITA ACTUALIZADA CON ÉXITO\r\n");
+        sb.append("------------------------------------------\r\n");
+        sb.append(String.format("ID Cita         : %d\r\n", dto.citaId));
+        sb.append(String.format("Nueva Fecha/Hora: %s\r\n", dto.fecha.toString()));
+        sb.append(String.format("Nuevo Barbero   : %s %s (ID: %d)\r\n",
+                barberoData.nombre, barberoData.apellido, barberoData.id));
+        sb.append("------------------------------------------\r\n");
+        sb.append("Servicios de la Cita:\r\n");
+
+        // Mostramos los servicios que ya tenía la cita (que se mantienen)
+        for (UpdateServicioDTO s : citaOriginal.servicios) {
+            sb.append(String.format(" - %-20s | Bs. %.2f\r\n", s.nombre, s.precio));
+        }
+
+        double montoTotal = calcularMontoTotalDeServicios(citaOriginal.servicios);
+
+        sb.append("------------------------------------------\r\n");
+        sb.append(String.format("MONTO TOTAL     : Bs. %.2f\r\n", montoTotal));
+        // En actualización, el pago inicial ya fue registrado en la creación
+        sb.append(String.format("PAGO INICIAL    : Bs. %.2f\r\n", citaOriginal.pagoInicial));
+        sb.append(String.format("SALDO RESTANTE  : Bs. %.2f\r\n", (montoTotal - citaOriginal.pagoInicial)));
+        sb.append("==========================================");
+
+        return sb.toString();
+    }
 
 }
